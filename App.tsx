@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { Text, Button, View } from 'react-native';
+import { StatusBar } from 'react-native';
 import { LoginResponse } from "lemmy-js-client";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { asyncStorageHandler, dataKeys } from './asyncStorage';
 import { LemmyHttp } from 'lemmy-js-client';
@@ -26,21 +26,20 @@ const App = observer(() => {
   React.useEffect(() => {
     async function init() {
       if (apiClient.api === undefined) {
-        const promises = [
+        const [ possibleInstance, possibleUser, possibleUsername ] = await Promise.all([
           asyncStorageHandler.readData(dataKeys.instance),
-          asyncStorageHandler.readData(dataKeys.login),
+          asyncStorageHandler.readSecureData(dataKeys.login),
           asyncStorageHandler.readData(dataKeys.username)
-        ]
-        const [ possibleInstance, possibleUser, possibleUsername ] = await Promise.all(promises)
+        ])
         if (possibleInstance && possibleUser && possibleUsername) {
           const auth: LoginResponse = JSON.parse(possibleUser);
           const client: LemmyHttp = new LemmyHttp(possibleInstance);
           apiClient.setClient(client)
           apiClient.setLoginDetails(auth)
           apiClient.setLoginState(true)
-          apiClient.setUsername(possibleUsername)
+          apiClient.profileStore.setUsername(possibleUsername)
 
-          void apiClient.getProfile()
+          void apiClient.profileStore.getProfile(auth)
         } else {
           const client: LemmyHttp = new LemmyHttp('https://lemmy.ml');
           apiClient.setClient(client)
@@ -55,6 +54,7 @@ const App = observer(() => {
 
   return (
     <SafeAreaProvider>
+      <StatusBar />
       <NavigationContainer theme={scheme === 'dark' ? AppDarkTheme : AppTheme}>
         <Stack.Navigator initialRouteName={"Home"}>
           <Stack.Screen

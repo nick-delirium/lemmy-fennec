@@ -8,7 +8,7 @@ import Post from './Post'
 function Feed() {
   React.useEffect(() => {
     if (apiClient.api) {
-      void apiClient.getPosts({})
+      void apiClient.postStore.getPosts(apiClient.loginDetails)
     }
   }, [ apiClient.api ])
 
@@ -16,10 +16,16 @@ function Feed() {
     <View style={styles.container}>
       <FlatList
         renderItem={({ item }) => <Post post={item} />}
-        data={apiClient.posts}
-        onRefresh={() => apiClient.getPosts({})}
-        refreshing={apiClient.isFeedFetching}
+        data={apiClient.postStore.posts}
+        onRefresh={() => {
+          apiClient.postStore.setFilters({ page: 0 })
+          apiClient.postStore.getPosts(apiClient.loginDetails)
+        }}
+        onEndReached={() => apiClient.postStore.nextPage(apiClient.loginDetails)}
+        refreshing={apiClient.postStore.isLoading}
+        onEndReachedThreshold={1}
         keyExtractor={(p) => p.post.id.toString()}
+        fadingEdgeLength={1}
       />
     </View>
   );

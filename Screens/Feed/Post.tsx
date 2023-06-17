@@ -10,30 +10,13 @@ import {
   NativeModules,
   useColorScheme,
   Image,
+  Vibration,
+  Share,
   TouchableOpacity
 } from "react-native";
 import { Text, Icon } from "../../ThemedComponents";
-import { AppTheme, AppDarkTheme } from '../../commonStyles'
+import { mdTheme } from '../../commonStyles'
 import { Score, apiClient } from "../../store/apiClient";
-
-const mdTheme = {
-  light: {
-    background: "#ffffff",
-    code: "#f6f8fa",
-    link: "#58a6ff",
-    text: "#333333",
-    border: "#d0d7de",
-    ...AppTheme.colors
-  },
-  dark: {
-    background: "#000000",
-    code: "#161b22",
-    link: "#58a6ff",
-    text: "#ffffff",
-    border: "#30363d",
-    ...AppDarkTheme.colors
-  },
-} as const
 
 const deviceLanguage =
   Platform.OS === 'ios'
@@ -57,39 +40,44 @@ function Post({ post, isExpanded }: { post: PostView, isExpanded?: boolean }) {
   const oldDateOptions = { month: 'long', day: '2-digit', year: 'numeric' } as const;
   const postDate = new Date(post.post.published);
   const isSameYear = postDate.getFullYear() === new Date().getFullYear();
-  const dateStr = postDate.toLocaleDateString(deviceLanguage.replace('_', '-'), isSameYear ? recentDateOptions : oldDateOptions);
+  const dateStr = postDate.toLocaleDateString(
+    deviceLanguage.replace('_', '-'), isSameYear ? recentDateOptions : oldDateOptions);
 
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
       <View style={styles.topRow}>
-        <Text style={{ fontSize: 12 }}>c/{post.community.name} by u/{post.creator.display_name || post.creator.name}</Text>
-        <Text>{dateStr}</Text>
+        <View style={styles.communityIconContainer}>
+          <Image
+            source={{ uri: post.community.icon }}
+            style={styles.communityIcon}
+          />
+        </View>
+        <Text style={styles.communityName}>c/{post.community.name}</Text>
+        <Text style={styles.smolText}>by</Text>
+        <Text style={styles.authorName}>u/{post.creator.display_name || post.creator.name}</Text>
+        <Text style={{ marginLeft: 'auto' }}>{dateStr}</Text>
       </View>
       <Text
         customColor={post.read ? "#F5F5F5" : undefined}
         lines={maxLines}
-        style={{
-          fontSize: 16,
-          marginTop: 4,
-          marginBottom: 8,
-      }}
+        style={styles.postName}
       >
         {post.post.name}
       </Text>
       {isPic ? (
         <Image
           source={{ uri: post.post.url }}
-          style={{ width: '100%', height: 320 }}
+          style={styles.postImg}
           progressiveRenderingEnabled
           resizeMode={'contain'}
           alt={"Post image"}
         />
-             ) : (
-        <Markdown
-          value={safeDescription}
-          theme={{ colors: sch === 'dark' ? mdTheme.dark : mdTheme.light }}
-        />
-      )}
+      ) : (
+         <Markdown
+           value={safeDescription}
+           theme={{ colors: sch === 'dark' ? mdTheme.dark : mdTheme.light }}
+         />
+       )}
       <View style={styles.iconsRow}>
         <View style={styles.infoPiece}>
           <Icon name={"chevrons-up"} size={24} />
@@ -98,24 +86,55 @@ function Post({ post, isExpanded }: { post: PostView, isExpanded?: boolean }) {
             (post.counts.upvotes / (post.counts.upvotes + post.counts.downvotes)) * 100)}%)
           </Text>
         </View>
-        <View style={{ flex: 1}} />
+        <View style={{ flex: 1 }} />
         <View style={styles.infoPiece}>
           <Icon name={"message-square"} size={24} />
           <Text>
             {`${post.counts.comments}${post.unread_comments > 0 ? '(+' + post.unread_comments + ')' : ''}`}
           </Text>
         </View>
-        <Icon name={"share-2"} size={24} />
-        <TouchableOpacity onPress={() => apiClient.ratePost(post.post.id, Score.Downvote)}>
+
+        <TouchableOpacity
+          onPress={() => {
+            Vibration.vibrate(50)
+            void apiClient.postStore.savePost(
+              { post_id: post.post.id, save: !post.saved, auth: apiClient.loginDetails?.jwt })
+          }}
+        >
+          <Icon name={"bookmark"} size={24} color={post.saved ? 'red' : undefined} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => Share.share(
+            { url: post.post.ap_id, message: Platform.OS === 'ios' ? '' : post.post.ap_id, title: post.post.name },
+            { dialogTitle: post.post.name }
+          )}
+        >
+          <Icon name={"share-2"} size={24} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            Vibration.vibrate(50)
+            void apiClient.postStore.ratePost(
+              post.post.id, apiClient.loginDetails, Score.Downvote)
+          }}
+        >
           <Icon name={"arrow-down"} size={24} color={post.my_vote === -1 ? "red" : undefined} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => apiClient.ratePost(post.post.id, Score.Upvote)}>
+        <TouchableOpacity
+          onPress={() => {
+            Vibration.vibrate(50)
+            void apiClient.postStore.ratePost(
+              post.post.id, apiClient.loginDetails, Score.Upvote)
+          }}
+        >
           <Icon name={"arrow-up"} size={24} color={post.my_vote === 1 ? "red" : undefined} />
         </TouchableOpacity>
       </View>
     </View>
   )
 }
+
+// todo add saving
 
 const styles = StyleSheet.create({
   container: {
@@ -137,8 +156,19 @@ const styles = StyleSheet.create({
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
-  }
+    gap: 4,
+  },
+  communityIconContainer: { backgroundColor: '#f6f6f6', borderRadius: 24, width: 24, height: 24 },
+  communityIcon: { width: 24, height: 24, borderRadius: 24 },
+  authorName: { fontSize: 12, fontWeight: '500' },
+  communityName: { fontSize: 12, fontWeight: '500', marginLeft: 4 },
+  smolText: { fontSize: 12 },
+  postName: {
+    fontSize: 16,
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  postImg: { width: '100%', height: 320 }
 })
 
 export default observer(Post);

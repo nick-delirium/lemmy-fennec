@@ -32,12 +32,11 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
     const client: LemmyHttp = new LemmyHttp(instanceHref);
     apiClient.setClient(client);
     apiClient.login(loginDetails).then(async (auth) => {
-      const promises = [
-        asyncStorageHandler.setData(dataKeys.login, JSON.stringify(auth)),
+      await Promise.all([
+        asyncStorageHandler.setSecureData(dataKeys.login, JSON.stringify(auth)),
         asyncStorageHandler.setData(dataKeys.instance, instanceHref),
         asyncStorageHandler.setData(dataKeys.username, loginDetails.username_or_email),
-      ]
-      await Promise.all(promises)
+      ])
       navigation.navigate("Home")
     })
   }

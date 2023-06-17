@@ -5,7 +5,8 @@ import {
   Login,
   LoginResponse,
   CreatePostLike,
-  GetPersonDetails
+  GetPersonDetails,
+  GetComments, SavePost
 } from 'lemmy-js-client';
 
 export default class ApiService {
@@ -22,6 +23,17 @@ export default class ApiService {
 
   getProfile(form: GetPersonDetails) {
     return this.client.getPersonDetails(form)
+  }
+
+  getComments(form: GetComments) {
+    return this.client.getComments(form)
+  }
+
+  savePost(form: SavePost) {
+    if (!form.auth) {
+      throw new Error('No jwt token for savePost');
+    }
+    return this.client.savePost(form)
   }
 
   ratePost(form: CreatePostLike) {

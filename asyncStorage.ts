@@ -1,9 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export const dataKeys = {
-  instance: '@instance',
-  login: '@login',
-  username: '@username',
+  instance: 'fennec-instance',
+  login: 'fennec-login',
+  username: 'fennec-username',
+  postsLimit: 'fennec-settings-posts-limit',
 } as const
 
 type Keys = keyof typeof dataKeys;
@@ -17,7 +19,7 @@ class AsyncStoragehandler {
         return value;
       } else return null;
     } catch(e) {
-      // error reading value
+      console.error('regular data read:', e)
     }
   }
 
@@ -25,7 +27,26 @@ class AsyncStoragehandler {
     try {
       await AsyncStorage.setItem(key, value)
     } catch (e) {
-      // saving error
+      console.error('regular data write:', e)
+    }
+  }
+
+  setSecureData = async (key, value) => {
+    try {
+      await SecureStore.setItemAsync(key, value);
+    } catch (e) {
+      console.error('secure data write:', e)
+    }
+  }
+
+  readSecureData = async (key) => {
+    try {
+      const value = await SecureStore.getItemAsync(key);
+      if (value !== null) {
+        return value;
+      } else return null;
+    } catch (e) {
+      console.error('secure data read:', e)
     }
   }
 
@@ -34,7 +55,7 @@ class AsyncStoragehandler {
   }
 
   logout() {
-    void AsyncStorage.removeItem(dataKeys.login);
+    void SecureStore.deleteItemAsync(dataKeys.login);
     void AsyncStorage.removeItem(dataKeys.username);
   }
 }

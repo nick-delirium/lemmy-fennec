@@ -8,12 +8,13 @@ interface Props {
   style?: ViewStyle,
   size: number,
   color?: string
+  accessibilityLabel?: string
 }
 
-export default function Icon({ name, size, color, style }: Props) {
+export default function Icon({ accessibilityLabel, name, size, color, style }: Props) {
   const { colors } = useTheme();
 
   return (
-    <Feather style={style} name={name} size={size} color={color || colors.primary} />
+    <Feather accessibilityLabel={accessibilityLabel} style={style} name={name} size={size} color={color || colors.primary} />
   )
 }

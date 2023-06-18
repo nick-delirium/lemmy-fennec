@@ -59,6 +59,8 @@ class CommentsStore extends DataClass {
       isLoading: observable,
       setIsLoading: action,
       setClient: action,
+      updateCommentById: action,
+      updateTreeCommentRating: action,
     })
   }
 
@@ -84,7 +86,42 @@ class CommentsStore extends DataClass {
   buildTree(comments: CommentView[]) {
     this.commentTree = buildCommentTree(comments);
   }
+
+  async rateComment(commentId: CommentId, loginDetails: LoginResponse, score: typeof Score[keyof typeof Score],) {
+    await this.fetchData(
+      () => this.api.rateComment({ comment_id: commentId, score, auth: loginDetails.jwt }),
+      ({ comment_view}) => {
+        this.updateCommentById(commentId, comment_view)
+        this.updateTreeCommentRating(this.commentTree, commentId, score, comment_view.counts)
+      },
+      (e) => console.error(e),
+      true,
+    )
+  }
+
+  updateCommentById(commentId: CommentId, updatedComment: CommentView) {
+    this.comments = this.comments.map(c => {
+      if (c.comment.id === commentId) return updatedComment
+      return c
+    })
+  }
+
+  // any better solution? No idea... (¬_¬)
+  updateTreeCommentRating(commentTree: CommentNode[], commentId: number, vote: typeof Score[keyof typeof Score], counts: CommentNode['counts']): boolean {
+    for (const commentNode of commentTree) {
+      if (commentNode.comment.id === commentId) {
+        commentNode.my_vote = vote;
+        commentNode.counts = counts;
+        return true;
+      }
+      if (this.updateTreeCommentRating(commentNode.children, commentId, vote, counts)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
+
 
 // yeah I really had no better idea. PRs welcome!
 function buildCommentTree(comments: CommentView[]) {

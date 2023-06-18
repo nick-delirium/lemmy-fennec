@@ -6,7 +6,9 @@ import {
   LoginResponse,
   CreatePostLike,
   GetPersonDetails,
-  GetComments, SavePost
+  GetComments,
+  SavePost,
+  CreateCommentLike
 } from 'lemmy-js-client';
 
 export default class ApiService {
@@ -41,5 +43,12 @@ export default class ApiService {
       throw new Error('No jwt token for likePost');
     }
     return this.client.likePost(form)
+  }
+
+  rateComment(form: CreateCommentLike) {
+    if (!form.auth) {
+      throw new Error('No jwt token for likeComment');
+    }
+    return this.client.likeComment(form)
   }
 }

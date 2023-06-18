@@ -7,7 +7,6 @@ import {
   View,
   StyleSheet,
   Platform,
-  NativeModules,
   useColorScheme,
   Image,
   Vibration,
@@ -18,12 +17,7 @@ import { Text, Icon } from "../../ThemedComponents";
 import { mdTheme } from '../../commonStyles'
 import { Score, apiClient } from "../../store/apiClient";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-const deviceLanguage =
-  Platform.OS === 'ios'
-  ? NativeModules.SettingsManager.settings.AppleLocale ||
-    NativeModules.SettingsManager.settings.AppleLanguages[0] // iOS 13 is special
-  : NativeModules.I18nManager.localeIdentifier;
+import { makeDateString } from '../../utils';
 
 function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: boolean, navigation?: NativeStackNavigationProp<any, "Feed"> }) {
   const { colors } = useTheme();
@@ -37,12 +31,7 @@ function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: b
   const maxLines = isExpanded ? undefined : 3;
   const safeDescription = post.post.body ? post.post.body : ''
 
-  const recentDateOptions = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' } as const;
-  const oldDateOptions = { month: 'long', day: '2-digit', year: 'numeric' } as const;
-  const postDate = new Date(post.post.published);
-  const isSameYear = postDate.getFullYear() === new Date().getFullYear();
-  const dateStr = postDate.toLocaleDateString(
-    deviceLanguage.replace('_', '-'), isSameYear ? recentDateOptions : oldDateOptions);
+  const dateStr = makeDateString(post.post.published)
 
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
@@ -104,7 +93,7 @@ function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: b
        )}
       <View style={styles.iconsRow}>
         <View style={styles.infoPiece}>
-          <Icon name={"chevrons-up"} size={24} />
+          <Icon accessibilityLabel={"total rating"} name={"chevrons-up"} size={24} />
           <Text>
             {post.counts.score} ({Math.ceil(
             (post.counts.upvotes / (post.counts.upvotes + post.counts.downvotes)) * 100)}%)
@@ -112,7 +101,7 @@ function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: b
         </View>
         <View style={{ flex: 1 }} />
         <View style={styles.infoPiece}>
-          <Icon name={"message-square"} size={24} />
+          <Icon accessibilityLabel={"total comments (+ unread)"} name={"message-square"} size={24} />
           <Text>
             {`${post.counts.comments}${post.unread_comments > 0 ? '(+' + post.unread_comments + ')' : ''}`}
           </Text>
@@ -125,7 +114,7 @@ function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: b
               { post_id: post.post.id, save: !post.saved, auth: apiClient.loginDetails?.jwt })
           }}
         >
-          <Icon name={"bookmark"} size={24} color={post.saved ? 'red' : undefined} />
+          <Icon accessibilityLabel={"bookmark post button"} name={"bookmark"} size={24} color={post.saved ? 'red' : undefined} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => Share.share(
@@ -133,7 +122,7 @@ function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: b
             { dialogTitle: post.post.name }
           )}
         >
-          <Icon name={"share-2"} size={24} />
+          <Icon accessibilityLabel={"share post button"} name={"share-2"} size={24} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -142,7 +131,7 @@ function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: b
               post.post.id, apiClient.loginDetails, Score.Downvote)
           }}
         >
-          <Icon name={"arrow-down"} size={24} color={post.my_vote === -1 ? "red" : undefined} />
+          <Icon accessibilityLabel={"downvote post"} name={"arrow-down"} size={24} color={post.my_vote === -1 ? "red" : undefined} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -151,7 +140,7 @@ function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: b
               post.post.id, apiClient.loginDetails, Score.Upvote)
           }}
         >
-          <Icon name={"arrow-up"} size={24} color={post.my_vote === 1 ? "red" : undefined} />
+          <Icon accessibilityLabel={"upvote post"} name={"arrow-up"} size={24} color={post.my_vote === 1 ? "red" : undefined} />
         </TouchableOpacity>
       </View>
     </View>

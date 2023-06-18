@@ -22,6 +22,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     apiClient.postStore.setFilters({ page: 0 })
     void apiClient.postStore.getPosts(apiClient.loginDetails)
   }, [])
+
   return (
     <View style={styles.container}>
       <FlatList

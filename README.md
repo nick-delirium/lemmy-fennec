@@ -8,13 +8,13 @@ Spot any bad code or bugs? Start a PR or issue, I'll be happy to see it.
 Same for feature requests.
 
 todo:
-- comments
 - writing comment/post
 - profile editing
-- more settings for app behavior
+- more settings for app behavior (default nsfw, default post limit, comment tree depth)
 - sublemmy (community) view
 - different user views
 - search
 
-Special thanks:
-https://github.com/gmsgowtham/react-native-marked - MD rendering library (MIT)
+Special thanks and credits:
+https://github.com/gmsgowtham/react-native-marked - goat MD rendering library (MIT)
+https://github.com/LemmyNet/lemmy-js-client - lemmy js client with types and all the good things (MIT)

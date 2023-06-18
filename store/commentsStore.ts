@@ -6,6 +6,7 @@ import {
   ListingType,
   CommentSortType,
   CommunityId,
+  CommentId,
   CommentView,
   GetCommentsResponse,
 } from 'lemmy-js-client';
@@ -34,7 +35,7 @@ export interface CommentNode extends CommentView {
 }
 
 // !!!TODO!!!
-// grab subcomments and build subtrees (build tree and insert into children array)
+// grab sub comments and build subtrees (build tree and insert into children array)
 
 class CommentsStore extends DataClass {
   public comments: CommentView[] = [];
@@ -87,7 +88,7 @@ class CommentsStore extends DataClass {
 
 // yeah I really had no better idea. PRs welcome!
 function buildCommentTree(comments: CommentView[]) {
-  const commentMap: { [key: string]: CommentNode } = {};
+  const commentMap: { [key: CommentId]: CommentNode } = {};
   const commentTree: CommentNode[] = [];
   for (const comment of comments) {
     commentMap[comment.comment.path] = { ...comment, children: [] };

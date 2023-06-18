@@ -61,6 +61,12 @@ class ApiClient {
   setLoginDetails(details: LoginResponse) {
     this.loginDetails = details;
   }
+
+  async getGeneralData() {
+    if (!this.loginDetails.jwt) return;
+    const { my_user: user } = await this.api.getGeneralData({ auth: this.loginDetails.jwt })
+    return this.profileStore.setProfile({ person_view: user.local_user_view } as unknown as GetPersonDetailsResponse)
+  }
 }
 
 export const apiClient = new ApiClient();

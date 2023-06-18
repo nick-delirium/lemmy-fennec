@@ -36,8 +36,10 @@ const App = observer(() => {
           apiClient.setLoginDetails(auth)
           apiClient.setLoginState(true)
           apiClient.profileStore.setUsername(possibleUsername)
+          void apiClient.getGeneralData()
 
-          void apiClient.profileStore.getProfile(auth)
+          // experimenting with getSite
+          // void apiClient.profileStore.getProfile(auth)
         } else {
           const client: LemmyHttp = new LemmyHttp('https://lemmy.ml');
           apiClient.setClient(client)
@@ -56,7 +58,7 @@ const App = observer(() => {
   }
 
   React.useEffect(() => {
-    setTitle(`Feed | ${apiClient.postStore.filters.type} | ${apiClient.postStore.filters.sort}`);
+    setTitle(`Feed | ${apiClient.postStore.filters.type} | ${apiClient.postStore.filters.sort.replace(/([a-z])([A-Z])/g, '$1 $2')}`);
   }, [ apiClient.postStore.filters.type, apiClient.postStore.filters.sort ])
 
   return (

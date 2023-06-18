@@ -22,7 +22,6 @@ class ProfileStore extends DataClass {
     });
   }
 
-  // need to change to GetSiteResponse for own user
   async getProfile(loginDetails: LoginResponse, otherUser?: string) {
     await this.fetchData<GetPersonDetailsResponse>(
       () => this.api.getProfile({ auth: loginDetails.jwt, username: otherUser ? otherUser : this.username }),

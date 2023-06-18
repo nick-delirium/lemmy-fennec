@@ -8,6 +8,7 @@ import {
 import ApiService from '../services/apiService';
 import { postStore } from './postStore';
 import { profileStore } from './profileStore';
+import { commentsStore } from "./commentsStore";
 
 /**
  * !!! TODO: !!!
@@ -28,6 +29,7 @@ class ApiClient {
   public loginDetails: LoginResponse
   public postStore = postStore;
   public profileStore = profileStore;
+  public commentsStore = commentsStore;
 
   constructor() {
     makeAutoObservable(this);
@@ -37,6 +39,7 @@ class ApiClient {
     this.api = new ApiService(client);
     this.postStore.setClient(this.api)
     this.profileStore.setClient(this.api)
+    this.commentsStore.setClient(this.api)
   }
 
   async login(form: Login) {

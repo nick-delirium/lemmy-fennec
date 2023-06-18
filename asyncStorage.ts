@@ -6,6 +6,8 @@ export const dataKeys = {
   login: 'fennec-login',
   username: 'fennec-username',
   postsLimit: 'fennec-settings-posts-limit',
+  filters: 'fennec-filters',
+  commentFilters: 'fennec-comment-filters',
 } as const
 
 type Keys = keyof typeof dataKeys;

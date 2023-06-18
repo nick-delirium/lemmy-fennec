@@ -22,7 +22,7 @@ interface Filters {
   limit: number
 }
 
-const SortTypeMap = {
+export const SortTypeMap = {
   Active: "Active",
   Hot: "Hot",
   New: "New",
@@ -36,22 +36,25 @@ const SortTypeMap = {
   NewComments: "NewComments",
 } as const
 
-const ListingTypeMap = {
+export const ListingTypeMap = {
   All: 'All',
   Local: 'Local',
   Subscribed: 'Subscribed',
 } as const
 
+const defaultFilters: Filters = {
+  type: ListingTypeMap.Local,
+  sort: SortTypeMap.New,
+  saved_only: false,
+  community: null,
+  page: 1,
+  limit: 25,
+}
+
 class PostStore extends DataClass {
   public posts: PostView[] = [];
-  public filters: Filters = {
-    type: ListingTypeMap.Local,
-    sort: SortTypeMap.New,
-    saved_only: false,
-    community: null,
-    page: 1,
-    limit: 25,
-  }
+  public filters: Filters = defaultFilters
+  public singlePost: PostView | null = null;
 
   constructor() {
     super();
@@ -61,6 +64,11 @@ class PostStore extends DataClass {
     asyncStorageHandler.readData(dataKeys.postsLimit).then((limit) => {
       if (limit) {
         this.setFilters({ limit: parseInt(limit, 10) })
+      }
+    })
+    asyncStorageHandler.readData(dataKeys.filters).then((filters) => {
+      if (filters) {
+        this.setFilters(JSON.parse(filters))
       }
     })
 
@@ -73,11 +81,21 @@ class PostStore extends DataClass {
       setClient: action,
       setIsLoading: action,
       concatPosts: action,
+      setFilters: action,
     });
   }
 
   setFilters(filters: Partial<Filters>) {
-    this.filters = Object.assign(this.filters, filters)
+    this.filters =  Object.assign(this.filters, filters)
+    void asyncStorageHandler.setData(dataKeys.filters, JSON.stringify(this.filters))
+  }
+
+  setSinglePost(post: PostView) {
+    this.singlePost = post
+  }
+
+  resetFilters() {
+    this.filters = defaultFilters
   }
 
   async getPosts(loginDetails?: LoginResponse) {

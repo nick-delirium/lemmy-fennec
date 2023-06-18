@@ -17,6 +17,7 @@ import {
 import { Text, Icon } from "../../ThemedComponents";
 import { mdTheme } from '../../commonStyles'
 import { Score, apiClient } from "../../store/apiClient";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 const deviceLanguage =
   Platform.OS === 'ios'
@@ -24,7 +25,7 @@ const deviceLanguage =
     NativeModules.SettingsManager.settings.AppleLanguages[0] // iOS 13 is special
   : NativeModules.I18nManager.localeIdentifier;
 
-function Post({ post, isExpanded }: { post: PostView, isExpanded?: boolean }) {
+function Post({ post, isExpanded, navigation }: { post: PostView, isExpanded?: boolean, navigation?: NativeStackNavigationProp<any, "Feed"> }) {
   const { colors } = useTheme();
   const sch = useColorScheme()
 
@@ -64,19 +65,42 @@ function Post({ post, isExpanded }: { post: PostView, isExpanded?: boolean }) {
       >
         {post.post.name}
       </Text>
-      {isPic ? (
-        <Image
-          source={{ uri: post.post.url }}
-          style={styles.postImg}
-          progressiveRenderingEnabled
-          resizeMode={'contain'}
-          alt={"Post image"}
-        />
-      ) : (
-         <Markdown
-           value={safeDescription}
-           theme={{ colors: sch === 'dark' ? mdTheme.dark : mdTheme.light }}
-         />
+      {!isExpanded ? (
+        <TouchableOpacity
+          onPress={() => {
+            apiClient.postStore.setSinglePost(post)
+            navigation.navigate("Post")
+        }}
+        >
+          {isPic ? (
+              <Image
+                source={{ uri: post.post.url }}
+                style={styles.postImg}
+                progressiveRenderingEnabled
+                resizeMode={'contain'}
+                alt={"Post image"}
+              />
+            ) : (
+              <Markdown
+                value={safeDescription}
+                theme={{ colors: sch === 'dark' ? mdTheme.dark : mdTheme.light }}
+              />
+            )}
+        </TouchableOpacity>
+      ) : (isPic ? (
+           <Image
+             source={{ uri: post.post.url }}
+             style={styles.postImg}
+             progressiveRenderingEnabled
+             resizeMode={'contain'}
+             alt={"Post image"}
+           />
+         ) : (
+           <Markdown
+             value={safeDescription}
+             theme={{ colors: sch === 'dark' ? mdTheme.dark : mdTheme.light }}
+           />
+         )
        )}
       <View style={styles.iconsRow}>
         <View style={styles.infoPiece}>

@@ -4,23 +4,21 @@ import { StatusBar } from 'react-native';
 import { LoginResponse } from "lemmy-js-client";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { asyncStorageHandler, dataKeys } from './asyncStorage';
 import { LemmyHttp } from 'lemmy-js-client';
 import { apiClient } from './store/apiClient';
 import LoginScreen from './Screens/LoginScreen';
 import HomeScreen from './Screens/HomeScreen';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { AppDarkTheme, AppTheme } from "./commonStyles";
-
-function getHeaderTitle(route) {
-  return getFocusedRouteNameFromRoute(route) ?? 'Feed';
-}
+import PostScreen from "./Screens/Post/PostScreen";
 
 const Stack = createNativeStackNavigator();
 
 const App = observer(() => {
+  const [title, setTitle] = React.useState<string>("Feed");
   const scheme = useColorScheme();
 
   React.useEffect(() => {
@@ -45,12 +43,21 @@ const App = observer(() => {
           apiClient.setClient(client)
         }
       } else {
-        console.log('got client in state')
+        console.log('got client in state', apiClient.api)
       }
     }
 
     void init();
-  }, [ apiClient.api ]);
+  }, [apiClient.api]);
+
+  const getTitle = (route) => {
+    const parsed = getFocusedRouteNameFromRoute(route) ?? "Feed"
+    return parsed === "Feed" ? title : parsed
+  }
+
+  React.useEffect(() => {
+    setTitle(`Feed | ${apiClient.postStore.filters.type} | ${apiClient.postStore.filters.sort}`);
+  }, [ apiClient.postStore.filters.type, apiClient.postStore.filters.sort ])
 
   return (
     <SafeAreaProvider>
@@ -65,8 +72,12 @@ const App = observer(() => {
             name="Home"
             component={HomeScreen}
             options={({ route }) => ({
-              headerTitle: getHeaderTitle(route)
+              headerTitle: getTitle(route)
             })}
+          />
+          <Stack.Screen
+            name={"Post"}
+            component={PostScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -8,7 +8,7 @@ import {
   GetPersonDetails,
   GetComments,
   SavePost,
-  CreateCommentLike, GetSite
+  CreateCommentLike, GetSite, MarkPostAsRead, SaveUserSettings
 } from 'lemmy-js-client';
 
 export default class ApiService {
@@ -54,5 +54,19 @@ export default class ApiService {
 
   getGeneralData(form: GetSite) {
     return this.client.getSite(form)
+  }
+
+  markPostRead(form: MarkPostAsRead) {
+    if (!form.auth) {
+      throw new Error('No jwt token for markPostRead');
+    }
+    return this.client.markPostAsRead(form)
+  }
+
+  saveUserSettings(form: SaveUserSettings) {
+    if (!form.auth) {
+      throw new Error('No jwt token for saveUserSettings');
+    }
+    return this.client.saveUserSettings(form)
   }
 }

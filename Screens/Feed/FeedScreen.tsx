@@ -23,8 +23,9 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     void apiClient.postStore.getPosts(apiClient.loginDetails)
   }, [])
 
+  // feedKey is a hack for autoscroll
   return (
-    <View style={styles.container}>
+    <View style={styles.container} key={apiClient.postStore.feedKey}>
       <FlatList
         renderItem={renderPost}
         data={apiClient.postStore.posts}

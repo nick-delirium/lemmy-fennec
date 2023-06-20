@@ -18,7 +18,7 @@ import { Text, Icon } from "../../ThemedComponents";
 import { mdTheme } from '../../commonStyles'
 import { Score, apiClient } from "../../store/apiClient";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { makeDateString } from '../../utils';
+import { makeDateString } from '../../utils/utils';
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -44,6 +44,9 @@ function Post({ post, isExpanded, navigation }: {
   const dateStr = makeDateString(post.post.published)
 
   React.useEffect(() => {
+    if (isExpanded) {
+      void apiClient.postStore.markPostRead({ post_id: post.post.id, read: true, auth: apiClient.loginDetails.jwt })
+    }
     if (isPic && isExpanded) {
       Image.getSize(post.post.url, (picWidth, picHeight) => {
         const { width } = Dimensions.get('window')
@@ -54,6 +57,7 @@ function Post({ post, isExpanded, navigation }: {
     }
   }, [isPic, isExpanded])
 
+  const customReadColor = post.read ? "#ababab" : colors.text;
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
       <View style={styles.topRow}>
@@ -63,10 +67,10 @@ function Post({ post, isExpanded, navigation }: {
             style={styles.communityIcon}
           />
         </View>
-        <Text style={styles.communityName}>c/{post.community.name}</Text>
-        <Text style={styles.smolText}>by</Text>
-        <Text style={styles.authorName}>u/{post.creator.display_name || post.creator.name}</Text>
-        <Text style={{ marginLeft: 'auto' }}>{dateStr}</Text>
+        <Text customColor={customReadColor} style={styles.communityName}>c/{post.community.name}</Text>
+        <Text customColor={customReadColor} style={styles.smolText}>by</Text>
+        <Text customColor={customReadColor} style={styles.authorName}>u/{post.creator.display_name || post.creator.name}</Text>
+        <Text customColor={customReadColor} style={{marginLeft: 'auto'}}>{dateStr}</Text>
       </View>
       {isNsfw ? (
         <Text style={{ color: 'red', marginTop: 8 }}>
@@ -74,7 +78,7 @@ function Post({ post, isExpanded, navigation }: {
         </Text>
       ) : null}
       <Text
-        customColor={post.read ? "#F5F5F5" : undefined}
+        customColor={customReadColor}
         lines={maxLines}
         style={styles.postName}
       >

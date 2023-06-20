@@ -8,7 +8,7 @@ import {
   PostResponse,
   ListingType,
   SortType,
-  CommunityId, SavePost,
+  CommunityId, SavePost, MarkPostAsRead,
 } from 'lemmy-js-client';
 import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
@@ -54,6 +54,8 @@ const defaultFilters: Filters = {
 class PostStore extends DataClass {
   public posts: PostView[] = [];
   public filters: Filters = defaultFilters
+  // hack for autoscroll
+  public feedKey = 0
   public singlePost: PostView | null = null;
 
   constructor() {
@@ -76,13 +78,19 @@ class PostStore extends DataClass {
       posts: observable.deep,
       filters: observable.deep,
       isLoading: observable,
+      feedKey: observable,
       updatePostById: action,
       setPosts: action,
       setClient: action,
       setIsLoading: action,
       concatPosts: action,
       setFilters: action,
+      bumpFeedKey: action,
     });
+  }
+
+  bumpFeedKey() {
+    this.feedKey += 1
   }
 
   setFilters(filters: Partial<Filters>) {
@@ -101,7 +109,10 @@ class PostStore extends DataClass {
   async getPosts(loginDetails?: LoginResponse) {
     await this.fetchData<GetPostsResponse>(
       () => this.api.getPosts({ ...this.filters, auth: loginDetails ? loginDetails.jwt : undefined }),
-      ({ posts }) => this.setPosts(posts),
+      ({ posts }) => {
+        this.setPosts(posts)
+        this.bumpFeedKey()
+      },
       (e) => console.error(e)
     )
   }
@@ -148,6 +159,15 @@ class PostStore extends DataClass {
 
   setPosts(posts: PostView[]) {
     this.posts = posts;
+  }
+
+  async markPostRead(form: MarkPostAsRead) {
+    await this.fetchData<PostResponse>(
+      () => this.api.markPostRead(form),
+      ({ post_view }) => this.updatePostById(form.post_id, post_view),
+      (e) => console.error(e),
+      true
+    )
   }
 }
 

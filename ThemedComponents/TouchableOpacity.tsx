@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, ViewStyle, TouchableOpacity } from "react-native";
+import { StyleSheet, ViewStyle, Pressable } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 interface Props {
@@ -7,6 +7,8 @@ interface Props {
   onPressCb: () => void
   style?: ViewStyle
   children: React.ReactNode
+  isSecondary?: boolean
+  simple?: boolean
 
   [key: string]: any
 }
@@ -15,17 +17,25 @@ function ThemedTouchableOpacity(props: Props) {
   const { colors } = useTheme();
 
   return (
-    <TouchableOpacity
-      style={{
-        ...styleSheet.button, ...props.style,
+    <Pressable
+      role={'button'}
+      style={({ pressed }) => props.simple ? ({
+        opacity: pressed ? 0.5 : 1,
+        ...props.style,
+      }) : ({
+        ...styleSheet.button,
         borderColor: props.isOutlined ? colors.primary : '',
         borderWidth: props.isOutlined ? 1 : 0,
-        backgroundColor: props.isOutlined ? '' : colors.primary
-      }}
+        backgroundColor: props.isOutlined
+                         ? '' : props.isSecondary
+                         ? colors.border : colors.primary,
+        opacity: pressed ? 0.5 : 1,
+        ...props.style,
+      })}
       onPress={props.onPressCb}
     >
       {props.children}
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 

@@ -40,6 +40,16 @@ function FloatingMenu() {
     setIsListingOpen(false)
   }
 
+  // yeah this sounds dumb so I'll just leave it here for now until they'll make a filter for it
+  const hideRead = () => {
+    const newPosts = apiClient.postStore.posts.filter(post => post.read === false)
+    apiClient.postStore.setPosts(newPosts)
+  }
+
+  const refresh = () => {
+    void apiClient.postStore.getPosts(apiClient.loginDetails)
+  }
+
   return (
     <View style={styles.container}>
       {isSortOpen ? <SortMenu colors={colors} closeSelf={closeAll} /> : null}
@@ -47,10 +57,13 @@ function FloatingMenu() {
       {isOpen ? (
         <View style={{ ...styles.menu, backgroundColor: colors.border }}>
           <TouchableOpacity onPress={() => switchToSort()}>
-            <Text style={{ fontWeight: '500' }}>Change sorting type</Text>
+            <Text style={styles.bold}>Change sorting type</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => switchToListing()}>
-            <Text style={{ fontWeight: '500' }}>Change feed type</Text>
+            <Text style={styles.bold}>Change feed type</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => refresh()}>
+            <Text style={styles.bold}>Refresh</Text>
           </TouchableOpacity>
         </View>
       ) : null}
@@ -99,6 +112,9 @@ function ListingMenu({ colors, closeSelf }: { colors: Theme['colors'], closeSelf
 }
 
 const styles = StyleSheet.create({
+  bold: {
+    fontWeight: '500',
+  },
   button: {
     padding: 12,
     maxWidth: 46,

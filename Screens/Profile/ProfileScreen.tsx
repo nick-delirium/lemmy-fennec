@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ActivityIndicator, TouchableOpacity, Text, useColorScheme, StyleSheet } from "react-native";
+import { View, ActivityIndicator, TouchableOpacity, Text, useColorScheme, StyleSheet, Switch } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import Markdown from "react-native-marked";
@@ -13,7 +13,7 @@ import { mdTheme } from '../../commonStyles'
 
 // even though its actually inside tab, main nav context is a stack right now
 function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
-  const { userProfile: profile } = apiClient.profileStore;
+  const { localUser: profile } = apiClient.profileStore;
   const sch = useColorScheme()
   const { colors } = useTheme();
 
@@ -42,31 +42,54 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
       </View>
     )
   }
+
+  const toggleReadPosts = () => {
+    void apiClient.profileStore.updateSettings({ auth: apiClient.loginDetails.jwt, show_read_posts: !profile.local_user.show_read_posts })
+  }
+  const toggleNSFW = () => {
+    void apiClient.profileStore.updateSettings({ auth: apiClient.loginDetails.jwt, show_nsfw: !profile.local_user.show_nsfw })
+  }
   return (
     <View style={styles.container}>
-      <UserRow person={profile.person_view.person} />
-      {profile.person_view.person.bio ? (
+      <UserRow person={profile.person} />
+      {profile.person.bio ? (
           <View style={styles.longRow}>
             <Icon name={'user'} size={24} style={{ marginTop: 8 }} />
             <Markdown
-              value={profile.person_view.person.bio}
+              value={profile.person.bio}
               theme={{ colors: sch === 'dark' ? mdTheme.dark : mdTheme.light }}
             />
           </View>) : null}
-      <UserRating counts={profile.person_view.counts} />
+      <UserRating counts={profile.counts} />
 
       <View style={styles.row}>
         <Icon size={24} name={"edit"} />
         <View>
           <ThemedText>
-            Comments: {profile.person_view.counts.comment_count}
+            Comments: {profile.counts.comment_count}
           </ThemedText>
           <ThemedText>
-            Posts: {profile.person_view.counts.post_count}
+            Posts: {profile.counts.post_count}
           </ThemedText>
         </View>
       </View>
 
+      <View style={styles.row}>
+        <ThemedText>Hide NSFW?</ThemedText>
+        <Switch
+          trackColor={{false: '#767577', true: '#81b0ff'}}
+          value={!profile.local_user.show_nsfw}
+          onValueChange={toggleNSFW}
+        />
+      </View>
+      <View style={styles.row}>
+        <ThemedText>Hide read posts?</ThemedText>
+        <Switch
+          trackColor={{false: '#767577', true: '#81b0ff'}}
+          value={!profile.local_user.show_read_posts}
+          onValueChange={toggleReadPosts}
+        />
+      </View>
       <TouchableOpacity onPress={logoutHandler} style={styles.row}>
         <Icon size={24} name={"log-out"} />
         <Text

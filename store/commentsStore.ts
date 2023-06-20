@@ -5,7 +5,6 @@ import {
   LoginResponse,
   ListingType,
   CommentSortType,
-  CommunityId,
   CommentId,
   CommentView,
   GetCommentsResponse,

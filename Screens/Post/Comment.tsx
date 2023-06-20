@@ -1,10 +1,10 @@
 import React from 'react'
 import { observer } from "mobx-react-lite";
-import { View, StyleSheet, useColorScheme, TouchableOpacity, Share, Platform, Vibration } from "react-native";
+import { View, StyleSheet, useColorScheme, Share, Platform, Vibration } from "react-native";
 import { apiClient, Score } from "../../store/apiClient";
-import { Icon, Text } from '../../ThemedComponents'
+import { Icon, Text, TouchableOpacity } from '../../ThemedComponents'
 import { CommentNode } from "../../store/commentsStore";
-import { makeDateString } from "../../utils";
+import { makeDateString } from "../../utils/utils";
 import Markdown from "react-native-marked";
 import { mdTheme } from '../../commonStyles'
 import { useTheme } from "@react-navigation/native";
@@ -68,19 +68,22 @@ function Comment({ comment, hide }: { comment: CommentNode, hide?: () => void })
 
         <View style={{ flex: 1 }} />
         <TouchableOpacity
-          onPress={shareComment}
+          simple
+          onPressCb={shareComment}
         >
           <Icon accessibilityLabel={"share comment button"} name={"share-2"} size={24} />
         </TouchableOpacity>
         {hide ? (
           <TouchableOpacity
-            onPress={hide}
+            simple
+            onPressCb={hide}
           >
             <Icon accessibilityLabel={"hide sub comment tree"} name={"eye-off"} size={24} />
           </TouchableOpacity>
         ) : null}
         <TouchableOpacity
-          onPress={downvoteComment}
+          simple
+          onPressCb={downvoteComment}
         >
           <Icon
             accessibilityLabel={"downvote comment"}
@@ -90,7 +93,8 @@ function Comment({ comment, hide }: { comment: CommentNode, hide?: () => void })
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={upvoteComment}
+          onPressCb={upvoteComment}
+          simple
         >
           <Icon
             accessibilityLabel={"upvote comment"}

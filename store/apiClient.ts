@@ -64,8 +64,11 @@ class ApiClient {
 
   async getGeneralData() {
     if (!this.loginDetails.jwt) return;
+    // extract this two to filter out posts;
+    // community_blocks: Array<CommunityBlockView>;
+    // person_blocks: Array<PersonBlockView>;
     const { my_user: user } = await this.api.getGeneralData({ auth: this.loginDetails.jwt })
-    return this.profileStore.setProfile({ person_view: user.local_user_view } as unknown as GetPersonDetailsResponse)
+    return this.profileStore.setLocalUser(user.local_user_view)
   }
 }
 

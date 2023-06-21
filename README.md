@@ -7,7 +7,8 @@ Why comment and post liking is slow? Lemmy API is barely alive because of too ma
 Spot any bad code or bugs? Start a PR or issue, I'll be happy to see it.
 Same for feature requests.
 
-todo:
+todo: [See status here](https://github.com/users/nick-delirium/projects/2)
+
 - writing comment/post
 - profile editing
 - more settings for app behavior (default nsfw, default post limit, comment tree depth)

@@ -8,6 +8,7 @@ export const dataKeys = {
   postsLimit: 'fennec-settings-posts-limit',
   filters: 'fennec-filters',
   commentFilters: 'fennec-comment-filters',
+  readScroll: 'fennec-read-scroll',
 } as const
 
 type Keys = keyof typeof dataKeys;

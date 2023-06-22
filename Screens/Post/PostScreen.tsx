@@ -4,10 +4,7 @@ import {
   ActivityIndicator,
   View,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard,
   Platform, StyleSheet,
-  Pressable,
 } from "react-native";
 import { apiClient } from "../../store/apiClient";
 import Post from '../Feed/Post'
@@ -42,17 +39,17 @@ function PostScreen() {
             colors={colors}
           />
           <CommentsFloatingMenu isLoading={apiClient.commentsStore.isLoading} />
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ position: 'absolute', bottom: 0, width: '100%' }}
-          >
-            <View style={{ ...styles.inputRow, backgroundColor: colors.card }}>
-              <TextInput style={{ flex: 1 }} />
-              <TouchableOpacity style={styles.additionalButtonStyle} isSecondary onPressCb={() => console.log('Keyboard.dismiss()')}>
-                <Icon name={"send"} accessibilityLabel={'Send text'} size={24} />
-              </TouchableOpacity>
-            </View>
-        </KeyboardAvoidingView>
+        {/* adding this later <KeyboardAvoidingView*/}
+        {/*    behavior={Platform.OS === "ios" ? "padding" : "height"}*/}
+        {/*    style={{ position: 'absolute', bottom: 0, width: '100%' }}*/}
+        {/*  >*/}
+        {/*    <View style={{ ...styles.inputRow, backgroundColor: colors.card }}>*/}
+        {/*      <TextInput style={{ flex: 1 }} />*/}
+        {/*      <TouchableOpacity style={styles.additionalButtonStyle} isSecondary onPressCb={() => console.log('Keyboard.dismiss()')}>*/}
+        {/*        <Icon name={"send"} accessibilityLabel={'Send text'} size={24} />*/}
+        {/*      </TouchableOpacity>*/}
+        {/*    </View>*/}
+        {/*</KeyboardAvoidingView>*/}
         </View>
   )
 }

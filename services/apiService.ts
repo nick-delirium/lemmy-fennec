@@ -8,7 +8,7 @@ import {
   GetPersonDetails,
   GetComments,
   SavePost,
-  CreateCommentLike, GetSite, MarkPostAsRead, SaveUserSettings
+  CreateCommentLike, GetSite, MarkPostAsRead, SaveUserSettings, Search
 } from 'lemmy-js-client';
 
 export default class ApiService {
@@ -68,5 +68,9 @@ export default class ApiService {
       throw new Error('No jwt token for saveUserSettings');
     }
     return this.client.saveUserSettings(form)
+  }
+
+  search(form: Search) {
+    return this.client.search(form)
   }
 }

@@ -91,7 +91,9 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     alignItems: 'flex-end',
-    bottom: 84,
+    // when input added
+    // bottom: 84,
+    bottom: 21,
     right: 16,
     gap: 12,
   }

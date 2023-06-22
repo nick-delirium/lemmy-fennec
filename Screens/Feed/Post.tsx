@@ -1,7 +1,7 @@
 import React from "react";
-import { PostView } from "lemmy-js-client";
-import { useTheme } from "@react-navigation/native";
-import { observer } from "mobx-react-lite";
+import {PostView} from "lemmy-js-client";
+import {useTheme} from "@react-navigation/native";
+import {observer} from "mobx-react-lite";
 import Markdown from "react-native-marked";
 import {
   View,
@@ -14,24 +14,24 @@ import {
   TouchableOpacity,
   Dimensions
 } from "react-native";
-import { Text, Icon } from "../../ThemedComponents";
-import { mdTheme } from '../../commonStyles'
-import { Score, apiClient } from "../../store/apiClient";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { makeDateString } from '../../utils/utils';
+import {Text, Icon} from "../../ThemedComponents";
+import {mdTheme} from '../../commonStyles'
+import {Score, apiClient} from "../../store/apiClient";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {makeDateString} from '../../utils/utils';
 
 // !!!TODO!!!
 // 1. split stuff into components
 // 2. research performance
 // 3. see how I can force max lines on markdown
-function Post({ post, isExpanded, navigation }: {
+function Post({post, isExpanded, navigation}: {
   post: PostView,
   isExpanded?: boolean,
   navigation?: NativeStackNavigationProp<any, "Feed">
 }) {
-  const [imgDimensions, setImgDimensions] = React.useState({ width: 0, height: 0 })
+  const [imgDimensions, setImgDimensions] = React.useState({width: 0, height: 0})
   const [isFullImg, setIsFullImg] = React.useState(false)
-  const { colors } = useTheme();
+  const {colors} = useTheme();
   const sch = useColorScheme()
 
   // flags to mark the post
@@ -45,45 +45,63 @@ function Post({ post, isExpanded, navigation }: {
 
   React.useEffect(() => {
     if (isExpanded) {
-      void apiClient.postStore.markPostRead({ post_id: post.post.id, read: true, auth: apiClient.loginDetails.jwt })
+      void apiClient.postStore.markPostRead({post_id: post.post.id, read: true, auth: apiClient.loginDetails.jwt})
     }
     if (isPic && isExpanded) {
       Image.getSize(post.post.url, (picWidth, picHeight) => {
-        const { width } = Dimensions.get('window')
+        const {width} = Dimensions.get('window')
         const safeHeight = (width / picWidth) * picHeight
 
-        setImgDimensions({ width, height: safeHeight })
+        setImgDimensions({width, height: safeHeight})
       })
     }
   }, [isPic, isExpanded])
 
   const customReadColor = post.read ? "#ababab" : colors.text;
   return (
-    <View style={{ ...styles.container, borderColor: colors.border }}>
+    <View style={{...styles.container, borderColor: colors.border}}>
       <View style={styles.topRow}>
         <View style={styles.communityIconContainer}>
           <Image
-            source={{ uri: post.community.icon }}
+            source={{uri: post.community.icon}}
             style={styles.communityIcon}
           />
         </View>
         <Text customColor={customReadColor} style={styles.communityName}>c/{post.community.name}</Text>
         <Text customColor={customReadColor} style={styles.smolText}>by</Text>
-        <Text customColor={customReadColor} style={styles.authorName}>u/{post.creator.display_name || post.creator.name}</Text>
+        <Text customColor={customReadColor}
+              style={styles.authorName}>u/{post.creator.display_name || post.creator.name}</Text>
         <Text customColor={customReadColor} style={{marginLeft: 'auto'}}>{dateStr}</Text>
       </View>
       {isNsfw ? (
-        <Text style={{ color: 'red', marginTop: 8 }}>
+        <Text style={{color: 'red', marginTop: 8}}>
           NSFW
         </Text>
       ) : null}
-      <Text
-        customColor={customReadColor}
-        lines={maxLines}
-        style={styles.postName}
-      >
-        {post.post.name}
-      </Text>
+      {!isExpanded ? (
+        <TouchableOpacity
+          onPress={() => {
+            apiClient.postStore.setSinglePost(post)
+            navigation.navigate("Post")
+          }}
+        >
+          <Text
+            customColor={customReadColor}
+            lines={maxLines}
+            style={styles.postName}
+          >
+            {post.post.name}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <Text
+          customColor={customReadColor}
+          lines={maxLines}
+          style={styles.postName}
+        >
+          {post.post.name}
+        </Text>
+      )}
       {!isExpanded ? (
         <TouchableOpacity
           onPress={() => {
@@ -93,7 +111,7 @@ function Post({ post, isExpanded, navigation }: {
         >
           {isPic ? (
             <Image
-              source={{ uri: post.post.url }}
+              source={{uri: post.post.url}}
               style={styles.postImg}
               progressiveRenderingEnabled
               resizeMode={'contain'}
@@ -101,51 +119,51 @@ function Post({ post, isExpanded, navigation }: {
               blurRadius={isNsfw ? 15 : 0}
             />
           ) : (
-             <View style={{ maxHeight: 200, overflow: 'hidden' }}>
-               <Markdown
-                 value={safeDescription}
-                 theme={{ colors: sch === 'dark' ? mdTheme.dark : mdTheme.light }}
-               />
-             </View>
-           )}
+            <View style={{maxHeight: 200, overflow: 'hidden'}}>
+              <Markdown
+                value={safeDescription}
+                theme={{colors: sch === 'dark' ? mdTheme.dark : mdTheme.light}}
+              />
+            </View>
+          )}
         </TouchableOpacity>
       ) : (
-         <View>
-           {isPic ? (
-             <View>
-               <View style={{ maxHeight: isFullImg ? undefined : 720, overflow: 'hidden' }}>
-                 <Image
-                   source={{ uri: post.post.url }}
-                   style={{ width: '100%', height: imgDimensions.height }}
-                   progressiveRenderingEnabled
-                   resizeMode={'contain'}
-                   alt={"Post image"}
-                 />
-               </View>
-               {isFullImg || imgDimensions.height <= 720 ? null : (
-                   <TouchableOpacity style={styles.previewButton} onPress={() => setIsFullImg(true)}>
-                     <Text>Show full image</Text>
-                   </TouchableOpacity>
-               )}
-             </View>
-           ) : null}
-           <Markdown
-             value={safeDescription}
-             theme={{ colors: sch === 'dark' ? mdTheme.dark : mdTheme.light }}
-           />
-         </View>
-       )}
+        <View>
+          {isPic ? (
+            <View>
+              <View style={{maxHeight: isFullImg ? undefined : 720, overflow: 'hidden'}}>
+                <Image
+                  source={{uri: post.post.url}}
+                  style={{width: '100%', height: imgDimensions.height}}
+                  progressiveRenderingEnabled
+                  resizeMode={'contain'}
+                  alt={"Post image"}
+                />
+              </View>
+              {isFullImg || imgDimensions.height <= 720 ? null : (
+                <TouchableOpacity style={styles.previewButton} onPress={() => setIsFullImg(true)}>
+                  <Text>Show full image</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ) : null}
+          <Markdown
+            value={safeDescription}
+            theme={{colors: sch === 'dark' ? mdTheme.dark : mdTheme.light}}
+          />
+        </View>
+      )}
       <View style={styles.iconsRow}>
         <View style={styles.infoPiece}>
-          <Icon accessibilityLabel={"total rating"} name={"chevrons-up"} size={24} />
+          <Icon accessibilityLabel={"total rating"} name={"chevrons-up"} size={24}/>
           <Text>
             {post.counts.score} ({Math.ceil(
             (post.counts.upvotes / (post.counts.upvotes + post.counts.downvotes)) * 100)}%)
           </Text>
         </View>
-        <View style={{ flex: 1 }} />
+        <View style={{flex: 1}}/>
         <View style={styles.infoPiece}>
-          <Icon accessibilityLabel={"total comments (+ unread)"} name={"message-square"} size={24} />
+          <Icon accessibilityLabel={"total comments (+ unread)"} name={"message-square"} size={24}/>
           <Text>
             {`${post.counts.comments}${post.unread_comments > 0 ? '(+' + post.unread_comments + ')' : ''}`}
           </Text>
@@ -155,7 +173,7 @@ function Post({ post, isExpanded, navigation }: {
           onPress={() => {
             Vibration.vibrate(50)
             void apiClient.postStore.savePost(
-              { post_id: post.post.id, save: !post.saved, auth: apiClient.loginDetails?.jwt })
+              {post_id: post.post.id, save: !post.saved, auth: apiClient.loginDetails?.jwt})
           }}
         >
           <Icon
@@ -167,11 +185,11 @@ function Post({ post, isExpanded, navigation }: {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => Share.share(
-            { url: post.post.ap_id, message: Platform.OS === 'ios' ? '' : post.post.ap_id, title: post.post.name },
-            { dialogTitle: post.post.name }
+            {url: post.post.ap_id, message: Platform.OS === 'ios' ? '' : post.post.ap_id, title: post.post.name},
+            {dialogTitle: post.post.name}
           )}
         >
-          <Icon accessibilityLabel={"share post button"} name={"share-2"} size={24} />
+          <Icon accessibilityLabel={"share post button"} name={"share-2"} size={24}/>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -239,17 +257,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
   },
-  communityIconContainer: { backgroundColor: '#f6f6f6', borderRadius: 24, width: 24, height: 24 },
-  communityIcon: { width: 24, height: 24, borderRadius: 24 },
-  authorName: { fontSize: 12, fontWeight: '500' },
-  communityName: { fontSize: 12, fontWeight: '500', marginLeft: 4 },
-  smolText: { fontSize: 12 },
+  communityIconContainer: {backgroundColor: '#f6f6f6', borderRadius: 24, width: 24, height: 24},
+  communityIcon: {width: 24, height: 24, borderRadius: 24},
+  authorName: {fontSize: 12, fontWeight: '500', color: 'orange'},
+  communityName: {fontSize: 12, fontWeight: '500', marginLeft: 4, color: 'violet'},
+  smolText: {fontSize: 12},
   postName: {
     fontSize: 16,
     marginTop: 4,
     marginBottom: 8,
   },
-  postImg: { width: '100%', height: 340 },
+  postImg: {width: '100%', height: 340},
 })
 
 export default observer(Post);

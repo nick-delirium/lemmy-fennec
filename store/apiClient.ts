@@ -1,14 +1,14 @@
-import { makeAutoObservable } from 'mobx';
+import {makeAutoObservable} from 'mobx';
 import {
   LemmyHttp,
   Login,
   LoginResponse,
-  GetPersonDetailsResponse
 } from 'lemmy-js-client';
 import ApiService from '../services/apiService';
-import { postStore } from './postStore';
-import { profileStore } from './profileStore';
-import { commentsStore } from "./commentsStore";
+import {postStore} from './postStore';
+import {profileStore} from './profileStore';
+import {commentsStore} from "./commentsStore";
+import {searchStore} from "./searchStore";
 
 /**
  * !!! TODO: !!!
@@ -30,6 +30,7 @@ class ApiClient {
   public postStore = postStore;
   public profileStore = profileStore;
   public commentsStore = commentsStore;
+  public searchStore = searchStore;
 
   constructor() {
     makeAutoObservable(this);
@@ -40,6 +41,7 @@ class ApiClient {
     this.postStore.setClient(this.api)
     this.profileStore.setClient(this.api)
     this.commentsStore.setClient(this.api)
+    this.searchStore.setClient(this.api)
   }
 
   async login(form: Login) {
@@ -67,7 +69,7 @@ class ApiClient {
     // extract this two to filter out posts;
     // community_blocks: Array<CommunityBlockView>;
     // person_blocks: Array<PersonBlockView>;
-    const { my_user: user } = await this.api.getGeneralData({ auth: this.loginDetails.jwt })
+    const {my_user: user} = await this.api.getGeneralData({auth: this.loginDetails.jwt})
     return this.profileStore.setLocalUser(user.local_user_view)
   }
 }

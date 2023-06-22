@@ -1,15 +1,15 @@
 import React from "react";
-import { View, ActivityIndicator, TouchableOpacity, Text, useColorScheme, StyleSheet, Switch } from "react-native";
+import { View, ActivityIndicator, useColorScheme, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import Markdown from "react-native-marked";
 import { apiClient } from "../../store/apiClient";
 import { Icon, Text as ThemedText } from "../../ThemedComponents";
-import { asyncStorageHandler } from "../../asyncStorage";
 import UserRow from './UserRow'
 import UserRating from './UserRating';
 import { useTheme } from "@react-navigation/native";
 import { mdTheme } from '../../commonStyles'
+import Settings from "./Settings";
 
 // even though its actually inside tab, main nav context is a stack right now
 function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
@@ -27,10 +27,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
     }
   }, [ navigation, apiClient.isLoggedIn ])
 
-  const logoutHandler = () => {
-    asyncStorageHandler.logout();
-    navigation.replace("Home")
-  }
+
   const reload = () => {
     void apiClient.profileStore.getProfile(apiClient.loginDetails)
   }
@@ -43,12 +40,6 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
     )
   }
 
-  const toggleReadPosts = () => {
-    void apiClient.profileStore.updateSettings({ auth: apiClient.loginDetails.jwt, show_read_posts: !profile.local_user.show_read_posts })
-  }
-  const toggleNSFW = () => {
-    void apiClient.profileStore.updateSettings({ auth: apiClient.loginDetails.jwt, show_nsfw: !profile.local_user.show_nsfw })
-  }
   return (
     <View style={styles.container}>
       <UserRow person={profile.person} />
@@ -74,34 +65,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
         </View>
       </View>
 
-      <View style={styles.row}>
-        <ThemedText>Hide NSFW?</ThemedText>
-        <Switch
-          trackColor={{false: '#767577', true: '#81b0ff'}}
-          value={!profile.local_user.show_nsfw}
-          onValueChange={toggleNSFW}
-        />
-      </View>
-      <View style={styles.row}>
-        <ThemedText>Hide read posts?</ThemedText>
-        <Switch
-          trackColor={{false: '#767577', true: '#81b0ff'}}
-          value={!profile.local_user.show_read_posts}
-          onValueChange={toggleReadPosts}
-        />
-      </View>
-      <TouchableOpacity onPress={logoutHandler} style={styles.row}>
-        <Icon size={24} name={"log-out"} />
-        <Text
-          style={{
-            color: colors.border,
-            textDecorationLine: 'underline',
-            textDecorationColor: colors.border
-          }}
-        >
-          Logout
-        </Text>
-      </TouchableOpacity>
+      <Settings navigation={navigation} />
     </View>
   )
 }

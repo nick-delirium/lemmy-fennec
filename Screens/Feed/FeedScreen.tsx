@@ -23,6 +23,20 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     void apiClient.postStore.getPosts(apiClient.loginDetails)
   }, [])
 
+  const onPostScroll = React.useCallback(({changed}) => {
+    if (changed.length > 0) {
+      changed.forEach((item) => {
+        if (!item.isViewable && apiClient.profileStore.getReadOnScroll()) {
+          void apiClient.postStore.markPostRead({
+            post_id: item.item.post.id,
+            read: true,
+            auth: apiClient.loginDetails.jwt
+          })
+        }
+      })
+    }
+  }, [])
+
   // feedKey is a hack for autoscroll
   return (
     <View style={styles.container} key={apiClient.postStore.feedKey}>
@@ -35,6 +49,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
         onEndReachedThreshold={1}
         keyExtractor={extractor}
         fadingEdgeLength={1}
+        onViewableItemsChanged={onPostScroll}
       />
       <FloatingMenu />
     </View>

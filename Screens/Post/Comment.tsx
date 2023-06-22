@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
   author: {
     fontSize: 12,
     fontWeight: '500',
+    color: 'orange',
   },
   bottomRow: {
     flexDirection: 'row',

@@ -1,4 +1,4 @@
-Minimalistic and easy to use Lemmy client written for general user enjoyment and my RN skills improvement, hopefully useful for people with impaired vision abilities.
+Minimalistic and easy to use Lemmy client written for general user enjoyment and my RN skills improvement, hopefully easy and fun to use, including people with impaired vision abilities.
 
 # Why React Native? 
 

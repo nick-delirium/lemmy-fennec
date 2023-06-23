@@ -8,16 +8,16 @@ import {
   CommentId,
   CommentView,
   GetCommentsResponse,
-} from 'lemmy-js-client';
+} from "lemmy-js-client";
 import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 import { ListingTypeMap } from "./postStore";
 
 interface Filters {
-  max_depth: number
-  saved_only: boolean
-  sort: CommentSortType
-  type_: ListingType
+  max_depth: number;
+  saved_only: boolean;
+  sort: CommentSortType;
+  type_: ListingType;
 }
 
 export const CommentSortTypeMap = {
@@ -25,7 +25,7 @@ export const CommentSortTypeMap = {
   Top: "Top",
   New: "New",
   Old: "Old",
-} as const
+} as const;
 
 // basically making it easier to recursively render comments
 // is there any better way to do this?
@@ -38,13 +38,13 @@ export interface CommentNode extends CommentView {
 
 class CommentsStore extends DataClass {
   public comments: CommentView[] = [];
-  public commentTree: CommentNode[] = []
+  public commentTree: CommentNode[] = [];
   public filters: Filters = {
     max_depth: 8,
     saved_only: false,
     sort: CommentSortTypeMap.Hot,
     type_: ListingTypeMap.All,
-  }
+  };
 
   constructor() {
     super();
@@ -60,20 +60,33 @@ class CommentsStore extends DataClass {
       setClient: action,
       updateCommentById: action,
       updateTreeCommentRating: action,
-    })
+    });
   }
 
   setFilters(filters: Partial<Filters>) {
-    this.filters =  Object.assign(this.filters, filters)
-    void asyncStorageHandler.setData(dataKeys.commentFilters, JSON.stringify(this.filters))
+    this.filters = Object.assign(this.filters, filters);
+    void asyncStorageHandler.setData(
+      dataKeys.commentFilters,
+      JSON.stringify(this.filters)
+    );
   }
 
-  async getComments(postId: PostId | null, loginDetails?: LoginResponse, parentId?: number) {
+  async getComments(
+    postId: PostId | null,
+    loginDetails?: LoginResponse,
+    parentId?: number
+  ) {
     await this.fetchData<GetCommentsResponse>(
-      () => this.api.getComments({ ... this.filters, auth: loginDetails.jwt, post_id: postId, parent_id: parentId }),
+      () =>
+        this.api.getComments({
+          ...this.filters,
+          auth: loginDetails?.jwt,
+          post_id: postId,
+          parent_id: parentId,
+        }),
       ({ comments }) => this.setComments(comments),
       (e) => console.error(e)
-    )
+    );
   }
 
   setComments(comments: CommentView[]) {
@@ -86,41 +99,66 @@ class CommentsStore extends DataClass {
     this.commentTree = buildCommentTree(comments);
   }
 
-  async rateComment(commentId: CommentId, loginDetails: LoginResponse, score: typeof Score[keyof typeof Score],) {
+  async rateComment(
+    commentId: CommentId,
+    loginDetails: LoginResponse,
+    score: (typeof Score)[keyof typeof Score]
+  ) {
     await this.fetchData(
-      () => this.api.rateComment({ comment_id: commentId, score, auth: loginDetails.jwt }),
-      ({ comment_view}) => {
-        this.updateCommentById(commentId, comment_view)
-        this.updateTreeCommentRating(this.commentTree, commentId, score, comment_view.counts)
+      () =>
+        this.api.rateComment({
+          comment_id: commentId,
+          score,
+          auth: loginDetails.jwt,
+        }),
+      ({ comment_view }) => {
+        this.updateCommentById(commentId, comment_view);
+        this.updateTreeCommentRating(
+          this.commentTree,
+          commentId,
+          score,
+          comment_view.counts
+        );
       },
       (e) => console.error(e),
-      true,
-    )
+      true
+    );
   }
 
   updateCommentById(commentId: CommentId, updatedComment: CommentView) {
-    this.comments = this.comments.map(c => {
-      if (c.comment.id === commentId) return updatedComment
-      return c
-    })
+    this.comments = this.comments.map((c) => {
+      if (c.comment.id === commentId) return updatedComment;
+      return c;
+    });
   }
 
   // any better solution? No idea... (¬_¬)
-  updateTreeCommentRating(commentTree: CommentNode[], commentId: number, vote: typeof Score[keyof typeof Score], counts: CommentNode['counts']): boolean {
+  updateTreeCommentRating(
+    commentTree: CommentNode[],
+    commentId: number,
+    vote: (typeof Score)[keyof typeof Score],
+    counts: CommentNode["counts"]
+  ): boolean {
     for (const commentNode of commentTree) {
       if (commentNode.comment.id === commentId) {
         commentNode.my_vote = vote;
         commentNode.counts = counts;
         return true;
       }
-      if (this.updateTreeCommentRating(commentNode.children, commentId, vote, counts)) {
+      if (
+        this.updateTreeCommentRating(
+          commentNode.children,
+          commentId,
+          vote,
+          counts
+        )
+      ) {
         return true;
       }
     }
     return false;
   }
 }
-
 
 // yeah I really had no better idea. PRs welcome!
 function buildCommentTree(comments: CommentView[]) {
@@ -136,7 +174,7 @@ function buildCommentTree(comments: CommentView[]) {
     if (!commentNode) {
       // Skip if the comment does not have a valid parent path
       // why can this happen? I saw it once
-      console.log('commentNode not found for comment', comment);
+      console.log("commentNode not found for comment", comment);
       continue;
     }
 
@@ -156,9 +194,9 @@ function buildCommentTree(comments: CommentView[]) {
 
 // I think .pop is faster than splice here
 function getParentPath(path: string): string {
-  const pathSegments = path.split('.');
+  const pathSegments = path.split(".");
   pathSegments.pop();
-  return pathSegments.join('.');
+  return pathSegments.join(".");
 }
 
 export const commentsStore = new CommentsStore();

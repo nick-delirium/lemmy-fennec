@@ -1,78 +1,84 @@
-import {makeObservable, observable, action} from "mobx";
+import { makeObservable, observable, action } from "mobx";
 import DataClass from "./dataClass";
-import {SearchResponse, LoginResponse, SearchType, ListingType} from "lemmy-js-client";
-import {ListingTypeMap} from "./postStore";
+import {
+  SearchResponse,
+  LoginResponse,
+  SearchType,
+  ListingType,
+} from "lemmy-js-client";
+import { ListingTypeMap } from "./postStore";
 
 export const SearchTypeMap = {
-    All: 'All',
-    Comments: 'Comments',
-    Posts: 'Posts',
-    Communities: 'Communities',
-    Users: 'Users',
-    Url: 'Url',
-} as const
+  All: "All",
+  Comments: "Comments",
+  Posts: "Posts",
+  Communities: "Communities",
+  Users: "Users",
+  Url: "Url",
+} as const;
 
 class SearchStore extends DataClass {
-    public searchQuery: string = "";
-    public page: number = 1;
-    public limit: number = 12;
-    public type: SearchType = SearchTypeMap.All;
-    public listingType: ListingType = ListingTypeMap.All;
+  public searchQuery: string = "";
+  public page: number = 1;
+  public limit: number = 12;
+  public type: SearchType = SearchTypeMap.All;
+  public listingType: ListingType = ListingTypeMap.All;
 
-    constructor() {
-        super();
-        makeObservable(this, {
-            searchQuery: observable,
-            page: observable,
-            listingType: observable,
-            type: observable,
-            limit: observable,
-            setListingType: action,
-            setSearchType: action,
-            setPage: action,
-            setSearchQuery: action,
-        });
-    }
+  constructor() {
+    super();
+    makeObservable(this, {
+      searchQuery: observable,
+      page: observable,
+      listingType: observable,
+      type: observable,
+      limit: observable,
+      setListingType: action,
+      setSearchType: action,
+      setPage: action,
+      setSearchQuery: action,
+    });
+  }
 
-    setLimit(limit: number) {
-        this.limit = limit;
-    }
+  setLimit(limit: number) {
+    this.limit = limit;
+  }
 
-    setListingType(type: ListingType) {
-        this.listingType = type;
-    }
+  setListingType(type: ListingType) {
+    this.listingType = type;
+  }
 
-    setSearchType(type: SearchType) {
-        this.type = type;
-    }
+  setSearchType(type: SearchType) {
+    this.type = type;
+  }
 
-    setPage(page: number) {
-        this.page = page;
-    }
+  setPage(page: number) {
+    this.page = page;
+  }
 
-    setSearchQuery(query: string) {
-        this.searchQuery = query;
-    }
+  setSearchQuery(query: string) {
+    this.searchQuery = query;
+  }
 
-    async fetchSearch(loginDetails: LoginResponse): Promise<SearchResponse> {
-        let results = null;
-        await this.fetchData<SearchResponse>(
-            () => this.api.search({
-                auth: loginDetails.jwt,
-                q: this.searchQuery,
-                limit: this.limit,
-                page: this.page,
-                listing_type: this.listingType,
-                sort: "TopAll",
-                type_: this.type,
-            }),
-            (data) => {
-                results = data;
-            },
-            (e) => console.error(e)
-        )
-        return results;
-    }
+  async fetchSearch(loginDetails: LoginResponse): Promise<SearchResponse> {
+    let results = null;
+    await this.fetchData<SearchResponse>(
+      () =>
+        this.api.search({
+          auth: loginDetails.jwt,
+          q: this.searchQuery,
+          limit: this.limit,
+          page: this.page,
+          listing_type: this.listingType,
+          sort: "TopAll",
+          type_: this.type,
+        }),
+      (data) => {
+        results = data;
+      },
+      (e) => console.error(e)
+    );
+    return results;
+  }
 }
 
 export const searchStore = new SearchStore();

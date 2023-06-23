@@ -9,7 +9,7 @@ export default class DataClass {
   }
 
   setClient(client: ApiService) {
-    this.api = client
+    this.api = client;
   }
 
   async fetchData<T>(

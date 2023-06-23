@@ -1,10 +1,10 @@
 import { TextInput, TextStyle, StyleSheet } from "react-native";
 import React from "react";
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from "@react-navigation/native";
 
 interface Props {
-  style?: TextStyle,
-  [key: string]: any
+  style?: TextStyle;
+  [key: string]: any;
 }
 
 export default function ThemedTextInput(props: Props) {
@@ -29,5 +29,5 @@ const ownStyle = StyleSheet.create({
     padding: 8,
     borderRadius: 6,
     borderWidth: 1,
-  }
-})
+  },
+});

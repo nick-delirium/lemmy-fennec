@@ -4,17 +4,29 @@ import { useTheme } from "@react-navigation/native";
 import { ViewStyle } from "react-native";
 
 interface Props {
-  name: keyof typeof Feather.glyphMap,
-  style?: ViewStyle,
-  size: number,
-  color?: string
-  accessibilityLabel?: string
+  name: keyof typeof Feather.glyphMap;
+  style?: ViewStyle;
+  size: number;
+  color?: string;
+  accessibilityLabel?: string;
 }
 
-export default function Icon({ accessibilityLabel, name, size, color, style }: Props) {
+export default function Icon({
+  accessibilityLabel,
+  name,
+  size,
+  color,
+  style,
+}: Props) {
   const { colors } = useTheme();
 
   return (
-    <Feather accessibilityLabel={accessibilityLabel} style={style} name={name} size={size} color={color || colors.primary} />
-  )
+    <Feather
+      accessibilityLabel={accessibilityLabel}
+      style={style}
+      name={name}
+      size={size}
+      color={color || colors.primary}
+    />
+  );
 }

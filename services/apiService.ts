@@ -8,69 +8,79 @@ import {
   GetPersonDetails,
   GetComments,
   SavePost,
-  CreateCommentLike, GetSite, MarkPostAsRead, SaveUserSettings, Search
-} from 'lemmy-js-client';
+  CreateCommentLike,
+  GetSite,
+  MarkPostAsRead,
+  SaveUserSettings,
+  Search,
+  GetCommunity,
+} from "lemmy-js-client";
 
 export default class ApiService {
-  constructor(private readonly client: LemmyHttp) {
-  }
+  constructor(private readonly client: LemmyHttp) {}
 
   getPosts(filters: GetPosts): Promise<GetPostsResponse> {
-    return this.client.getPosts(filters)
+    return this.client.getPosts(filters);
   }
 
   login(form: Login): Promise<LoginResponse> {
-    return this.client.login(form)
+    return this.client.login(form);
   }
 
   getProfile(form: GetPersonDetails) {
-    return this.client.getPersonDetails(form)
+    return this.client.getPersonDetails(form);
   }
 
   getComments(form: GetComments) {
-    return this.client.getComments(form)
+    return this.client.getComments(form);
   }
 
   savePost(form: SavePost) {
     if (!form.auth) {
-      throw new Error('No jwt token for savePost');
+      throw new Error("No jwt token for savePost");
     }
-    return this.client.savePost(form)
+    return this.client.savePost(form);
   }
 
   ratePost(form: CreatePostLike) {
     if (!form.auth) {
-      throw new Error('No jwt token for likePost');
+      throw new Error("No jwt token for likePost");
     }
-    return this.client.likePost(form)
+    return this.client.likePost(form);
   }
 
   rateComment(form: CreateCommentLike) {
     if (!form.auth) {
-      throw new Error('No jwt token for likeComment');
+      throw new Error("No jwt token for likeComment");
     }
-    return this.client.likeComment(form)
+    return this.client.likeComment(form);
   }
 
   getGeneralData(form: GetSite) {
-    return this.client.getSite(form)
+    return this.client.getSite(form);
   }
 
   markPostRead(form: MarkPostAsRead) {
     if (!form.auth) {
-      throw new Error('No jwt token for markPostRead');
+      throw new Error("No jwt token for markPostRead");
     }
-    return this.client.markPostAsRead(form)
+    return this.client.markPostAsRead(form);
   }
 
   saveUserSettings(form: SaveUserSettings) {
     if (!form.auth) {
-      throw new Error('No jwt token for saveUserSettings');
+      throw new Error("No jwt token for saveUserSettings");
     }
-    return this.client.saveUserSettings(form)
+    return this.client.saveUserSettings(form);
   }
 
   search(form: Search) {
-    return this.client.search(form)
+    return this.client.search(form);
   }
+
+  fetchCommunity(form: GetCommunity) {
+    return this.client.getCommunity(form);
+  }
+
+  // followCommunity
 }

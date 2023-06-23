@@ -5,17 +5,17 @@ export const AppTheme = {
   dark: false,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#57bcd9',
-    border: '#2142AB',
-    background: '#effaf6'
+    primary: "#57bcd9",
+    border: "#2142AB",
+    background: "#effaf6",
   },
 };
 export const AppDarkTheme = {
   dark: true,
   colors: {
     ...DarkTheme.colors,
-    primary: '#2142AB',
-    border: '#57bcd9'
+    primary: "#2142AB",
+    border: "#57bcd9",
   },
 };
 
@@ -26,7 +26,7 @@ export const mdTheme = {
     link: "#58a6ff",
     text: "#333333",
     border: "#d0d7de",
-    ...AppTheme.colors
+    ...AppTheme.colors,
   },
   dark: {
     background: "#000000",
@@ -34,15 +34,15 @@ export const mdTheme = {
     link: "#58a6ff",
     text: "#ffffff",
     border: "#30363d",
-    ...AppDarkTheme.colors
+    ...AppDarkTheme.colors,
   },
-} as const
+} as const;
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: 8,
   },
   hrefInput: {
@@ -50,13 +50,13 @@ export const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#AADDEC'
+    borderColor: "#AADDEC",
   },
   button: {
     borderRadius: 6,
     width: "30%",
-    alignItems: 'center',
-    backgroundColor: '#AADDEC',
+    alignItems: "center",
+    backgroundColor: "#AADDEC",
     padding: 8,
-  }
+  },
 });

@@ -21,6 +21,11 @@ todo board: [See status here](https://github.com/users/nick-delirium/projects/2)
 - different user views
 - search
 
+![telegram-cloud-photo-size-2-5237860480767346680-y](https://github.com/nick-delirium/lemmy-fennec/assets/23126999/c0e69e01-a9a5-42a4-bb21-15ab63d14653)
+![telegram-cloud-photo-size-2-5237860480767346679-y](https://github.com/nick-delirium/lemmy-fennec/assets/23126999/c4e44900-7c8d-46fc-a550-cdd12b946fa6)
+![telegram-cloud-photo-size-2-5237860480767346681-y](https://github.com/nick-delirium/lemmy-fennec/assets/23126999/5c310dd5-105f-4eb1-aeb7-e0a645c10f96)
+
+
 # Special thanks and credits:
 
 https://github.com/gmsgowtham/react-native-marked - goat MD rendering library (MIT)

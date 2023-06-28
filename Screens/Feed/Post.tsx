@@ -18,7 +18,7 @@ import {
 import { Text, Icon } from "../../ThemedComponents";
 import { mdTheme } from "../../commonStyles";
 import { Score, apiClient } from "../../store/apiClient";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { makeDateString } from "../../utils/utils";
 
 // !!!TODO!!!
@@ -29,15 +29,27 @@ function Post({
   post,
   isExpanded,
   navigation,
+  route,
 }: {
   post: PostView;
   isExpanded?: boolean;
-  navigation?: NativeStackNavigationProp<any, "Feed">;
+  navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
+  route?: NativeStackScreenProps<any, "Feed">["route"];
 }) {
   const [imgDimensions, setImgDimensions] = React.useState({
     width: 0,
     height: 0,
   });
+  const postId = route?.params?.post;
+  React.useEffect(() => {
+    if (postId) {
+      void apiClient.postStore.getSinglePost(
+        route.params.post,
+        apiClient.loginDetails
+      );
+    }
+  }, [postId]);
+
   const [isFullImg, setIsFullImg] = React.useState(false);
   const { colors } = useTheme();
   const sch = useColorScheme();
@@ -76,10 +88,6 @@ function Post({
   }, [isPic, isExpanded]);
 
   const getCommunity = () => {
-    void apiClient.communityStore.getCommunity(
-      post.community.id,
-      apiClient.loginDetails
-    );
     navigation.navigate("Community", { id: post.community.id });
   };
 
@@ -113,7 +121,7 @@ function Post({
         <TouchableOpacity
           onPress={() => {
             apiClient.postStore.setSinglePost(post);
-            navigation.navigate("Post");
+            navigation.navigate("Post", { post: post.post.id });
           }}
         >
           <Text
@@ -137,7 +145,7 @@ function Post({
         <TouchableOpacity
           onPress={() => {
             apiClient.postStore.setSinglePost(post);
-            navigation.navigate("Post");
+            navigation.navigate("Post", { post: post.post.id });
           }}
         >
           {isPic ? (

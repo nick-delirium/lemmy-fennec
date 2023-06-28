@@ -14,6 +14,7 @@ import {
   SaveUserSettings,
   Search,
   GetCommunity,
+  GetPost,
 } from "lemmy-js-client";
 
 export default class ApiService {
@@ -21,6 +22,10 @@ export default class ApiService {
 
   getPosts(filters: GetPosts): Promise<GetPostsResponse> {
     return this.client.getPosts(filters);
+  }
+
+  getSinglePost(form: GetPost) {
+    return this.client.getPost(form);
   }
 
   login(form: Login): Promise<LoginResponse> {

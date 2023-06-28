@@ -1,99 +1,102 @@
 import React from "react";
+import { FlatList, useColorScheme, View } from "react-native";
 import { observer } from "mobx-react-lite";
-import {
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  Image,
-  useColorScheme,
-  Linking,
-} from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { styles } from "../../commonStyles";
 import { apiClient } from "../../store/apiClient";
+import Post from "../Feed/Post";
+import FloatingMenu from "../Feed/FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
-import { mdTheme } from "../../commonStyles";
-import Markdown from "react-native-marked";
+import { useTheme } from "@react-navigation/native";
+import CommunityHeader from "./CommunityHeader";
+import { communityStore } from "../../store/communityStore";
 
 function CommunityScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any, "Community">) {
-  const [showDescription, setShowDescription] = React.useState(false);
   const { colors } = useTheme();
   const sch = useColorScheme();
-  const { community } = apiClient.communityStore;
+  const commId = route.params.id;
+
   React.useEffect(() => {
-    if (community !== null && navigation) {
-      navigation.setOptions({ title: community.community.title });
-      apiClient.postStore.setUseCommunityId(community.community.id);
-      void apiClient.postStore.getPosts(apiClient.loginDetails);
-    }
-    if (community === null && !apiClient.communityStore.isLoading) {
+    const getData = () => {
+      if (communityStore.community?.community.id === commId) return;
+      if (commId) {
+        apiClient.postStore.setFilters({ page: 1 });
+        void apiClient.postStore.getPosts(apiClient.loginDetails, commId);
+      }
       void apiClient.communityStore.getCommunity(
-        route.params.id,
+        commId,
         apiClient.loginDetails
       );
-    }
-    return () => {
-      apiClient.postStore.setUseCommunityId(null);
-      apiClient.postStore.setPosts([]);
     };
-  }, [community, navigation]);
 
-  if (apiClient.communityStore.isLoading || community === null)
-    return <ActivityIndicator />;
+    const unsubscribe = navigation.addListener("focus", () => {
+      getData();
+    });
+    getData();
 
-  const onProfileUrlPress = async () => {
-    try {
-      await Linking.openURL(community.community.actor_id);
-    } catch (e) {
-      console.error(e);
+    if (communityStore.community !== null && apiClient.postStore) {
+      navigation.setOptions({
+        title: `${communityStore.community.community.title} | ${apiClient.postStore.filters.sort}`,
+      });
     }
-  };
+
+    return unsubscribe;
+  }, [commId, navigation, apiClient.postStore, communityStore.community]);
+
+  // some optimizations
+  const renderPost = React.useCallback(
+    // @ts-ignore
+    ({ item }) => <Post post={item} navigation={navigation} />,
+    []
+  );
+  const extractor = React.useCallback((p) => p.post.id.toString(), []);
+  const onEndReached = React.useCallback(() => {
+    console.log("next page community", apiClient.postStore.posts.length);
+    if (apiClient.postStore.posts.length === 0) return;
+    void apiClient.postStore.nextPage(apiClient.loginDetails, commId);
+  }, [commId]);
+  const onRefresh = React.useCallback(() => {
+    apiClient.postStore.setFilters({ page: 0 });
+    void apiClient.postStore.getPosts(apiClient.loginDetails, commId);
+  }, [commId]);
+
+  const onPostScroll = React.useRef(({ changed }) => {
+    if (changed.length > 0) {
+      changed.forEach((item) => {
+        if (!item.isViewable && apiClient.profileStore.getReadOnScroll()) {
+          void apiClient.postStore.markPostRead({
+            post_id: item.item.post.id,
+            read: true,
+            auth: apiClient.loginDetails.jwt,
+          });
+        }
+      });
+    }
+  }).current;
+
+  // feedKey is a hack for autoscroll; force rerender on each feed update
   return (
-    <View>
-      <View style={styles.header}>
-        {community.community.icon ? (
-          <Image
-            source={{ uri: community.community.icon }}
-            style={styles.communityIcon}
-          />
-        ) : null}
-        <View>
-          <Text style={styles.title}>{community.community.name}</Text>
-          <TouchableOpacity onPressCb={onProfileUrlPress} simple>
-            <Text style={{ color: colors.border }}>
-              {community.community.actor_id}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {community.community.description ? (
-        <View>
-          <TouchableOpacity
-            onPressCb={() => setShowDescription(!showDescription)}
-          >
-            <Text>{showDescription ? "Hide" : "Show"} description</Text>
-          </TouchableOpacity>
-          {showDescription ? (
-            <Markdown
-              value={community.community.description}
-              theme={{
-                colors: sch === "dark" ? mdTheme.dark : mdTheme.light,
-              }}
-            />
-          ) : null}
-        </View>
-      ) : null}
+    <View style={styles.container} key={apiClient.postStore.feedKey}>
+      <FlatList
+        ListHeaderComponent={
+          <CommunityHeader navigation={navigation} route={route} />
+        }
+        style={{ flex: 1, width: "100%" }}
+        renderItem={renderPost}
+        data={apiClient.postStore.posts}
+        onRefresh={onRefresh}
+        onEndReached={onEndReached}
+        refreshing={apiClient.postStore.isLoading}
+        onEndReachedThreshold={1}
+        keyExtractor={extractor}
+        fadingEdgeLength={1}
+        onViewableItemsChanged={onPostScroll}
+      />
+      <FloatingMenu />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: { flexDirection: "row", alignItems: "center", padding: 8, gap: 8 },
-  communityIcon: { width: 48, height: 48, borderRadius: 48 },
-  title: { fontSize: 22, fontWeight: "bold" },
-});
 
 export default observer(CommunityScreen);

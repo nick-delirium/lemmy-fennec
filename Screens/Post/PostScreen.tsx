@@ -12,11 +12,14 @@ import Post from "../Feed/Post";
 import { useTheme } from "@react-navigation/native";
 import CommentsFloatingMenu from "./CommentsFloatingMenu";
 import CommentFlatList from "./CommentsFlatlist";
-import { TextInput, TouchableOpacity, Icon } from "../../ThemedComponents";
 import useKeyboard from "../../utils/useKeyboard";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-function PostScreen() {
+function PostScreen({
+  navigation,
+  route,
+}: NativeStackScreenProps<any, "Feed">) {
   const post = apiClient.postStore.singlePost;
   const { colors } = useTheme();
   const keyboardHeight = useKeyboard();
@@ -35,7 +38,9 @@ function PostScreen() {
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList
-        header={<Post post={post} isExpanded />}
+        header={
+          <Post post={post} isExpanded navigation={navigation} route={route} />
+        }
         refreshing={apiClient.commentsStore.isLoading}
         comments={apiClient.commentsStore.commentTree}
         colors={colors}

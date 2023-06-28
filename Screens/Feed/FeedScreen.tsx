@@ -8,28 +8,40 @@ import FloatingMenu from "./FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
+  const isFocused = navigation.isFocused();
   React.useEffect(() => {
-    if (apiClient.api) {
-      void apiClient.postStore.getPosts(apiClient.loginDetails);
-    }
-  }, [apiClient.api]);
+    const getPosts = () => {
+      if (apiClient.api) {
+        console.log("getting posts");
+        void apiClient.postStore.getPosts(apiClient.loginDetails);
+      }
+    };
 
-  // some optimizations
+    const unsubscribe = navigation.addListener("focus", () => {
+      console.log("focus");
+      getPosts();
+    });
+
+    getPosts();
+    return unsubscribe;
+  }, [apiClient.api, navigation, isFocused]);
+
   const renderPost = React.useCallback(
     ({ item }) => <Post post={item} navigation={navigation} />,
     []
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
-  const onEndReached = React.useCallback(
-    () => apiClient.postStore.nextPage(apiClient.loginDetails),
-    []
-  );
+  const onEndReached = React.useCallback(() => {
+    if (apiClient.postStore.posts.length === 0) return;
+    void apiClient.postStore.nextPage(apiClient.loginDetails);
+  }, [apiClient.postStore.posts.length]);
   const onRefresh = React.useCallback(() => {
-    apiClient.postStore.setFilters({ page: 0 });
+    apiClient.postStore.setFilters({ page: 1 });
     void apiClient.postStore.getPosts(apiClient.loginDetails);
   }, []);
 
-  const onPostScroll = React.useCallback(({ changed }) => {
+  // ref will be kept in memory in-between renders
+  const onPostScroll = React.useRef(({ changed }) => {
     if (changed.length > 0) {
       changed.forEach((item) => {
         if (!item.isViewable && apiClient.profileStore.getReadOnScroll()) {
@@ -41,7 +53,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
         }
       });
     }
-  }, []);
+  }).current;
 
   // feedKey is a hack for autoscroll
   return (

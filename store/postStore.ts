@@ -16,7 +16,7 @@ import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 
 interface Filters {
-  type: ListingType;
+  type_: ListingType;
   sort: SortType;
   saved_only: boolean;
   community?: CommunityId;
@@ -45,10 +45,9 @@ export const ListingTypeMap = {
 } as const;
 
 const defaultFilters: Filters = {
-  type: ListingTypeMap.Local,
+  type_: ListingTypeMap.Local,
   sort: SortTypeMap.New,
   saved_only: false,
-  community: null,
   page: 1,
   limit: 25,
 };
@@ -56,7 +55,6 @@ const defaultFilters: Filters = {
 class PostStore extends DataClass {
   public posts: PostView[] = [];
   public filters: Filters = defaultFilters;
-  public useCommunityId: CommunityId | null = null;
   // hack for autoscroll
   public feedKey = 0;
   public singlePost: PostView | null = null;
@@ -82,7 +80,6 @@ class PostStore extends DataClass {
       filters: observable.deep,
       isLoading: observable,
       feedKey: observable,
-      useCommunityId: observable,
       updatePostById: action,
       setPosts: action,
       setClient: action,
@@ -91,10 +88,6 @@ class PostStore extends DataClass {
       setFilters: action,
       bumpFeedKey: action,
     });
-  }
-
-  setUseCommunityId(id: CommunityId | null) {
-    this.useCommunityId = id;
   }
 
   bumpFeedKey() {
@@ -117,28 +110,57 @@ class PostStore extends DataClass {
     this.filters = defaultFilters;
   }
 
-  async getPosts(loginDetails?: LoginResponse) {
-    await this.fetchData<GetPostsResponse>(
-      () =>
-        this.api.getPosts({
+  async getPosts(loginDetails?: LoginResponse, communityId?: number) {
+    const filters = communityId
+      ? {
           ...this.filters,
-          community_id: this.useCommunityId ? this.useCommunityId : undefined,
+          community_id: communityId,
+          type_: ListingTypeMap.All,
+        }
+      : this.filters;
+    await this.fetchData<GetPostsResponse>(
+      () => {
+        this.setPosts([]);
+        return this.api.getPosts({
+          ...filters,
           auth: loginDetails ? loginDetails.jwt : undefined,
-        }),
-      ({ posts }) => {
-        this.setPosts(posts);
+        });
+      },
+      (result) => {
+        console.log(
+          result.posts.length,
+          communityId,
+          this.filters,
+          loginDetails.jwt
+        );
+        this.setPosts(result.posts);
         this.bumpFeedKey();
       },
       (e) => console.error(e)
     );
   }
 
-  async nextPage(loginDetails?: LoginResponse) {
+  async getSinglePost(postId: PostId, loginDetails?: LoginResponse) {
+    await this.fetchData<PostResponse>(
+      () =>
+        this.api.getSinglePost({
+          id: postId,
+          auth: loginDetails ? loginDetails.jwt : undefined,
+        }),
+      ({ post_view }) => {
+        this.setSinglePost(post_view);
+      },
+      (e) => console.error(e)
+    );
+  }
+
+  async nextPage(loginDetails?: LoginResponse, communityId?: number) {
     this.setFilters({ page: this.filters.page + 1 });
     await this.fetchData<GetPostsResponse>(
       () =>
         this.api.getPosts({
           ...this.filters,
+          community_id: communityId,
           auth: loginDetails ? loginDetails.jwt : undefined,
         }),
       ({ posts }) => this.concatPosts(posts),

@@ -18,6 +18,7 @@ export default class DataClass {
     onError: (error: any) => void,
     isUnimportant?: boolean
   ) {
+    console.log(this.isLoading, "loading");
     if (this.isLoading) return;
     if (!isUnimportant) this.setIsLoading(true);
     try {

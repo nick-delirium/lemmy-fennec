@@ -6,6 +6,7 @@ import { profileStore } from "./profileStore";
 import { commentsStore } from "./commentsStore";
 import { searchStore } from "./searchStore";
 import { communityStore } from "./communityStore";
+import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 
 /**
  * !!! TODO: !!!
@@ -32,6 +33,25 @@ class ApiClient {
 
   constructor() {
     makeAutoObservable(this);
+    Promise.all([
+      asyncStorageHandler.readData(dataKeys.instance),
+      asyncStorageHandler.readSecureData(dataKeys.login),
+      asyncStorageHandler.readData(dataKeys.username),
+    ]).then((values) => {
+      const [possibleInstance, possibleUser, possibleUsername] = values;
+      if (possibleInstance && possibleUser && possibleUsername) {
+        const auth: LoginResponse = JSON.parse(possibleUser);
+        const client: LemmyHttp = new LemmyHttp(possibleInstance);
+        this.setClient(client);
+        this.setLoginDetails(auth);
+        this.setLoginState(true);
+        this.profileStore.setUsername(possibleUsername);
+        void this.getGeneralData();
+      } else {
+        const client: LemmyHttp = new LemmyHttp("https://lemmy.ml");
+        this.setClient(client);
+      }
+    });
   }
 
   setClient(client: LemmyHttp) {

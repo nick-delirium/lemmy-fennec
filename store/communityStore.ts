@@ -64,7 +64,6 @@ class CommunityStore extends DataClass {
           sort: "TopAll",
         }),
       (data) => {
-        console.log(data.communities.length, this.page);
         this.setFollowedCommunities(data.communities);
       },
       (error) => console.log(error)

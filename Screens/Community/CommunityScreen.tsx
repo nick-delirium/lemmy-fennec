@@ -94,7 +94,7 @@ function CommunityScreen({
         fadingEdgeLength={1}
         onViewableItemsChanged={onPostScroll}
       />
-      <FloatingMenu />
+      <FloatingMenu useCommunity />
     </View>
   );
 }

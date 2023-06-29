@@ -19,7 +19,7 @@ const listingTypes = Object.values(ListingTypeMap).map((type) => ({
   value: type,
 }));
 
-function FloatingMenu() {
+function FloatingMenu({ useCommunity }: { useCommunity?: boolean }) {
   const { colors } = useTheme();
   const [isSortOpen, setIsSortOpen] = React.useState(false);
   const [isListingOpen, setIsListingOpen] = React.useState(false);
@@ -48,21 +48,41 @@ function FloatingMenu() {
 
   // yeah this sounds dumb so I'll just leave it here for now until they'll make a filter for it
   const hideRead = () => {
-    const newPosts = apiClient.postStore.posts.filter(
-      (post) => post.read === false
-    );
-    apiClient.postStore.setPosts(newPosts);
+    if (useCommunity) {
+      const newPosts = apiClient.postStore.communityPosts.filter(
+        (post) => post.read === false
+      );
+      apiClient.postStore.setCommunityPosts(newPosts);
+    } else {
+      const newPosts = apiClient.postStore.posts.filter(
+        (post) => post.read === false
+      );
+      apiClient.postStore.setPosts(newPosts);
+    }
   };
 
   const refresh = () => {
-    apiClient.postStore.getPosts(apiClient.loginDetails).then(() => {
-      apiClient.postStore.bumpFeedKey();
-    });
+    if (useCommunity) {
+      const id = apiClient.communityStore.community.community.id;
+      apiClient.postStore.getPosts(apiClient.loginDetails, id).then(() => {
+        apiClient.postStore.bumpFeedKey();
+      });
+    } else {
+      apiClient.postStore.getPosts(apiClient.loginDetails).then(() => {
+        apiClient.postStore.bumpFeedKey();
+      });
+    }
   };
 
   return (
     <View style={styles.container}>
-      {isSortOpen ? <SortMenu colors={colors} closeSelf={closeAll} /> : null}
+      {isSortOpen ? (
+        <SortMenu
+          useCommunity={useCommunity}
+          colors={colors}
+          closeSelf={closeAll}
+        />
+      ) : null}
       {isListingOpen ? (
         <ListingMenu colors={colors} closeSelf={closeAll} />
       ) : null}
@@ -71,9 +91,11 @@ function FloatingMenu() {
           <TouchableOpacity onPress={switchToSort}>
             <Text style={styles.bold}>Change sorting type</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={switchToListing}>
-            <Text style={styles.bold}>Change feed type</Text>
-          </TouchableOpacity>
+          {useCommunity ? null : (
+            <TouchableOpacity onPress={switchToListing}>
+              <Text style={styles.bold}>Change feed type</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity onPress={hideRead}>
             <Text style={styles.bold}>Hide Read</Text>
           </TouchableOpacity>
@@ -94,13 +116,20 @@ function FloatingMenu() {
 function SortMenu({
   colors,
   closeSelf,
+  useCommunity,
 }: {
+  useCommunity?: boolean;
   colors: Theme["colors"];
   closeSelf: () => void;
 }) {
   const setSorting = (sort: (typeof SortTypeMap)[keyof typeof SortTypeMap]) => {
     void apiClient.postStore.setFilters({ sort: sort });
-    void apiClient.postStore.getPosts(apiClient.loginDetails);
+    if (useCommunity) {
+      const id = apiClient.communityStore.community.community.id;
+      void apiClient.postStore.getPosts(apiClient.loginDetails, id);
+    } else {
+      void apiClient.postStore.getPosts(apiClient.loginDetails);
+    }
     closeSelf();
   };
 

@@ -4,11 +4,14 @@ import {
   CommunityView,
   GetCommunityResponse,
   LoginResponse,
+  ListCommunitiesResponse,
 } from "lemmy-js-client";
 
 class CommunityStore extends DataClass {
   communityId = 0;
   community: CommunityView | null = null;
+  followedCommunities: CommunityView[] = [];
+  page = 1;
 
   constructor() {
     super();
@@ -16,10 +19,22 @@ class CommunityStore extends DataClass {
       communityId: observable,
       isLoading: observable,
       community: observable,
+      followedCommunities: observable,
+      page: observable,
       setCommunityId: action,
       setCommunity: action,
       setIsLoading: action,
+      setFollowedCommunities: action,
+      setPage: action,
     });
+  }
+
+  setPage(page: number) {
+    this.page = page;
+  }
+
+  setFollowedCommunities(communities: CommunityView[]) {
+    this.followedCommunities = communities;
   }
 
   setCommunityId(id: number) {
@@ -37,6 +52,36 @@ class CommunityStore extends DataClass {
       (error) => console.log(error)
     );
   }
+
+  async getFollowedCommunities(auth?: LoginResponse) {
+    await this.fetchData<ListCommunitiesResponse>(
+      () =>
+        this.api.getCommunities({
+          auth: auth?.jwt,
+          type_: "Subscribed",
+          limit: 30,
+          page: this.page,
+          sort: "TopAll",
+        }),
+      (data) => {
+        console.log(data.communities.length, this.page);
+        this.setFollowedCommunities(data.communities);
+      },
+      (error) => console.log(error)
+    );
+  }
+
+  nextPage = (auth?: LoginResponse) => {
+    this.setPage(this.page + 1);
+    void this.getFollowedCommunities(auth);
+  };
+
+  prevPage = (auth?: LoginResponse) => {
+    if (this.page > 1) {
+      this.setPage(this.page - 1);
+    }
+    void this.getFollowedCommunities(auth);
+  };
 }
 
 export const communityStore = new CommunityStore();

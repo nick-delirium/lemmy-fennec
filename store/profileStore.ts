@@ -1,6 +1,7 @@
 import { makeObservable, observable, action } from "mobx";
 import DataClass from "./dataClass";
 import {
+  GetPersonDetails,
   GetPersonDetailsResponse,
   LocalUserView,
   LoginResponse,
@@ -14,6 +15,7 @@ class ProfileStore extends DataClass {
   public username: string | null = null;
   public readOnScroll = false;
   public unblurNsfw = false;
+  public leftHanded = false;
 
   constructor() {
     super();
@@ -23,7 +25,9 @@ class ProfileStore extends DataClass {
       username: observable,
       localUser: observable,
       readOnScroll: observable,
+      leftHanded: observable,
       unblurNsfw: observable,
+      setLeftHanded: action,
       setReadOnScroll: action,
       setProfile: action,
       setUsername: action,
@@ -38,6 +42,17 @@ class ProfileStore extends DataClass {
     asyncStorageHandler.readData(dataKeys.blurNsfw).then((value) => {
       this.unblurNsfw = value === "1";
     });
+    asyncStorageHandler.readData(dataKeys.leftHanded).then((value) => {
+      this.leftHanded = value === "1";
+    });
+  }
+
+  setLeftHanded(leftHanded: boolean) {
+    this.leftHanded = leftHanded;
+    void asyncStorageHandler.setData(
+      dataKeys.leftHanded,
+      leftHanded ? "1" : "0"
+    );
   }
 
   setBlurNsfw(unblurNsfw: boolean) {
@@ -62,12 +77,12 @@ class ProfileStore extends DataClass {
     this.localUser = localUser;
   }
 
-  async getProfile(loginDetails: LoginResponse, otherUser?: string) {
+  async getProfile(loginDetails: LoginResponse, form: GetPersonDetails) {
     await this.fetchData<GetPersonDetailsResponse>(
       () =>
         this.api.getProfile({
+          ...form,
           auth: loginDetails.jwt,
-          username: otherUser ? otherUser : this.username,
         }),
       (profile) => this.setProfile(profile),
       (e) => console.error(e)

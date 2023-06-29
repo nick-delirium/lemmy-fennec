@@ -10,6 +10,7 @@ export const dataKeys = {
   commentFilters: "fennec-comment-filters",
   readScroll: "fennec-read-scroll",
   blurNsfw: "fennec-blur-nsfw",
+  leftHanded: "fennec-left-handed",
 } as const;
 
 type Keys = keyof typeof dataKeys;

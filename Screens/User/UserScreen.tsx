@@ -3,29 +3,36 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 import { apiClient } from "../../store/apiClient";
-import UserRow from "./UserRow";
-import UserRating from "./UserRating";
-import Settings from "./Settings";
-import Counters from "./Counters";
-import Bio from "./Bio";
+import UserRow from "../Profile/UserRow";
+import UserRating from "../Profile/UserRating";
+import Counters from "../Profile/Counters";
+import Bio from "../Profile/Bio";
 
-// even though its actually inside tab, main nav context is a stack right now
-function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
-  const { localUser: profile } = apiClient.profileStore;
+function UserScreen({
+  navigation,
+  route,
+}: NativeStackScreenProps<any, "User">) {
+  const loadedProfile = apiClient.profileStore.userProfile;
+  const profile = loadedProfile?.person_view;
 
   React.useEffect(() => {
-    if (apiClient.isLoggedIn === false) {
-      navigation.replace("Login");
-    } else {
-      if (!profile) {
-        reload();
-      }
+    if (!profile && route.params?.personId) {
+      void apiClient.profileStore.getProfile(apiClient.loginDetails, {
+        person_id: route.params.personId,
+      });
     }
-  }, [navigation, apiClient.isLoggedIn]);
+    return () => {
+      apiClient.profileStore.setProfile(null);
+    };
+  }, [route.params.personId]);
 
-  const reload = () => {
-    void apiClient.getGeneralData();
-  };
+  React.useEffect(() => {
+    if (profile) {
+      navigation.setOptions({
+        title: profile.person.name,
+      });
+    }
+  }, [profile]);
 
   if (!profile || apiClient.profileStore.isLoading) {
     return (
@@ -41,13 +48,9 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
       <UserRating counts={profile.counts} />
       <Bio profile={profile} />
       <Counters profile={profile} />
-
-      <Settings navigation={navigation} />
     </View>
   );
 }
-
-// todo: settings, posts, comments, profile editing
 
 const styles = StyleSheet.create({
   container: {
@@ -61,4 +64,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(Profile);
+export default observer(UserScreen);

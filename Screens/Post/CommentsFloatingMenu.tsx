@@ -39,8 +39,11 @@ function CommentsFloatingMenu({ isLoading }: { isLoading: boolean }) {
     setIsSortOpen(false);
   };
 
+  const position = apiClient.profileStore.leftHanded
+    ? { left: 16 }
+    : { right: 16 };
   return (
-    <View style={styles.container}>
+    <View style={{ ...styles.container, ...position }}>
       {isSortOpen ? <SortMenu colors={colors} closeSelf={closeAll} /> : null}
       {isOpen ? (
         <View style={{ ...styles.menu, backgroundColor: colors.card }}>
@@ -116,7 +119,6 @@ const styles = StyleSheet.create({
     // when input added
     // bottom: 84,
     bottom: 21,
-    right: 16,
     gap: 12,
   },
 });

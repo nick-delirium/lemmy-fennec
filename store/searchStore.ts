@@ -31,10 +31,12 @@ class SearchStore extends DataClass {
       page: observable,
       listingType: observable,
       type: observable,
+      isLoading: observable,
       limit: observable,
       setListingType: action,
       setSearchType: action,
       setPage: action,
+      setIsLoading: action,
       setSearchQuery: action,
     });
   }

@@ -27,28 +27,17 @@ function Post({
   post,
   isExpanded,
   navigation,
-  route,
   useCommunity,
 }: {
   post: PostView;
   isExpanded?: boolean;
   useCommunity?: boolean;
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
-  route?: NativeStackScreenProps<any, "Feed">["route"];
 }) {
   const [imgDimensions, setImgDimensions] = React.useState({
     width: 0,
     height: 0,
   });
-  const postId = route?.params?.post;
-  React.useEffect(() => {
-    if (postId) {
-      void apiClient.postStore.getSinglePost(
-        route.params.post,
-        apiClient.loginDetails
-      );
-    }
-  }, [postId]);
 
   const [isFullImg, setIsFullImg] = React.useState(false);
   const { colors } = useTheme();
@@ -99,6 +88,10 @@ function Post({
     navigation.navigate("Community", { id: post.community.id });
   };
 
+  const getAuthor = () => {
+    navigation.navigate("User", { personId: post.creator.id });
+  };
+
   const customReadColor = post.read ? "#ababab" : colors.text;
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
@@ -117,9 +110,11 @@ function Post({
         <Text customColor={customReadColor} style={styles.smolText}>
           by
         </Text>
-        <Text customColor={customReadColor} style={styles.authorName}>
-          u/{post.creator.display_name || post.creator.name}
-        </Text>
+        <TouchableOpacity simple onPressCb={getAuthor}>
+          <Text customColor={customReadColor} style={styles.authorName}>
+            u/{post.creator.display_name || post.creator.name}
+          </Text>
+        </TouchableOpacity>
         <Text customColor={customReadColor} style={{ marginLeft: "auto" }}>
           {dateStr}
         </Text>
@@ -213,7 +208,14 @@ function Post({
           />
         </View>
       )}
-      <View style={styles.iconsRow}>
+      <View
+        style={{
+          ...styles.iconsRow,
+          flexDirection: apiClient.profileStore.leftHanded
+            ? "row-reverse"
+            : "row",
+        }}
+      >
         <View style={styles.infoPiece}>
           <Icon
             accessibilityLabel={"total rating"}
@@ -337,7 +339,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconsRow: {
-    flexDirection: "row",
     gap: 12,
     alignItems: "center",
     paddingTop: 8,

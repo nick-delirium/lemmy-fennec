@@ -30,6 +30,10 @@ function Settings({ navigation }: { navigation: any }) {
   const toggleBlurNsfw = () => {
     apiClient.profileStore.setBlurNsfw(!apiClient.profileStore.unblurNsfw);
   };
+
+  const toggleLeftHanded = () => {
+    apiClient.profileStore.setLeftHanded(!apiClient.profileStore.leftHanded);
+  };
   return (
     <View>
       <View style={styles.row}>
@@ -66,6 +70,14 @@ function Settings({ navigation }: { navigation: any }) {
               !apiClient.profileStore.readOnScroll
             )
           }
+        />
+      </View>
+      <View style={styles.row}>
+        <ThemedText>Left handed?</ThemedText>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          value={apiClient.profileStore.leftHanded}
+          onValueChange={toggleLeftHanded}
         />
       </View>
       <TouchableOpacity onPress={logoutHandler} style={styles.row}>

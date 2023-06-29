@@ -74,8 +74,11 @@ function FloatingMenu({ useCommunity }: { useCommunity?: boolean }) {
     }
   };
 
+  const position = apiClient.profileStore.leftHanded
+    ? { left: 16 }
+    : { right: 16 };
   return (
-    <View style={styles.container}>
+    <View style={{ ...styles.container, ...position }}>
       {isSortOpen ? (
         <SortMenu
           useCommunity={useCommunity}
@@ -195,7 +198,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "flex-end",
     bottom: 16,
-    right: 16,
     gap: 12,
   },
 });

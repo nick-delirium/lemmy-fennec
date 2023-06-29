@@ -14,6 +14,7 @@ import { AppDarkTheme, AppTheme } from "./commonStyles";
 import PostScreen from "./Screens/Post/PostScreen";
 import CommunityScreen from "./Screens/Community/CommunityScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import UserScreen from "./Screens/User/UserScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,7 @@ const App = observer(() => {
           <Stack.Screen name="Post" component={PostScreen} />
           <Stack.Screen name="Community" component={CommunityScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name={"User"} component={UserScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -12,8 +12,8 @@ import Post from "../Feed/Post";
 import { useTheme } from "@react-navigation/native";
 import CommentsFloatingMenu from "./CommentsFloatingMenu";
 import CommentFlatList from "./CommentsFlatlist";
-import useKeyboard from "../../utils/useKeyboard";
-import { useHeaderHeight } from "@react-navigation/elements";
+// import useKeyboard from "../../utils/useKeyboard";
+// import { useHeaderHeight } from "@react-navigation/elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 function PostScreen({
@@ -24,26 +24,41 @@ function PostScreen({
   const { colors } = useTheme();
   // const keyboardHeight = useKeyboard();
   // const height = useHeaderHeight();
+
   React.useEffect(() => {
-    if (apiClient.commentsStore.api) {
+    if (route.params.post) {
+      void apiClient.postStore.getSinglePost(
+        route.params.post,
+        apiClient.loginDetails
+      );
+    }
+    return () => {
+      apiClient.postStore.setSinglePost(null);
+    };
+  }, [route.params.post]);
+
+  React.useEffect(() => {
+    if (post) {
       void apiClient.commentsStore.getComments(
         post.post.id,
         apiClient.loginDetails
       );
     }
-  }, [apiClient.commentsStore.api]);
+    return () => {
+      apiClient.commentsStore.setComments([]);
+    };
+  }, [post]);
 
   if (!post) return <ActivityIndicator />;
 
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList
-        header={
-          <Post post={post} isExpanded navigation={navigation} route={route} />
-        }
+        header={<Post post={post} isExpanded navigation={navigation} />}
         refreshing={apiClient.commentsStore.isLoading}
         comments={apiClient.commentsStore.commentTree}
         colors={colors}
+        footer={<View style={{ height: 72, width: "100%" }} />}
       />
       <CommentsFloatingMenu isLoading={apiClient.commentsStore.isLoading} />
       {/* adding this later <KeyboardAvoidingView*/}
@@ -60,6 +75,7 @@ function PostScreen({
     </View>
   );
 }
+
 //
 // const styles = StyleSheet.create({
 //   inputRow: { paddingHorizontal: 6, paddingVertical: 12, flexDirection: 'row', gap: 6 },

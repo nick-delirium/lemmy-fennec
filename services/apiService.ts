@@ -15,6 +15,7 @@ import {
   Search,
   GetCommunity,
   GetPost,
+  ListCommunities,
 } from "lemmy-js-client";
 
 export default class ApiService {
@@ -87,5 +88,7 @@ export default class ApiService {
     return this.client.getCommunity(form);
   }
 
-  // followCommunity
+  getCommunities(form: ListCommunities) {
+    return this.client.listCommunities(form);
+  }
 }

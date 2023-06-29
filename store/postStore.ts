@@ -80,6 +80,7 @@ class PostStore extends DataClass {
       posts: observable.deep,
       page: observable,
       commPage: observable,
+      singlePost: observable,
       filters: observable.deep,
       isLoading: observable,
       feedKey: observable,

@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Feed from "./Feed/FeedScreen";
 import Profile from "./Profile/ProfileScreen";
 import Search from "./Search/SearchScreen";
+import FollowsScreen from "./Follows/FollowsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,6 +21,8 @@ function HomeScreen() {
               return <Feather name={"user"} size={size} color={color} />;
             case "Search":
               return <Feather name={"search"} size={size} color={color} />;
+            case "Communities":
+              return <Feather name={"star"} size={size} color={color} />;
             default:
               return <Feather name={"heart"} size={size} color={color} />;
           }
@@ -35,6 +38,11 @@ function HomeScreen() {
         options={{
           headerShown: false,
         }}
+      />
+      <Tab.Screen
+        name={"Communities"}
+        component={FollowsScreen}
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name={"Search"}

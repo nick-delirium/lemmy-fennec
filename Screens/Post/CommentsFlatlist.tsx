@@ -16,6 +16,7 @@ const CommentFlatList = observer(
   ({
     comments,
     header,
+    footer,
     refreshing,
     colors,
   }: {
@@ -23,6 +24,7 @@ const CommentFlatList = observer(
     refreshing?: boolean;
     comments: CommentNode[];
     header?: React.ReactElement;
+    footer?: React.ReactElement;
   }) => {
     const extractor = React.useCallback((c) => c.comment.id.toString(), []);
     const renderer = React.useCallback(
@@ -37,7 +39,9 @@ const CommentFlatList = observer(
         removeClippedSubviews
         initialNumToRender={5}
         ListHeaderComponent={header}
+        ListFooterComponent={footer}
         data={comments}
+        style={{ flex: 1 }}
         keyExtractor={extractor}
         renderItem={renderer}
         refreshing={refreshing}

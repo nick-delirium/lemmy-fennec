@@ -76,7 +76,14 @@ function Comment({
           theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
         />
       </View>
-      <View style={styles.bottomRow}>
+      <View
+        style={{
+          ...styles.bottomRow,
+          flexDirection: apiClient.profileStore.leftHanded
+            ? "row-reverse"
+            : "row",
+        }}
+      >
         <View style={styles.infoPiece}>
           <Icon
             accessibilityLabel={"total rating (upvote percent)"}
@@ -166,7 +173,6 @@ const styles = StyleSheet.create({
     color: "orange",
   },
   bottomRow: {
-    flexDirection: "row",
     gap: 12,
     paddingTop: 4,
     paddingBottom: 4,

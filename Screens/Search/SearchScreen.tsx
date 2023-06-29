@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   SectionList,
+  ActivityIndicator,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import {
@@ -64,19 +65,19 @@ function SearchScreen({
 
   const processData = (data: SearchResponse) => {
     const searchResults: SearchResult[] = [];
-    if (data.communities.length > 0) {
+    if (data.communities?.length > 0) {
       searchResults.push({
         title: "Communities",
         data: isFullSearch ? data.communities : data.communities.slice(0, 10),
       });
     }
-    if (data.users.length > 0) {
+    if (data.users?.length > 0) {
       searchResults.push({
         title: "Users",
         data: isFullSearch ? data.users : data.users.slice(0, 10),
       });
     }
-    if (data.posts.length > 0) {
+    if (data.posts?.length > 0) {
       searchResults.push({
         title: "Posts",
         data: isFullSearch ? data.posts : data.posts.slice(0, 10),
@@ -108,6 +109,7 @@ function SearchScreen({
         <View style={styles.searchPage}>
           <SearchSettings />
         </View>
+        {apiClient.searchStore.isLoading ? <ActivityIndicator /> : null}
         {searchResults ? (
           <SectionList
             style={{ flex: 1 }}
@@ -143,9 +145,11 @@ function SearchScreen({
                   />
                 );
               if (section.title === "Users")
-                return <User user={item as PersonView} />;
+                return (
+                  <User navigation={navigation} user={item as PersonView} />
+                );
               if (section.title === "Posts")
-                return <Post post={item as PostView} />;
+                return <Post navigation={navigation} post={item as PostView} />;
             }}
             keyExtractor={(item, ind) => {
               return (

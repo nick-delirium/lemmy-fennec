@@ -22,7 +22,7 @@ function CommunityScreen({
     const getData = () => {
       if (communityStore.community?.community.id === commId) return;
       if (commId) {
-        apiClient.postStore.setFilters({ page: 1 });
+        apiClient.postStore.setPage(1);
         void apiClient.postStore.getPosts(apiClient.loginDetails, commId);
       }
       void apiClient.communityStore.getCommunity(
@@ -48,7 +48,7 @@ function CommunityScreen({
   // some optimizations
   const renderPost = React.useCallback(
     // @ts-ignore
-    ({ item }) => <Post post={item} navigation={navigation} />,
+    ({ item }) => <Post post={item} navigation={navigation} useCommunity />,
     []
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
@@ -58,7 +58,7 @@ function CommunityScreen({
     void apiClient.postStore.nextPage(apiClient.loginDetails, commId);
   }, [commId]);
   const onRefresh = React.useCallback(() => {
-    apiClient.postStore.setFilters({ page: 0 });
+    apiClient.postStore.setCommPage(1);
     void apiClient.postStore.getPosts(apiClient.loginDetails, commId);
   }, [commId]);
 
@@ -85,7 +85,7 @@ function CommunityScreen({
         }
         style={{ flex: 1, width: "100%" }}
         renderItem={renderPost}
-        data={apiClient.postStore.posts}
+        data={apiClient.postStore.communityPosts}
         onRefresh={onRefresh}
         onEndReached={onEndReached}
         refreshing={apiClient.postStore.isLoading}

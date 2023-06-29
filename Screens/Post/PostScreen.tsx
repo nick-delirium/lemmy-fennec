@@ -3,9 +3,9 @@ import { observer } from "mobx-react-lite";
 import {
   ActivityIndicator,
   View,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
+  // KeyboardAvoidingView,
+  // Platform,
+  // StyleSheet,
 } from "react-native";
 import { apiClient } from "../../store/apiClient";
 import Post from "../Feed/Post";
@@ -22,8 +22,8 @@ function PostScreen({
 }: NativeStackScreenProps<any, "Feed">) {
   const post = apiClient.postStore.singlePost;
   const { colors } = useTheme();
-  const keyboardHeight = useKeyboard();
-  const height = useHeaderHeight();
+  // const keyboardHeight = useKeyboard();
+  // const height = useHeaderHeight();
   React.useEffect(() => {
     if (apiClient.commentsStore.api) {
       void apiClient.commentsStore.getComments(

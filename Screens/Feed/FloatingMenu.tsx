@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { useTheme, Theme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { Score, apiClient } from "../../store/apiClient";
+import { apiClient } from "../../store/apiClient";
 import { Icon, Text } from "../../ThemedComponents";
 import { SortTypeMap, ListingTypeMap } from "../../store/postStore";
 
@@ -55,7 +55,9 @@ function FloatingMenu() {
   };
 
   const refresh = () => {
-    void apiClient.postStore.getPosts(apiClient.loginDetails);
+    apiClient.postStore.getPosts(apiClient.loginDetails).then(() => {
+      apiClient.postStore.bumpFeedKey();
+    });
   };
 
   return (
@@ -66,13 +68,16 @@ function FloatingMenu() {
       ) : null}
       {isOpen ? (
         <View style={{ ...styles.menu, backgroundColor: colors.card }}>
-          <TouchableOpacity onPress={() => switchToSort()}>
+          <TouchableOpacity onPress={switchToSort}>
             <Text style={styles.bold}>Change sorting type</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => switchToListing()}>
+          <TouchableOpacity onPress={switchToListing}>
             <Text style={styles.bold}>Change feed type</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => refresh()}>
+          <TouchableOpacity onPress={hideRead}>
+            <Text style={styles.bold}>Hide Read</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={refresh}>
             <Text style={styles.bold}>Refresh</Text>
           </TouchableOpacity>
         </View>
@@ -123,7 +128,7 @@ function ListingMenu({
   const setListing = (
     listing: (typeof ListingTypeMap)[keyof typeof ListingTypeMap]
   ) => {
-    void apiClient.postStore.setFilters({ type: listing });
+    void apiClient.postStore.setFilters({ type_: listing });
     void apiClient.postStore.getPosts(apiClient.loginDetails);
     closeSelf();
   };

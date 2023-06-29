@@ -11,14 +11,12 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   const isFocused = navigation.isFocused();
   React.useEffect(() => {
     const getPosts = () => {
-      if (apiClient.api) {
-        console.log("getting posts");
+      if (apiClient.api && apiClient.postStore.posts.length === 0) {
         void apiClient.postStore.getPosts(apiClient.loginDetails);
       }
     };
 
     const unsubscribe = navigation.addListener("focus", () => {
-      console.log("focus");
       getPosts();
     });
 
@@ -36,7 +34,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     void apiClient.postStore.nextPage(apiClient.loginDetails);
   }, [apiClient.postStore.posts.length]);
   const onRefresh = React.useCallback(() => {
-    apiClient.postStore.setFilters({ page: 1 });
+    apiClient.postStore.setPage(1);
     void apiClient.postStore.getPosts(apiClient.loginDetails);
   }, []);
 

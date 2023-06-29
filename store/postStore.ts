@@ -20,7 +20,6 @@ interface Filters {
   sort: SortType;
   saved_only: boolean;
   community?: CommunityId;
-  page: number;
   limit: number;
 }
 
@@ -48,13 +47,15 @@ const defaultFilters: Filters = {
   type_: ListingTypeMap.Local,
   sort: SortTypeMap.New,
   saved_only: false,
-  page: 1,
   limit: 25,
 };
 
 class PostStore extends DataClass {
   public posts: PostView[] = [];
+  public communityPosts: PostView[] = [];
   public filters: Filters = defaultFilters;
+  public page = 1;
+  public commPage = 1;
   // hack for autoscroll
   public feedKey = 0;
   public singlePost: PostView | null = null;
@@ -77,17 +78,37 @@ class PostStore extends DataClass {
 
     makeObservable(this, {
       posts: observable.deep,
+      page: observable,
+      commPage: observable,
       filters: observable.deep,
       isLoading: observable,
       feedKey: observable,
+      communityPosts: observable.deep,
       updatePostById: action,
       setPosts: action,
+      setPage: action,
+      setCommPage: action,
       setClient: action,
       setIsLoading: action,
       concatPosts: action,
+      concatCommunityPosts: action,
       setFilters: action,
       bumpFeedKey: action,
+      setSinglePost: action,
+      setCommunityPosts: action,
     });
+  }
+
+  setPage(page: number) {
+    this.page = page;
+  }
+
+  setCommPage(page: number) {
+    this.commPage = page;
+  }
+
+  setCommunityPosts(posts: PostView[]) {
+    this.communityPosts = posts;
   }
 
   bumpFeedKey() {
@@ -120,21 +141,18 @@ class PostStore extends DataClass {
       : this.filters;
     await this.fetchData<GetPostsResponse>(
       () => {
-        this.setPosts([]);
         return this.api.getPosts({
           ...filters,
+          page: 1,
           auth: loginDetails ? loginDetails.jwt : undefined,
         });
       },
       (result) => {
-        console.log(
-          result.posts.length,
-          communityId,
-          this.filters,
-          loginDetails.jwt
-        );
-        this.setPosts(result.posts);
-        this.bumpFeedKey();
+        if (communityId) {
+          this.setCommunityPosts(result.posts);
+        } else {
+          this.setPosts(result.posts);
+        }
       },
       (e) => console.error(e)
     );
@@ -155,21 +173,36 @@ class PostStore extends DataClass {
   }
 
   async nextPage(loginDetails?: LoginResponse, communityId?: number) {
-    this.setFilters({ page: this.filters.page + 1 });
+    if (communityId) {
+      this.setCommPage(this.commPage + 1);
+    } else {
+      this.setPage(this.page + 1);
+    }
     await this.fetchData<GetPostsResponse>(
       () =>
         this.api.getPosts({
           ...this.filters,
+          page: this.page,
           community_id: communityId,
           auth: loginDetails ? loginDetails.jwt : undefined,
         }),
-      ({ posts }) => this.concatPosts(posts),
+      ({ posts }) => {
+        if (communityId) {
+          this.concatCommunityPosts(posts);
+        } else {
+          this.concatPosts(posts);
+        }
+      },
       (e) => console.error(e)
     );
   }
 
   concatPosts(posts: PostView[]) {
     this.posts = this.posts.concat(posts);
+  }
+
+  concatCommunityPosts(posts: PostView[]) {
+    this.communityPosts = this.communityPosts.concat(posts);
   }
 
   async ratePost(
@@ -195,23 +228,37 @@ class PostStore extends DataClass {
     );
   }
 
-  updatePostById(postId: PostId, updatedPost: PostView) {
-    this.posts = this.posts.map((post) => {
-      if (post.post.id === postId) {
-        return updatedPost;
-      }
-      return post;
-    });
+  updatePostById(
+    postId: PostId,
+    updatedPost: PostView,
+    communityPost?: boolean
+  ) {
+    if (communityPost) {
+      this.communityPosts = this.communityPosts.map((post) => {
+        if (post.post.id === postId) {
+          return updatedPost;
+        }
+        return post;
+      });
+    } else {
+      this.posts = this.posts.map((post) => {
+        if (post.post.id === postId) {
+          return updatedPost;
+        }
+        return post;
+      });
+    }
   }
 
   setPosts(posts: PostView[]) {
     this.posts = posts;
   }
 
-  async markPostRead(form: MarkPostAsRead) {
+  async markPostRead(form: MarkPostAsRead, communityPost?: boolean) {
     await this.fetchData<PostResponse>(
       () => this.api.markPostRead(form),
-      ({ post_view }) => this.updatePostById(form.post_id, post_view),
+      ({ post_view }) =>
+        this.updatePostById(form.post_id, post_view, communityPost),
       (e) => console.error(e),
       true
     );

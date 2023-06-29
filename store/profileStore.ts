@@ -13,6 +13,7 @@ class ProfileStore extends DataClass {
   public localUser: LocalUserView | null = null;
   public username: string | null = null;
   public readOnScroll = false;
+  public unblurNsfw = false;
 
   constructor() {
     super();
@@ -22,16 +23,26 @@ class ProfileStore extends DataClass {
       username: observable,
       localUser: observable,
       readOnScroll: observable,
+      unblurNsfw: observable,
       setReadOnScroll: action,
       setProfile: action,
       setUsername: action,
       setClient: action,
       setIsLoading: action,
       setLocalUser: action,
+      setBlurNsfw: action,
     });
     asyncStorageHandler.readData(dataKeys.readScroll).then((value) => {
       this.readOnScroll = value === "1";
     });
+    asyncStorageHandler.readData(dataKeys.blurNsfw).then((value) => {
+      this.unblurNsfw = value === "1";
+    });
+  }
+
+  setBlurNsfw(unblurNsfw: boolean) {
+    this.unblurNsfw = unblurNsfw;
+    void asyncStorageHandler.setData(dataKeys.blurNsfw, unblurNsfw ? "1" : "0");
   }
 
   setReadOnScroll(readOnScroll: boolean) {

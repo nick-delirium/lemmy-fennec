@@ -27,14 +27,25 @@ function Settings({ navigation }: { navigation: any }) {
       show_nsfw: !profile.local_user.show_nsfw,
     });
   };
+  const toggleBlurNsfw = () => {
+    apiClient.profileStore.setBlurNsfw(!apiClient.profileStore.unblurNsfw);
+  };
   return (
     <View>
       <View style={styles.row}>
-        <ThemedText>Hide NSFW?</ThemedText>
+        <ThemedText>Hide NSFW posts?</ThemedText>
         <Switch
           trackColor={{ false: "#767577", true: "#81b0ff" }}
           value={!profile.local_user.show_nsfw}
           onValueChange={toggleNSFW}
+        />
+      </View>
+      <View style={styles.row}>
+        <ThemedText>Blur NSFW posts?</ThemedText>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          value={!apiClient.profileStore.unblurNsfw}
+          onValueChange={toggleBlurNsfw}
         />
       </View>
       <View style={styles.row}>

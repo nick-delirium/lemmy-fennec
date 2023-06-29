@@ -13,10 +13,8 @@ export function Community({
   navigation: any;
 }) {
   const getCommunity = () => {
-    void apiClient.communityStore.getCommunity(
-      sublemmy.community.id,
-      apiClient.loginDetails
-    );
+    apiClient.postStore.setCommunityPosts([]);
+    apiClient.communityStore.setCommunity(null);
     navigation.navigate("Community", { id: sublemmy.community.id });
   };
   return (

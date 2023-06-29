@@ -11,11 +11,9 @@ import {
   Image,
   Vibration,
   Share,
-  TouchableOpacity,
   Dimensions,
-  Pressable,
 } from "react-native";
-import { Text, Icon } from "../../ThemedComponents";
+import { Text, Icon, TouchableOpacity } from "../../ThemedComponents";
 import { mdTheme } from "../../commonStyles";
 import { Score, apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -30,9 +28,11 @@ function Post({
   isExpanded,
   navigation,
   route,
+  useCommunity,
 }: {
   post: PostView;
   isExpanded?: boolean;
+  useCommunity?: boolean;
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
   route?: NativeStackScreenProps<any, "Feed">["route"];
 }) {
@@ -69,14 +69,20 @@ function Post({
     : "";
   const dateStr = makeDateString(post.post.published);
 
-  React.useEffect(() => {
-    if (isExpanded && apiClient.loginDetails) {
-      void apiClient.postStore.markPostRead({
-        post_id: post.post.id,
-        read: true,
-        auth: apiClient.loginDetails.jwt,
-      });
+  const markRead = () => {
+    if (apiClient.loginDetails) {
+      void apiClient.postStore.markPostRead(
+        {
+          post_id: post.post.id,
+          read: true,
+          auth: apiClient.loginDetails.jwt,
+        },
+        useCommunity
+      );
     }
+  };
+  React.useEffect(() => {
+    if (isExpanded) markRead();
     if (isPic && isExpanded) {
       Image.getSize(post.post.url, (picWidth, picHeight) => {
         const { width } = Dimensions.get("window");
@@ -88,6 +94,8 @@ function Post({
   }, [isPic, isExpanded]);
 
   const getCommunity = () => {
+    apiClient.postStore.setCommunityPosts([]);
+    apiClient.communityStore.setCommunity(null);
     navigation.navigate("Community", { id: post.community.id });
   };
 
@@ -101,11 +109,11 @@ function Post({
             style={styles.communityIcon}
           />
         </View>
-        <Pressable onPress={getCommunity}>
+        <TouchableOpacity simple onPressCb={getCommunity}>
           <Text customColor={customReadColor} style={styles.communityName}>
             c/{post.community.name}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
         <Text customColor={customReadColor} style={styles.smolText}>
           by
         </Text>
@@ -119,7 +127,8 @@ function Post({
       {isNsfw ? <Text style={{ color: "red", marginTop: 8 }}>NSFW</Text> : null}
       {!isExpanded ? (
         <TouchableOpacity
-          onPress={() => {
+          simple
+          onPressCb={() => {
             apiClient.postStore.setSinglePost(post);
             navigation.navigate("Post", { post: post.post.id });
           }}
@@ -143,7 +152,8 @@ function Post({
       )}
       {!isExpanded ? (
         <TouchableOpacity
-          onPress={() => {
+          simple
+          onPressCb={() => {
             apiClient.postStore.setSinglePost(post);
             navigation.navigate("Post", { post: post.post.id });
           }}
@@ -155,7 +165,7 @@ function Post({
               progressiveRenderingEnabled
               resizeMode={"contain"}
               alt={"Post image"}
-              blurRadius={isNsfw ? 15 : 0}
+              blurRadius={isNsfw && !apiClient.profileStore.unblurNsfw ? 15 : 0}
             />
           ) : (
             <View style={{ maxHeight: 200, overflow: "hidden" }}>
@@ -188,8 +198,9 @@ function Post({
               </View>
               {isFullImg || imgDimensions.height <= 720 ? null : (
                 <TouchableOpacity
+                  simple
                   style={styles.previewButton}
-                  onPress={() => setIsFullImg(true)}
+                  onPressCb={() => setIsFullImg(true)}
                 >
                   <Text>Show full image</Text>
                 </TouchableOpacity>
@@ -234,7 +245,8 @@ function Post({
         </View>
 
         <TouchableOpacity
-          onPress={() => {
+          simple
+          onPressCb={() => {
             Vibration.vibrate(50);
             void apiClient.postStore.savePost({
               post_id: post.post.id,
@@ -251,7 +263,8 @@ function Post({
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() =>
+          simple
+          onPressCb={() =>
             Share.share(
               {
                 url: post.post.ap_id,
@@ -269,8 +282,10 @@ function Post({
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => {
+          simple
+          onPressCb={() => {
             Vibration.vibrate(50);
+            markRead();
             void apiClient.postStore.ratePost(
               post.post.id,
               apiClient.loginDetails,
@@ -286,8 +301,10 @@ function Post({
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => {
+          simple
+          onPressCb={() => {
             Vibration.vibrate(50);
+            markRead();
             void apiClient.postStore.ratePost(
               post.post.id,
               apiClient.loginDetails,

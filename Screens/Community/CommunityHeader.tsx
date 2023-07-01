@@ -42,6 +42,16 @@ function CommunityHeader({
       console.error(e);
     }
   };
+
+  const showFollow = Boolean(apiClient.loginDetails?.jwt);
+  const isFollowing = community.subscribed === "Subscribed";
+  const follow = () => {
+    void apiClient.communityStore.followCommunity(
+      community.community.id,
+      !isFollowing,
+      apiClient.loginDetails
+    );
+  };
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>
@@ -66,21 +76,30 @@ function CommunityHeader({
         <Text>{community.counts.users_active_day} daily users</Text>
       </View>
       {community.community.description ? (
-        <View>
+        <View style={styles.buttons}>
           <TouchableOpacity
             onPressCb={() => setShowDescription(!showDescription)}
           >
             <Text>{showDescription ? "Hide" : "Show"} description</Text>
           </TouchableOpacity>
-          {showDescription ? (
-            <Markdown
-              value={community.community.description}
-              theme={{
-                colors: sch === "dark" ? mdTheme.dark : mdTheme.light,
-              }}
-            />
+          {showFollow ? (
+            <TouchableOpacity onPressCb={follow}>
+              <Text>{isFollowing ? "Unsubscribe" : "Subscribe"}</Text>
+            </TouchableOpacity>
           ) : null}
         </View>
+      ) : showFollow ? (
+        <TouchableOpacity onPressCb={follow}>
+          <Text>{isFollowing ? "Unsubscribe" : "Subscribe"}</Text>
+        </TouchableOpacity>
+      ) : null}
+      {showDescription ? (
+        <Markdown
+          value={community.community.description}
+          theme={{
+            colors: sch === "dark" ? mdTheme.dark : mdTheme.light,
+          }}
+        />
       ) : null}
     </View>
   );
@@ -97,6 +116,7 @@ const styles = StyleSheet.create({
   communityIcon: { width: 48, height: 48, borderRadius: 48 },
   title: { fontSize: 22, fontWeight: "bold" },
   wrapper: { flex: 1, width: "100%" },
+  buttons: { flexDirection: "row", gap: 8, flex: 1 },
 });
 
 export default observer(CommunityHeader);

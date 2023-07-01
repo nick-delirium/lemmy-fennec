@@ -104,6 +104,8 @@ class CommentsStore extends DataClass {
     loginDetails: LoginResponse,
     score: (typeof Score)[keyof typeof Score]
   ) {
+    // update local comment rating because api is slow
+    this.updateTreeCommentRating(this.commentTree, commentId, score);
     await this.fetchData(
       () =>
         this.api.rateComment({
@@ -137,12 +139,12 @@ class CommentsStore extends DataClass {
     commentTree: CommentNode[],
     commentId: number,
     vote: (typeof Score)[keyof typeof Score],
-    counts: CommentNode["counts"]
+    counts?: CommentNode["counts"]
   ): boolean {
     for (const commentNode of commentTree) {
       if (commentNode.comment.id === commentId) {
         commentNode.my_vote = vote;
-        commentNode.counts = counts;
+        if (counts) commentNode.counts = counts;
         return true;
       }
       if (

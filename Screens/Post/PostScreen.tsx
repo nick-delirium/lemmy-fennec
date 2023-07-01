@@ -38,7 +38,7 @@ function PostScreen({
   }, [route.params.post]);
 
   React.useEffect(() => {
-    if (post) {
+    if (post && apiClient.commentsStore.comments.length === 0) {
       void apiClient.commentsStore.getComments(
         post.post.id,
         apiClient.loginDetails

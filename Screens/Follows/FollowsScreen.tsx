@@ -33,21 +33,23 @@ function FollowsScreen({ navigation }) {
         )}
         keyExtractor={(item) => item.community.id.toString()}
       />
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 8,
-          padding: 8,
-          marginTop: "auto",
-        }}
-      >
-        <TouchableOpacity onPressCb={prevPage}>
-          <Text>Previous</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPressCb={nextPage}>
-          <Text>Next</Text>
-        </TouchableOpacity>
-      </View>
+      {apiClient.communityStore.isLoading ? null : (
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 8,
+            padding: 8,
+            marginTop: "auto",
+          }}
+        >
+          <TouchableOpacity onPressCb={prevPage}>
+            <Text>Previous</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPressCb={nextPage}>
+            <Text>Next</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }

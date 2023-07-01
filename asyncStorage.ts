@@ -11,6 +11,7 @@ export const dataKeys = {
   readScroll: "fennec-read-scroll",
   blurNsfw: "fennec-blur-nsfw",
   leftHanded: "fennec-left-handed",
+  collapseParent: "fennec-collapse-parent",
 } as const;
 
 type Keys = keyof typeof dataKeys;

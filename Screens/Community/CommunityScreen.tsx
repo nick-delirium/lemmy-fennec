@@ -63,7 +63,7 @@ function CommunityScreen({
   }, [commId]);
 
   const onPostScroll = React.useRef(({ changed }) => {
-    if (changed.length > 0) {
+    if (changed.length > 0 && apiClient.loginDetails?.jwt) {
       changed.forEach((item) => {
         if (!item.isViewable && apiClient.profileStore.getReadOnScroll()) {
           void apiClient.postStore.markPostRead({

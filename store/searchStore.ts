@@ -66,7 +66,7 @@ class SearchStore extends DataClass {
     await this.fetchData<SearchResponse>(
       () =>
         this.api.search({
-          auth: loginDetails.jwt,
+          auth: loginDetails?.jwt,
           q: this.searchQuery,
           limit: this.limit,
           page: this.page,

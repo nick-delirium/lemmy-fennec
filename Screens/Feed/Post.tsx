@@ -14,10 +14,11 @@ import {
   Dimensions,
 } from "react-native";
 import { Text, Icon, TouchableOpacity } from "../../ThemedComponents";
-import { mdTheme } from "../../commonStyles";
+import { mdTheme, commonColors } from "../../commonStyles";
 import { Score, apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { makeDateString } from "../../utils/utils";
+import Embed from "./Embed";
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -59,7 +60,7 @@ function Post({
   const dateStr = makeDateString(post.post.published);
 
   const markRead = () => {
-    if (apiClient.loginDetails) {
+    if (apiClient.loginDetails?.jwt) {
       void apiClient.postStore.markPostRead(
         {
           post_id: post.post.id,
@@ -164,6 +165,13 @@ function Post({
             />
           ) : (
             <View style={{ maxHeight: 200, overflow: "hidden" }}>
+              {post.post.url || post.post.embed_title ? (
+                <Embed
+                  embed_title={post.post.embed_title}
+                  embed_description={post.post.embed_description}
+                  url={post.post.url}
+                />
+              ) : null}
               <Markdown
                 value={safeDescription}
                 theme={{
@@ -202,6 +210,13 @@ function Post({
               )}
             </View>
           ) : null}
+          {post.post.embed_title ? (
+            <Embed
+              embed_title={post.post.embed_title}
+              embed_description={post.post.embed_description}
+              url={post.post.url}
+            />
+          ) : null}
           <Markdown
             value={safeDescription}
             theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
@@ -222,7 +237,15 @@ function Post({
             name={"chevrons-up"}
             size={24}
           />
-          <Text>
+          <Text
+            customColor={
+              !post.my_vote
+                ? undefined
+                : post.my_vote === 1
+                ? commonColors.upvote
+                : commonColors.downvote
+            }
+          >
             {post.counts.score} (
             {Math.ceil(
               (post.counts.upvotes /
@@ -291,7 +314,8 @@ function Post({
             void apiClient.postStore.ratePost(
               post.post.id,
               apiClient.loginDetails,
-              Score.Downvote
+              post.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote,
+              useCommunity
             );
           }}
         >
@@ -299,7 +323,7 @@ function Post({
             accessibilityLabel={"downvote post"}
             name={"arrow-down"}
             size={24}
-            color={post.my_vote === -1 ? "red" : undefined}
+            color={post.my_vote === -1 ? commonColors.downvote : undefined}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -310,7 +334,8 @@ function Post({
             void apiClient.postStore.ratePost(
               post.post.id,
               apiClient.loginDetails,
-              Score.Upvote
+              post.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote,
+              useCommunity
             );
           }}
         >
@@ -318,7 +343,7 @@ function Post({
             accessibilityLabel={"upvote post"}
             name={"arrow-up"}
             size={24}
-            color={post.my_vote === 1 ? "red" : undefined}
+            color={post.my_vote === 1 ? commonColors.upvote : undefined}
           />
         </TouchableOpacity>
       </View>

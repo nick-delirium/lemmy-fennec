@@ -7,6 +7,7 @@ interface Props {
   customColor?: string;
   lines?: number;
   children: React.ReactNode;
+  selectable?: boolean;
 }
 
 export default function ThemedText({
@@ -14,6 +15,7 @@ export default function ThemedText({
   children,
   lines,
   customColor,
+  selectable,
 }: Props) {
   const { colors } = useTheme();
 
@@ -21,6 +23,9 @@ export default function ThemedText({
     <Text
       style={{ color: customColor ? customColor : colors.text, ...style }}
       numberOfLines={lines}
+      allowFontScaling
+      selectable={selectable}
+      maxFontSizeMultiplier={10}
     >
       {children}
     </Text>

@@ -69,6 +69,7 @@ const CommentRenderer = React.memo(
         <View>
           <Comment
             comment={comment}
+            isExpanded={isExpanded}
             hide={comment.children.length > 0 ? hide : undefined}
           />
           {comment.children.length > 0 ? (
@@ -81,7 +82,7 @@ const CommentRenderer = React.memo(
     } else {
       return (
         <View>
-          <Comment comment={comment} />
+          <Comment isExpanded={isExpanded} comment={comment} />
           <TouchableOpacity onPress={show}>
             <Text
               style={{

@@ -40,7 +40,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
 
   // ref will be kept in memory in-between renders
   const onPostScroll = React.useRef(({ changed }) => {
-    if (changed.length > 0) {
+    if (changed.length > 0 && apiClient.loginDetails?.jwt) {
       changed.forEach((item) => {
         if (!item.isViewable && apiClient.profileStore.getReadOnScroll()) {
           void apiClient.postStore.markPostRead({

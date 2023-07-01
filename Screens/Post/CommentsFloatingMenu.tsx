@@ -16,6 +16,7 @@ import { CommentSortTypeMap } from "../../store/commentsStore";
 function splitCamelCase(str: string) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
+
 const sortTypes = Object.values(CommentSortTypeMap).map((type) => ({
   label: splitCamelCase(type),
   value: type,
@@ -40,8 +41,8 @@ function CommentsFloatingMenu({ isLoading }: { isLoading: boolean }) {
   };
 
   const position = apiClient.profileStore.leftHanded
-    ? { left: 16 }
-    : { right: 16 };
+    ? styles.leftButton
+    : styles.rightButton;
   return (
     <View style={{ ...styles.container, ...position }}>
       {isSortOpen ? <SortMenu colors={colors} closeSelf={closeAll} /> : null}
@@ -115,12 +116,13 @@ const styles = StyleSheet.create({
   },
   container: {
     position: "absolute",
-    alignItems: "flex-end",
     // when input added
     // bottom: 84,
     bottom: 21,
     gap: 12,
   },
+  leftButton: { left: 16, alignItems: "flex-start" },
+  rightButton: { right: 16, alignItems: "flex-end" },
 });
 
 export default observer(CommentsFloatingMenu);

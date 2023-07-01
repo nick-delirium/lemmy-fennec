@@ -15,6 +15,8 @@ import PostScreen from "./Screens/Post/PostScreen";
 import CommunityScreen from "./Screens/Community/CommunityScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import UserScreen from "./Screens/User/UserScreen";
+import SettingsScreen from "./Screens/SettingsScreen";
+import DebugScreen from "./Screens/DebugScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,9 +46,7 @@ const App = observer(() => {
       <StatusBar
         barStyle={scheme !== "dark" ? "dark-content" : "light-content"}
         backgroundColor={
-          scheme !== "dark"
-            ? AppTheme.colors.background
-            : AppDarkTheme.colors.background
+          scheme !== "dark" ? AppTheme.colors.card : AppDarkTheme.colors.card
         }
       />
       <NavigationContainer theme={scheme === "dark" ? AppDarkTheme : AppTheme}>
@@ -61,7 +61,9 @@ const App = observer(() => {
           <Stack.Screen name="Post" component={PostScreen} />
           <Stack.Screen name="Community" component={CommunityScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name={"User"} component={UserScreen} />
+          <Stack.Screen name="User" component={UserScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="Debug" component={DebugScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

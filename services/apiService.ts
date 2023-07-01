@@ -16,6 +16,7 @@ import {
   GetCommunity,
   GetPost,
   ListCommunities,
+  FollowCommunity,
 } from "lemmy-js-client";
 
 export default class ApiService {
@@ -86,6 +87,13 @@ export default class ApiService {
 
   fetchCommunity(form: GetCommunity) {
     return this.client.getCommunity(form);
+  }
+
+  followCommunity(form: FollowCommunity) {
+    if (!form.auth) {
+      throw new Error("No jwt token for followCommunity");
+    }
+    return this.client.followCommunity(form);
   }
 
   getCommunities(form: ListCommunities) {

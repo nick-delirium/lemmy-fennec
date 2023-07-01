@@ -16,6 +16,7 @@ class ProfileStore extends DataClass {
   public readOnScroll = false;
   public unblurNsfw = false;
   public leftHanded = false;
+  public collapseParentComment = false;
 
   constructor() {
     super();
@@ -23,6 +24,7 @@ class ProfileStore extends DataClass {
       userProfile: observable.deep,
       isLoading: observable,
       username: observable,
+      collapseParentComment: observable,
       localUser: observable,
       readOnScroll: observable,
       leftHanded: observable,
@@ -30,6 +32,7 @@ class ProfileStore extends DataClass {
       setLeftHanded: action,
       setReadOnScroll: action,
       setProfile: action,
+      setCollapseParentComment: action,
       setUsername: action,
       setClient: action,
       setIsLoading: action,
@@ -45,6 +48,17 @@ class ProfileStore extends DataClass {
     asyncStorageHandler.readData(dataKeys.leftHanded).then((value) => {
       this.leftHanded = value === "1";
     });
+    asyncStorageHandler.readData(dataKeys.collapseParent).then((value) => {
+      this.collapseParentComment = value === "1";
+    });
+  }
+
+  setCollapseParentComment(collapseParentComment: boolean) {
+    this.collapseParentComment = collapseParentComment;
+    void asyncStorageHandler.setData(
+      dataKeys.collapseParent,
+      collapseParentComment ? "1" : "0"
+    );
   }
 
   setLeftHanded(leftHanded: boolean) {
@@ -82,7 +96,7 @@ class ProfileStore extends DataClass {
       () =>
         this.api.getProfile({
           ...form,
-          auth: loginDetails.jwt,
+          auth: loginDetails?.jwt,
         }),
       (profile) => this.setProfile(profile),
       (e) => console.error(e)

@@ -60,3 +60,10 @@ export const styles = StyleSheet.create({
     padding: 8,
   },
 });
+
+export const commonColors = {
+  author: "orange",
+  community: "violet",
+  upvote: "red",
+  downvote: "blue",
+};

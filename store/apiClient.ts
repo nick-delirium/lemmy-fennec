@@ -7,6 +7,7 @@ import { commentsStore } from "./commentsStore";
 import { searchStore } from "./searchStore";
 import { communityStore } from "./communityStore";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
+import { debugStore } from "./debugStore";
 
 /**
  * !!! TODO: !!!
@@ -23,7 +24,7 @@ class ApiClient {
   public api: ApiService;
 
   public isLoggedIn = false;
-
+  public isLoading = false;
   public loginDetails: LoginResponse;
   public postStore = postStore;
   public profileStore = profileStore;
@@ -37,21 +38,32 @@ class ApiClient {
       asyncStorageHandler.readData(dataKeys.instance),
       asyncStorageHandler.readSecureData(dataKeys.login),
       asyncStorageHandler.readData(dataKeys.username),
-    ]).then((values) => {
-      const [possibleInstance, possibleUser, possibleUsername] = values;
-      if (possibleInstance && possibleUser && possibleUsername) {
-        const auth: LoginResponse = JSON.parse(possibleUser);
-        const client: LemmyHttp = new LemmyHttp(possibleInstance);
-        this.setClient(client);
-        this.setLoginDetails(auth);
-        this.setLoginState(true);
-        this.profileStore.setUsername(possibleUsername);
-        void this.getGeneralData();
-      } else {
+    ])
+      .then((values) => {
+        const [possibleInstance, possibleUser, possibleUsername] = values;
+        if (possibleInstance && possibleUser && possibleUsername) {
+          const auth: LoginResponse = JSON.parse(possibleUser);
+          const client: LemmyHttp = new LemmyHttp(possibleInstance);
+          this.setClient(client);
+          this.setLoginDetails(auth);
+          this.setLoginState(true);
+          this.profileStore.setUsername(possibleUsername);
+          void this.getGeneralData();
+        } else {
+          const client: LemmyHttp = new LemmyHttp("https://lemmy.ml");
+          this.setClient(client);
+        }
+      })
+      .catch((e) => {
+        // save it somewhere for future
+        console.error(e);
         const client: LemmyHttp = new LemmyHttp("https://lemmy.ml");
         this.setClient(client);
-      }
-    });
+      });
+  }
+
+  setIsLoading(state: boolean) {
+    this.isLoading = state;
   }
 
   setClient(client: LemmyHttp) {
@@ -64,6 +76,7 @@ class ApiClient {
   }
 
   async login(form: Login) {
+    this.setIsLoading(true);
     try {
       const auth = await this.api.login(form);
       this.setLoginDetails(auth);
@@ -71,7 +84,10 @@ class ApiClient {
       this.setLoginState(true);
       return auth;
     } catch (e) {
-      console.error(e);
+      debugStore.addError(`LOGIN: ${e.name}: ${e.message}; ${e.stack}`);
+      throw e;
+    } finally {
+      this.setIsLoading(false);
     }
   }
 
@@ -84,7 +100,7 @@ class ApiClient {
   }
 
   async getGeneralData() {
-    if (!this.loginDetails.jwt) return;
+    if (!this.loginDetails?.jwt) return;
     // extract this two to filter out posts;
     // community_blocks: Array<CommunityBlockView>;
     // person_blocks: Array<PersonBlockView>;

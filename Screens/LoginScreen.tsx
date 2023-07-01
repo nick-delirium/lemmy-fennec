@@ -2,7 +2,12 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { StatusBar } from "expo-status-bar";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { StyleSheet, View } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ToastAndroid,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 import { LemmyHttp } from "lemmy-js-client";
@@ -31,17 +36,29 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
 
     const client: LemmyHttp = new LemmyHttp(instanceHref);
     apiClient.setClient(client);
-    apiClient.login(loginDetails).then(async (auth) => {
-      await Promise.all([
-        asyncStorageHandler.setSecureData(dataKeys.login, JSON.stringify(auth)),
-        asyncStorageHandler.setData(dataKeys.instance, instanceHref),
-        asyncStorageHandler.setData(
-          dataKeys.username,
-          loginDetails.username_or_email
-        ),
-      ]);
-      navigation.navigate("Home");
-    });
+    apiClient
+      .login(loginDetails)
+      .then(async (auth) => {
+        await Promise.all([
+          asyncStorageHandler.setSecureData(
+            dataKeys.login,
+            JSON.stringify(auth)
+          ),
+          asyncStorageHandler.setData(dataKeys.instance, instanceHref),
+          asyncStorageHandler.setData(
+            dataKeys.username,
+            loginDetails.username_or_email
+          ),
+        ]);
+        navigation.replace("Home");
+      })
+      .catch(() => {
+        ToastAndroid.showWithGravity(
+          "Couldn't login to chosen instance; check your credentials?",
+          ToastAndroid.SHORT,
+          ToastAndroid.TOP
+        );
+      });
   };
 
   return (
@@ -103,24 +120,31 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
             keyboardType="default"
           />
         </View>
-        <View
-          style={{
-            ...styles.container,
-            flexDirection: "row",
-            width: "70%",
-            marginTop: 12,
-          }}
-        >
-          <TouchableOpacity style={{ flex: 1 }} onPressCb={saveInstance}>
-            <Text>Go!</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{ flex: 1 }}
-            onPressCb={() => navigation.navigate("Home")}
+        {apiClient.isLoading ? (
+          <View style={{ flexDirection: "row" }}>
+            <ActivityIndicator />
+            <Text>Loading...</Text>
+          </View>
+        ) : (
+          <View
+            style={{
+              ...styles.container,
+              flexDirection: "row",
+              width: "70%",
+              marginTop: 12,
+            }}
           >
-            <Text>Skip for now</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity style={{ flex: 1 }} onPressCb={saveInstance}>
+              <Text>Go!</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ flex: 1 }}
+              onPressCb={() => navigation.navigate("Home")}
+            >
+              <Text>Skip for now</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </SafeAreaProvider>
   );

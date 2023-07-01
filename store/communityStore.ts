@@ -5,6 +5,7 @@ import {
   GetCommunityResponse,
   LoginResponse,
   ListCommunitiesResponse,
+  CommunityResponse,
 } from "lemmy-js-client";
 
 class CommunityStore extends DataClass {
@@ -81,6 +82,15 @@ class CommunityStore extends DataClass {
     }
     void this.getFollowedCommunities(auth);
   };
+
+  async followCommunity(id: number, follow: boolean, auth: LoginResponse) {
+    await this.fetchData<CommunityResponse>(
+      () =>
+        this.api.followCommunity({ auth: auth?.jwt, community_id: id, follow }),
+      (data) => this.setCommunity(data.community_view),
+      (error) => console.log(error)
+    );
+  }
 }
 
 export const communityStore = new CommunityStore();

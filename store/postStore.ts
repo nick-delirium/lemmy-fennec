@@ -145,7 +145,7 @@ class PostStore extends DataClass {
         return this.api.getPosts({
           ...filters,
           page: 1,
-          auth: loginDetails ? loginDetails.jwt : undefined,
+          auth: loginDetails ? loginDetails?.jwt : undefined,
         });
       },
       (result) => {
@@ -209,12 +209,23 @@ class PostStore extends DataClass {
   async ratePost(
     postId: PostId,
     loginDetails,
-    score: (typeof Score)[keyof typeof Score]
+    score: (typeof Score)[keyof typeof Score],
+    communityPost?: boolean
   ) {
+    // updating local state before request because they're hella slow rn
+    this.updatePostById(postId, { my_vote: score }, communityPost);
+
     await this.fetchData<PostResponse>(
       () =>
-        this.api.ratePost({ auth: loginDetails?.jwt, post_id: postId, score }),
-      ({ post_view }) => this.updatePostById(postId, post_view),
+        this.api.ratePost({
+          auth: loginDetails?.jwt,
+          post_id: postId,
+          score: score,
+        }),
+      ({ post_view }) => {
+        this.updatePostById(postId, { my_vote: post_view.my_vote });
+        if (this.singlePost) this.setSinglePost(post_view);
+      },
       (e) => console.error(e),
       true
     );
@@ -223,7 +234,8 @@ class PostStore extends DataClass {
   async savePost(form: SavePost) {
     await this.fetchData<PostResponse>(
       () => this.api.savePost(form),
-      ({ post_view }) => this.updatePostById(form.post_id, post_view),
+      ({ post_view }) =>
+        this.updatePostById(form.post_id, { saved: post_view.saved }),
       (e) => console.error(e),
       true
     );
@@ -231,20 +243,20 @@ class PostStore extends DataClass {
 
   updatePostById(
     postId: PostId,
-    updatedPost: PostView,
+    updatedPost: Partial<PostView>,
     communityPost?: boolean
   ) {
     if (communityPost) {
       this.communityPosts = this.communityPosts.map((post) => {
         if (post.post.id === postId) {
-          return updatedPost;
+          return { ...post, ...updatedPost };
         }
         return post;
       });
     } else {
       this.posts = this.posts.map((post) => {
         if (post.post.id === postId) {
-          return updatedPost;
+          return { ...post, ...updatedPost };
         }
         return post;
       });
@@ -259,7 +271,11 @@ class PostStore extends DataClass {
     await this.fetchData<PostResponse>(
       () => this.api.markPostRead(form),
       ({ post_view }) =>
-        this.updatePostById(form.post_id, post_view, communityPost),
+        this.updatePostById(
+          form.post_id,
+          { read: post_view.read },
+          communityPost
+        ),
       (e) => console.error(e),
       true
     );

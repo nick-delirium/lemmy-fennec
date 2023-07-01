@@ -15,12 +15,15 @@ import { makeDateString } from "../../utils/utils";
 import Markdown from "react-native-marked";
 import { mdTheme } from "../../commonStyles";
 import { useTheme } from "@react-navigation/native";
+import { commonColors } from "../../commonStyles";
 
 function Comment({
   comment,
   hide,
+  isExpanded,
 }: {
   comment: CommentNode;
+  isExpanded: boolean;
   hide?: () => void;
 }) {
   const sch = useColorScheme();
@@ -45,7 +48,7 @@ function Comment({
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
       apiClient.loginDetails,
-      Score.Upvote
+      comment.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote
     );
   }, []);
   const downvoteComment = React.useCallback(() => {
@@ -53,7 +56,7 @@ function Comment({
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
       apiClient.loginDetails,
-      Score.Downvote
+      comment.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote
     );
   }, []);
 
@@ -66,15 +69,21 @@ function Comment({
         <Text style={styles.date}>{commentDate}</Text>
       </View>
       <View>
-        <Markdown
-          value={comment.comment.content}
-          styles={{
-            paragraph: {
-              backgroundColor: colors.background,
-            },
-          }}
-          theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
-        />
+        {!isExpanded && apiClient.profileStore.collapseParentComment ? (
+          <Text style={{ fontSize: 16 }} lines={1}>
+            {comment.comment.content}
+          </Text>
+        ) : (
+          <Markdown
+            value={comment.comment.content}
+            styles={{
+              paragraph: {
+                backgroundColor: colors.background,
+              },
+            }}
+            theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
+          />
+        )}
       </View>
       <View
         style={{
@@ -133,7 +142,11 @@ function Comment({
             accessibilityLabel={"downvote comment"}
             name={"arrow-down"}
             size={24}
-            color={comment.my_vote === Score.Downvote ? "red" : undefined}
+            color={
+              comment.my_vote === Score.Downvote
+                ? commonColors.downvote
+                : undefined
+            }
           />
         </TouchableOpacity>
         <TouchableOpacity onPressCb={upvoteComment} simple>
@@ -141,7 +154,9 @@ function Comment({
             accessibilityLabel={"upvote comment"}
             name={"arrow-up"}
             size={24}
-            color={comment.my_vote === Score.Upvote ? "red" : undefined}
+            color={
+              comment.my_vote === Score.Upvote ? commonColors.upvote : undefined
+            }
           />
         </TouchableOpacity>
       </View>

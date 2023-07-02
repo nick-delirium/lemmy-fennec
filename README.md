@@ -12,6 +12,8 @@ Lemmy API is barely alive because of too many users and is sometimes slow.
 
 Start a PR or issue, I'll be happy to see it. Same for feature requests.
 
+Lemmy community: [here](https://lemmy.world/c/fennec)
+
 todo board: [See status here](https://github.com/users/nick-delirium/projects/2)
 
 - writing comment/post

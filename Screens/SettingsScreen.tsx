@@ -1,6 +1,12 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { StyleSheet, Switch, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Switch,
+  View,
+  Dimensions,
+} from "react-native";
 import { Text } from "../ThemedComponents";
 import { apiClient } from "../store/apiClient";
 
@@ -69,6 +75,25 @@ function SettingsScreen() {
           )
         }
       />
+      {apiClient.profileStore.isLoading ? (
+        <View
+          style={{
+            position: "absolute",
+            width: Dimensions.get("window").width,
+            height: Dimensions.get("window").height,
+            top: 0,
+            left: 0,
+            flex: 1,
+            backgroundColor: "rgba(255,255,255, 0.15)",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 10,
+            elevation: 10,
+          }}
+        >
+          <ActivityIndicator accessibilityHint={"user settings are fetching"} />
+        </View>
+      ) : null}
     </View>
   );
 }

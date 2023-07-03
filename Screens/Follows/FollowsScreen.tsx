@@ -46,8 +46,7 @@ function FollowsScreen({ navigation }) {
         )}
         keyExtractor={(item) => item.community.id.toString()}
       />
-      {apiClient.communityStore.isLoading ||
-      apiClient.communityStore.followedCommunities.length === 0 ? null : (
+      {apiClient.communityStore.isLoading ? null : (
         <View
           style={{
             flexDirection: "row",

@@ -8,6 +8,7 @@ import { searchStore } from "./searchStore";
 import { communityStore } from "./communityStore";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 import { debugStore } from "./debugStore";
+import { mentionsStore } from "./mentionsStore";
 
 /**
  * !!! TODO: !!!
@@ -31,6 +32,7 @@ class ApiClient {
   public commentsStore = commentsStore;
   public searchStore = searchStore;
   public communityStore = communityStore;
+  public mentionsStore = mentionsStore;
 
   constructor() {
     makeAutoObservable(this);
@@ -73,6 +75,7 @@ class ApiClient {
     this.commentsStore.setClient(this.api);
     this.searchStore.setClient(this.api);
     this.communityStore.setClient(this.api);
+    this.mentionsStore.setClient(this.api);
   }
 
   async login(form: Login) {

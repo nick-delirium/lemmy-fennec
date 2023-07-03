@@ -8,7 +8,7 @@ import {
   // StyleSheet,
 } from "react-native";
 import { apiClient } from "../../store/apiClient";
-import Post from "../Feed/Post";
+import ExpandedPost from "../../components/Post/ExpandedPost";
 import { useTheme } from "@react-navigation/native";
 import CommentsFloatingMenu from "./CommentsFloatingMenu";
 import CommentFlatList from "./CommentsFlatlist";
@@ -44,17 +44,21 @@ function PostScreen({
         apiClient.loginDetails
       );
     }
+  }, [post]);
+
+  React.useEffect(() => {
     return () => {
       apiClient.commentsStore.setComments([]);
     };
-  }, [post]);
+  }, []);
 
   if (!post) return <ActivityIndicator />;
 
+  console.log(apiClient.commentsStore.commentTree.length);
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList
-        header={<Post post={post} isExpanded navigation={navigation} />}
+        header={<ExpandedPost post={post} navigation={navigation} />}
         refreshing={apiClient.commentsStore.isLoading}
         comments={apiClient.commentsStore.commentTree}
         colors={colors}

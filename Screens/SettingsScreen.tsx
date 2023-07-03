@@ -101,6 +101,7 @@ function Toggler({
 const styles = StyleSheet.create({
   container: {
     gap: 12,
+    padding: 12,
   },
   row: {
     flexDirection: "row",

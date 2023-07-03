@@ -1,17 +1,13 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useTheme, Theme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { apiClient } from "../../store/apiClient";
 import { Icon, Text } from "../../ThemedComponents";
 import { CommentSortTypeMap } from "../../store/commentsStore";
-
+import FAB from "../../components/FAB";
 // I know its basically a copy paste of Feed FAB but I'm very lazy
+import { commonStyles } from "../../commonStyles";
 
 function splitCamelCase(str: string) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");
@@ -40,31 +36,32 @@ function CommentsFloatingMenu({ isLoading }: { isLoading: boolean }) {
     setIsSortOpen(false);
   };
 
-  const position = apiClient.profileStore.leftHanded
-    ? styles.leftButton
-    : styles.rightButton;
   return (
-    <View style={{ ...styles.container, ...position }}>
+    <FAB>
       {isSortOpen ? <SortMenu colors={colors} closeSelf={closeAll} /> : null}
       {isOpen ? (
-        <View style={{ ...styles.menu, backgroundColor: colors.card }}>
+        <View style={{ ...commonStyles.fabMenu, backgroundColor: colors.card }}>
           <TouchableOpacity onPress={() => switchToSort()}>
             <Text style={{ fontWeight: "500" }}>Change sorting type</Text>
           </TouchableOpacity>
         </View>
       ) : null}
       {isLoading ? (
-        <View style={{ ...styles.button, backgroundColor: colors.card }}>
+        <View
+          style={{ ...commonStyles.fabButton, backgroundColor: colors.card }}
+        >
           <ActivityIndicator color={colors.primary} />
         </View>
       ) : (
         <TouchableOpacity onPress={() => (isOpen ? closeAll() : openMenu())}>
-          <View style={{ ...styles.button, backgroundColor: colors.card }}>
+          <View
+            style={{ ...commonStyles.fabButton, backgroundColor: colors.card }}
+          >
             <Icon name={isOpen ? "x" : "menu"} size={24} />
           </View>
         </TouchableOpacity>
       )}
-    </View>
+    </FAB>
   );
 }
 
@@ -87,7 +84,7 @@ function SortMenu({
   };
 
   return (
-    <View style={{ ...styles.menu, backgroundColor: colors.card }}>
+    <View style={{ ...commonStyles.fabMenu, backgroundColor: colors.card }}>
       {sortTypes.map((type) => (
         <TouchableOpacity
           key={type.value}
@@ -99,30 +96,5 @@ function SortMenu({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    padding: 12,
-    maxWidth: 46,
-    alignItems: "center",
-    borderRadius: 24,
-  },
-  menu: {
-    flexDirection: "column",
-    gap: 16,
-    padding: 12,
-    borderRadius: 6,
-    minWidth: 130,
-  },
-  container: {
-    position: "absolute",
-    // when input added
-    // bottom: 84,
-    bottom: 21,
-    gap: 12,
-  },
-  leftButton: { left: 16, alignItems: "flex-start" },
-  rightButton: { right: 16, alignItems: "flex-end" },
-});
 
 export default observer(CommentsFloatingMenu);

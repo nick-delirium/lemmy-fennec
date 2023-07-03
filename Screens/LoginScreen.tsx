@@ -7,6 +7,7 @@ import {
   View,
   ToastAndroid,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
@@ -24,7 +25,7 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
 
   React.useEffect(() => {
     if (apiClient.isLoggedIn && apiClient.api) {
-      navigation.navigate("Home");
+      navigation.replace("Home");
     }
   }, [apiClient.isLoggedIn]);
 
@@ -139,12 +140,20 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
             </TouchableOpacity>
             <TouchableOpacity
               style={{ flex: 1 }}
-              onPressCb={() => navigation.navigate("Home")}
+              onPressCb={() => navigation.replace("Home")}
             >
               <Text>Skip for now</Text>
             </TouchableOpacity>
           </View>
         )}
+        <TouchableOpacity
+          style={{ width: "70%", marginTop: 12 }}
+          onPressCb={() =>
+            void Linking.openURL("https://join-lemmy.org/instances")
+          }
+        >
+          <Text>Create account</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaProvider>
   );

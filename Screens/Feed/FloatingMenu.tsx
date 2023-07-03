@@ -5,6 +5,8 @@ import { observer } from "mobx-react-lite";
 import { apiClient } from "../../store/apiClient";
 import { Icon, Text } from "../../ThemedComponents";
 import { SortTypeMap, ListingTypeMap } from "../../store/postStore";
+import FAB from "../../components/FAB";
+import { commonStyles } from "../../commonStyles";
 
 function splitCamelCase(str: string) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");
@@ -74,11 +76,8 @@ function FloatingMenu({ useCommunity }: { useCommunity?: boolean }) {
     }
   };
 
-  const position = apiClient.profileStore.leftHanded
-    ? styles.leftButton
-    : styles.rightButton;
   return (
-    <View style={{ ...styles.container, ...position }}>
+    <FAB>
       {isSortOpen ? (
         <SortMenu
           useCommunity={useCommunity}
@@ -90,7 +89,7 @@ function FloatingMenu({ useCommunity }: { useCommunity?: boolean }) {
         <ListingMenu colors={colors} closeSelf={closeAll} />
       ) : null}
       {isOpen ? (
-        <View style={{ ...styles.menu, backgroundColor: colors.card }}>
+        <View style={{ ...commonStyles.fabMenu, backgroundColor: colors.card }}>
           <TouchableOpacity onPress={switchToSort}>
             <Text style={styles.bold}>Change sorting type</Text>
           </TouchableOpacity>
@@ -108,11 +107,13 @@ function FloatingMenu({ useCommunity }: { useCommunity?: boolean }) {
         </View>
       ) : null}
       <TouchableOpacity onPress={() => (isOpen ? closeAll() : openMenu())}>
-        <View style={{ ...styles.button, backgroundColor: colors.card }}>
+        <View
+          style={{ ...commonStyles.fabButton, backgroundColor: colors.card }}
+        >
           <Icon name={isOpen ? "x" : "menu"} size={24} />
         </View>
       </TouchableOpacity>
-    </View>
+    </FAB>
   );
 }
 
@@ -137,7 +138,7 @@ function SortMenu({
   };
 
   return (
-    <View style={{ ...styles.menu, backgroundColor: colors.card }}>
+    <View style={{ ...commonStyles.fabMenu, backgroundColor: colors.card }}>
       {sortTypes.map((type) => (
         <TouchableOpacity
           key={type.value}
@@ -165,7 +166,7 @@ function ListingMenu({
     closeSelf();
   };
   return (
-    <View style={{ ...styles.menu, backgroundColor: colors.card }}>
+    <View style={{ ...commonStyles.fabMenu, backgroundColor: colors.card }}>
       {listingTypes.map((type) => (
         <TouchableOpacity
           key={type.value}
@@ -182,25 +183,6 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: "500",
   },
-  button: {
-    padding: 12,
-    maxWidth: 46,
-    alignItems: "center",
-    borderRadius: 24,
-  },
-  menu: {
-    flexDirection: "column",
-    gap: 16,
-    padding: 12,
-    borderRadius: 6,
-  },
-  container: {
-    position: "absolute",
-    bottom: 16,
-    gap: 12,
-  },
-  leftButton: { left: 16, alignItems: "flex-start" },
-  rightButton: { right: 16, alignItems: "flex-end" },
 });
 
 export default observer(FloatingMenu);

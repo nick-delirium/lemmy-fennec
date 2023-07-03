@@ -6,7 +6,7 @@ import { Icon, Text as ThemedText } from "../../ThemedComponents";
 function Counters({ profile }: { profile: PersonView }) {
   return (
     <View style={styles.row}>
-      <Icon size={24} name={"edit"} />
+      <Icon size={24} name={"align-left"} />
       <View>
         <ThemedText>Comments: {profile.counts.comment_count}</ThemedText>
         <ThemedText>Posts: {profile.counts.post_count}</ThemedText>

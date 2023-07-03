@@ -53,19 +53,19 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
       }
     >
       {profile ? (
-        <View>
+        <View style={{ gap: 8 }}>
           <UserRow person={profile.person} />
-          <UserRating counts={profile.counts} />
           <ScrollView
             horizontal={true}
             contentContainerStyle={{ width: "100%", height: "100%" }}
           >
             <Bio profile={profile} />
           </ScrollView>
+          <UserRating counts={profile.counts} />
           <Counters profile={profile} />
         </View>
       ) : null}
-      <View style={{ gap: 12, marginTop: 32 }}>
+      <View style={{ gap: 8, marginTop: 32 }}>
         <TouchableOpacity
           simple
           onPressCb={() => navigation.navigate("Settings")}
@@ -77,11 +77,27 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
         <TouchableOpacity
           style={styles.row}
           simple
+          onPressCb={() => Linking.openURL("https://lemmy.world/c/fennec")}
+        >
+          <Icon size={24} name={"message-circle"} />
+          <Text
+            style={{
+              color: colors.border,
+              textDecorationLine: "underline",
+              textDecorationColor: colors.border,
+            }}
+          >
+            https://lemmy.world/c/fennec
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.row}
+          simple
           onPressCb={() =>
             Linking.openURL("https://github.com/nick-delirium/lemmy-fennec")
           }
         >
-          <Icon size={24} name={"help-circle"} />
+          <Icon size={24} name={"github"} />
           <Text
             style={{
               color: colors.border,
@@ -139,7 +155,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
 const styles = StyleSheet.create({
   container: {
     padding: 12,
-    gap: 12,
+    gap: 8,
   },
   row: {
     flexDirection: "row",

@@ -4,14 +4,18 @@ import Markdown from "react-native-marked";
 import { mdTheme } from "../../commonStyles";
 import { Icon } from "../../ThemedComponents";
 import { PersonView } from "lemmy-js-client";
+import { useTheme } from "@react-navigation/native";
 
 function Bio({ profile }: { profile: PersonView }) {
   const sch = useColorScheme();
-
+  const { colors } = useTheme();
   return profile.person.bio ? (
     <View style={styles.longRow}>
-      <Icon name={"user"} size={24} style={{ marginTop: 8 }} />
+      <Icon name={"edit"} size={24} style={{ marginTop: 8 }} />
       <Markdown
+        styles={{
+          text: { fontSize: 14, color: colors.text },
+        }}
         value={profile.person.bio}
         theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
       />

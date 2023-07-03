@@ -17,7 +17,14 @@ import {
   GetPost,
   ListCommunities,
   FollowCommunity,
+  GetUnreadCount,
+  GetReplies,
+  MarkCommentReplyAsRead,
+  MarkAllAsRead,
 } from "lemmy-js-client";
+
+// !!!TODO!!!
+// split this crap into multiple services once app will be more or less close to MVP
 
 export default class ApiService {
   constructor(private readonly client: LemmyHttp) {}
@@ -98,5 +105,21 @@ export default class ApiService {
 
   getCommunities(form: ListCommunities) {
     return this.client.listCommunities(form);
+  }
+
+  getUnreads(form: GetUnreadCount) {
+    return this.client.getUnreadCount(form);
+  }
+
+  getReplies(form: GetReplies) {
+    return this.client.getReplies(form);
+  }
+
+  markReplyRead(form: MarkCommentReplyAsRead) {
+    return this.client.markCommentReplyAsRead(form);
+  }
+
+  markAllRead(form: MarkAllAsRead) {
+    return this.client.markAllAsRead(form);
   }
 }

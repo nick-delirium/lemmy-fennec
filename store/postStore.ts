@@ -155,7 +155,9 @@ class PostStore extends DataClass {
           this.setPosts(result.posts);
         }
       },
-      (e) => console.error(e)
+      (e) => console.error(e),
+      false,
+      "get posts"
     );
   }
 
@@ -169,7 +171,9 @@ class PostStore extends DataClass {
       ({ post_view }) => {
         this.setSinglePost(post_view);
       },
-      (e) => console.error(e)
+      (e) => console.error(e),
+      false,
+      "single post"
     );
   }
 
@@ -194,7 +198,9 @@ class PostStore extends DataClass {
           this.concatPosts(posts);
         }
       },
-      (e) => console.error(e)
+      (e) => console.error(e),
+      false,
+      "next page posts"
     );
   }
 
@@ -227,7 +233,8 @@ class PostStore extends DataClass {
         if (this.singlePost) this.setSinglePost(post_view);
       },
       (e) => console.error(e),
-      true
+      true,
+      "rate post"
     );
   }
 
@@ -237,7 +244,8 @@ class PostStore extends DataClass {
       ({ post_view }) =>
         this.updatePostById(form.post_id, { saved: post_view.saved }),
       (e) => console.error(e),
-      true
+      true,
+      "save post"
     );
   }
 
@@ -277,7 +285,8 @@ class PostStore extends DataClass {
           communityPost
         ),
       (e) => console.error(e),
-      true
+      true,
+      "mark post read"
     );
   }
 }

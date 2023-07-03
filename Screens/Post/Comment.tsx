@@ -121,13 +121,6 @@ function Comment({
         ) : null}
 
         <View style={{ flex: 1 }} />
-        <TouchableOpacity simple onPressCb={shareComment}>
-          <Icon
-            accessibilityLabel={"share comment button"}
-            name={"share-2"}
-            size={24}
-          />
-        </TouchableOpacity>
         {hide ? (
           <TouchableOpacity simple onPressCb={hide}>
             <Icon
@@ -137,6 +130,13 @@ function Comment({
             />
           </TouchableOpacity>
         ) : null}
+        <TouchableOpacity simple onPressCb={shareComment}>
+          <Icon
+            accessibilityLabel={"share comment button"}
+            name={"share-2"}
+            size={24}
+          />
+        </TouchableOpacity>
         <TouchableOpacity simple onPressCb={downvoteComment}>
           <Icon
             accessibilityLabel={"downvote comment"}
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   },
   infoPiece: {
     flexDirection: "row",
-    gap: 6,
+    gap: 8,
     alignItems: "center",
   },
   date: {

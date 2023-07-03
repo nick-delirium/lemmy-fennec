@@ -29,7 +29,8 @@ todo board: [See status here](https://github.com/users/nick-delirium/projects/2)
 
 
 # Special thanks and credits:
+- https://github.com/LemmyNet/lemmy-js-client - lemmy js client with types and all the good things (MIT)
 
-https://github.com/gmsgowtham/react-native-marked - goat MD rendering library (MIT)
+- https://github.com/gmsgowtham/react-native-marked - for MD rendering library (MIT)
 
-https://github.com/LemmyNet/lemmy-js-client - lemmy js client with types and all the good things (MIT)
+- https://github.com/jobtoday/react-native-image-viewing - image viewer (MIT)

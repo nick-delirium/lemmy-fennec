@@ -38,7 +38,7 @@ export const mdTheme = {
   },
 } as const;
 
-export const styles = StyleSheet.create({
+export const commonStyles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
@@ -58,6 +58,32 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#AADDEC",
     padding: 8,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  text: {
+    fontSize: 15,
+  },
+  iconsRow: {
+    gap: 12,
+    alignItems: "center",
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  fabButton: {
+    padding: 12,
+    maxWidth: 46,
+    alignItems: "center",
+    borderRadius: 24,
+  },
+  fabMenu: {
+    flexDirection: "column",
+    gap: 16,
+    padding: 12,
+    borderRadius: 6,
+    minWidth: 130,
   },
 });
 

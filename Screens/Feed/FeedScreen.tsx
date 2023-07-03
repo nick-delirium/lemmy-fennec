@@ -1,9 +1,9 @@
 import React from "react";
 import { FlatList, View } from "react-native";
 import { observer } from "mobx-react-lite";
-import { styles } from "../../commonStyles";
+import { commonStyles } from "../../commonStyles";
 import { apiClient } from "../../store/apiClient";
-import Post from "./Post";
+import FeedPost from "../../components/Post/FeedPost";
 import FloatingMenu from "./FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -25,7 +25,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   }, [apiClient.api, navigation, isFocused]);
 
   const renderPost = React.useCallback(
-    ({ item }) => <Post post={item} navigation={navigation} />,
+    ({ item }) => <FeedPost post={item} navigation={navigation} />,
     []
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
@@ -55,7 +55,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
 
   // feedKey is a hack for autoscroll
   return (
-    <View style={styles.container} key={apiClient.postStore.feedKey}>
+    <View style={commonStyles.container} key={apiClient.postStore.feedKey}>
       <FlatList
         style={{ flex: 1 }}
         renderItem={renderPost}

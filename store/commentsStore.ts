@@ -85,7 +85,9 @@ class CommentsStore extends DataClass {
           parent_id: parentId,
         }),
       ({ comments }) => this.setComments(comments),
-      (e) => console.error(e)
+      (e) => console.error(e),
+      false,
+      "get comments"
     );
   }
 
@@ -123,7 +125,8 @@ class CommentsStore extends DataClass {
         );
       },
       (e) => console.error(e),
-      true
+      true,
+      "rateComment"
     );
   }
 

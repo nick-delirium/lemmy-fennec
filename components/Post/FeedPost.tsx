@@ -32,7 +32,7 @@ function Post({
   // flags to mark the post
   const isNsfw = post.post.nsfw || post.community.nsfw;
   const isPic = post.post.url
-    ? /\.(jpeg|jpg|gif|png)$/.test(post.post.url)
+    ? /\.(jpeg|jpg|gif|png|webp)$/.test(post.post.url)
     : false;
   // const isLocal = post.post.local; // do I even need it?
 

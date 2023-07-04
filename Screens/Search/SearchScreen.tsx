@@ -98,8 +98,19 @@ function SearchScreen({
   };
 
   const nextPage = () => {
-    listRef.current?.scrollToLocation({ itemIndex: 1, sectionIndex: 1 });
+    if (searchResults.length > 0) {
+      listRef.current?.scrollToLocation({ sectionIndex: 0, itemIndex: 0 });
+    }
     apiClient.searchStore.setPage(apiClient.searchStore.page + 1);
+    apiClient.searchStore.fetchSearch(apiClient.loginDetails).then(processData);
+  };
+
+  const prevPage = () => {
+    if (searchResults.length > 0) {
+      listRef.current?.scrollToLocation({ sectionIndex: 0, itemIndex: 0 });
+    }
+    if (apiClient.searchStore.page === 1) return;
+    apiClient.searchStore.setPage(apiClient.searchStore.page - 1);
     apiClient.searchStore.fetchSearch(apiClient.loginDetails).then(processData);
   };
 
@@ -116,13 +127,6 @@ function SearchScreen({
             ref={listRef}
             sections={searchResults}
             refreshing={apiClient.searchStore.isLoading}
-            ListFooterComponent={
-              <View>
-                <TouchableOpacity onPressCb={nextPage}>
-                  <Text>Next page</Text>
-                </TouchableOpacity>
-              </View>
-            }
             renderSectionHeader={({ section: { title } }) => (
               <View
                 style={{ ...styles.community, justifyContent: "space-between" }}
@@ -161,6 +165,32 @@ function SearchScreen({
           />
         ) : null}
       </View>
+      <View style={styles.paddedRow}>
+        {apiClient.searchStore.page > 1 ? (
+          <TouchableOpacity onPressCb={prevPage}>
+            <Text>Previous page</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={{ backgroundColor: colors.card }}
+            onPressCb={() => null}
+          >
+            <Text>Previous page</Text>
+          </TouchableOpacity>
+        )}
+        {searchResults?.length > 0 ? (
+          <TouchableOpacity onPressCb={nextPage}>
+            <Text>Next page</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={{ backgroundColor: colors.card }}
+            onPressCb={() => null}
+          >
+            <Text>Next page</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
@@ -196,6 +226,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     gap: 4,
+    paddingHorizontal: 8,
   },
   searchPage: { padding: 6 },
   searchControls: {
@@ -209,6 +240,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     flexDirection: "row",
     gap: 6,
+  },
+  paddedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 6,
   },
   additionalButtonStyle: { justifyContent: "center" },
   community: { flexDirection: "row", alignItems: "center", gap: 8, padding: 4 },
@@ -238,6 +275,8 @@ const phrases = [
   "Bee-trained secret agents",
   "Jetpack-powered potato airplanes",
   "Tree vacation playlist",
+  "Cheap battleships",
+  "A bug of beans",
   "Joke-telling toaster, really?",
 ] as const;
 

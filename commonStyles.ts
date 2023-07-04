@@ -5,8 +5,8 @@ export const AppTheme = {
   dark: false,
   colors: {
     ...DefaultTheme.colors,
-    primary: "#57bcd9",
-    border: "#2142AB",
+    primary: "#2142AB", //57bcd9
+    border: "#637ac4",
     background: "#effaf6",
   },
 };
@@ -14,8 +14,8 @@ export const AppDarkTheme = {
   dark: true,
   colors: {
     ...DarkTheme.colors,
-    primary: "#2142AB",
-    border: "#57bcd9",
+    primary: "#57bcd9", // 2142AB
+    border: "#637ac4",
   },
 };
 

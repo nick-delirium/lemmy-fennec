@@ -51,7 +51,6 @@ function CommunityScreen({
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {
-    console.log("next page community", apiClient.postStore.posts.length);
     if (apiClient.postStore.posts.length === 0) return;
     void apiClient.postStore.nextPage(apiClient.loginDetails, commId);
   }, [commId]);

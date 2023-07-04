@@ -187,7 +187,7 @@ class PostStore extends DataClass {
       () =>
         this.api.getPosts({
           ...this.filters,
-          page: this.page,
+          page: communityId ? this.commPage : this.page,
           community_id: communityId,
           auth: loginDetails ? loginDetails.jwt : undefined,
         }),

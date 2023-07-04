@@ -10,6 +10,7 @@ import {
 
 class MentionsStore extends DataClass {
   unreadsCount = 0;
+  page = 1;
   replies: CommentReplyView[] = [];
 
   constructor() {
@@ -17,11 +18,17 @@ class MentionsStore extends DataClass {
     makeObservable(this, {
       unreadsCount: observable,
       replies: observable,
+      page: observable,
       setUnreadsCount: action,
       setReplies: action,
+      setPage: action,
       isLoading: observable,
       setIsLoading: action,
     });
+  }
+
+  setPage(page: number) {
+    this.page = page;
   }
 
   setReplies(replies: CommentReplyView[]) {
@@ -51,7 +58,7 @@ class MentionsStore extends DataClass {
           auth,
           sort: "New",
           limit: 30,
-          page: 1,
+          page: this.page,
         }),
       ({ replies }) => this.setReplies(replies),
       (error) => console.log(error),

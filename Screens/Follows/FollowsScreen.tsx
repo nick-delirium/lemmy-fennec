@@ -4,8 +4,10 @@ import { observer } from "mobx-react-lite";
 import { apiClient } from "../../store/apiClient";
 import { Community } from "../Search/ListComponents";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
+import { useTheme } from "@react-navigation/native";
 
 function FollowsScreen({ navigation }) {
+  const { colors } = useTheme();
   React.useEffect(() => {
     if (apiClient.communityStore.followedCommunities.length === 0) {
       apiClient.communityStore.setPage(1);
@@ -47,20 +49,31 @@ function FollowsScreen({ navigation }) {
         keyExtractor={(item) => item.community.id.toString()}
       />
       {apiClient.communityStore.isLoading ? null : (
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 8,
-            padding: 8,
-            marginTop: "auto",
-          }}
-        >
-          <TouchableOpacity onPressCb={prevPage}>
-            <Text>Previous</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPressCb={nextPage}>
-            <Text>Next</Text>
-          </TouchableOpacity>
+        <View style={ownStyles.paddedRow}>
+          {apiClient.communityStore.page > 1 ? (
+            <TouchableOpacity onPressCb={prevPage}>
+              <Text>Previous page</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={{ backgroundColor: colors.card }}
+              onPressCb={() => null}
+            >
+              <Text>Previous page</Text>
+            </TouchableOpacity>
+          )}
+          {apiClient.communityStore.followedCommunities?.length > 0 ? (
+            <TouchableOpacity onPressCb={nextPage}>
+              <Text>Next page</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={{ backgroundColor: colors.card }}
+              onPressCb={() => null}
+            >
+              <Text>Next page</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </View>
@@ -85,6 +98,13 @@ const ownStyles = StyleSheet.create({
   },
   empty: {
     fontSize: 16,
+  },
+  paddedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
   },
 });
 

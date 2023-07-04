@@ -1,10 +1,34 @@
 import React from "react";
-import { StyleSheet, useColorScheme, View } from "react-native";
-import Markdown from "react-native-marked";
+import { Linking, StyleSheet, useColorScheme, View } from "react-native";
+import Markdown, { Renderer } from "react-native-marked";
 import { mdTheme } from "../../commonStyles";
-import { Icon } from "../../ThemedComponents";
+import { Icon, TouchableOpacity } from "../../ThemedComponents";
 import { PersonView } from "lemmy-js-client";
 import { useTheme } from "@react-navigation/native";
+import { Text } from "../../ThemedComponents";
+import { SvgFromUri, SvgUri } from "react-native-svg";
+
+class CustomRenderer extends Renderer {
+  constructor() {
+    super();
+  }
+
+  linkImage(href: string, imageUrl: string, alt?: string, style?: any) {
+    if (imageUrl.endsWith(".svg")) {
+      return (
+        <TouchableOpacity
+          key={this.getKey()}
+          style={{ ...style, width: "100%" }}
+          onPressCb={() => Linking.openURL(href)}
+        >
+          <Text>{alt}</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return super.linkImage(href, imageUrl, alt, style);
+    }
+  }
+}
 
 function Bio({ profile }: { profile: PersonView }) {
   const sch = useColorScheme();
@@ -16,6 +40,7 @@ function Bio({ profile }: { profile: PersonView }) {
         styles={{
           text: { fontSize: 14, color: colors.text },
         }}
+        renderer={new CustomRenderer()}
         value={profile.person.bio}
         theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
       />

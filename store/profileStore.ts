@@ -6,6 +6,7 @@ import {
   LocalUserView,
   LoginResponse,
   SaveUserSettings,
+  SortType,
 } from "lemmy-js-client";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 
@@ -17,6 +18,8 @@ class ProfileStore extends DataClass {
   public unblurNsfw = false;
   public leftHanded = false;
   public collapseParentComment = false;
+  public profilePage = 1;
+  public profileSort: SortType = "New";
 
   constructor() {
     super();
@@ -27,6 +30,8 @@ class ProfileStore extends DataClass {
       collapseParentComment: observable,
       localUser: observable,
       readOnScroll: observable,
+      profileSort: observable,
+      profilePage: observable,
       leftHanded: observable,
       unblurNsfw: observable,
       setLeftHanded: action,
@@ -38,6 +43,8 @@ class ProfileStore extends DataClass {
       setIsLoading: action,
       setLocalUser: action,
       setBlurNsfw: action,
+      setProfilePage: action,
+      setProfileSort: action,
     });
     asyncStorageHandler.readData(dataKeys.readScroll).then((value) => {
       this.readOnScroll = value === "1";
@@ -51,6 +58,14 @@ class ProfileStore extends DataClass {
     asyncStorageHandler.readData(dataKeys.collapseParent).then((value) => {
       this.collapseParentComment = value === "1";
     });
+  }
+
+  setProfilePage(page: number) {
+    this.profilePage = page;
+  }
+
+  setProfileSort(sort: SortType) {
+    this.profileSort = sort;
   }
 
   setCollapseParentComment(collapseParentComment: boolean) {
@@ -96,10 +111,14 @@ class ProfileStore extends DataClass {
       () =>
         this.api.getProfile({
           ...form,
+          page: this.profilePage,
+          sort: this.profileSort,
           auth: loginDetails?.jwt,
         }),
       (profile) => this.setProfile(profile),
-      (e) => console.error(e)
+      (e) => console.error(e),
+      false,
+      "get profile _" + form.person_id
     );
   }
 

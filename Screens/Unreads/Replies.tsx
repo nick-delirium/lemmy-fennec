@@ -4,10 +4,10 @@ import { View, FlatList, StyleSheet, Share, ToastAndroid } from "react-native";
 import { Text, Icon, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { CommentReplyView } from "lemmy-js-client";
-import { commonColors, commonStyles } from "../../commonStyles";
-import { makeDateString } from "../../utils/utils";
+import { commonStyles } from "../../commonStyles";
 import { useTheme } from "@react-navigation/native";
 import FAB from "../../components/FAB";
+import MiniComment from "../../components/TinyComment";
 
 function Replies() {
   const { colors } = useTheme();
@@ -31,14 +31,25 @@ function Replies() {
     void apiClient.mentionsStore.markAllRepliesRead(apiClient.loginDetails.jwt);
     closeAll();
   };
+
+  const nextPage = () => {
+    if (apiClient.mentionsStore.replies.length > 0) {
+      apiClient.mentionsStore.setPage(apiClient.mentionsStore.page + 1);
+      void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
+    }
+  };
+
+  const refresh = () => {
+    apiClient.mentionsStore.setPage(1);
+    void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
+  };
   return (
     <View style={{ flex: 1 }}>
       <FlatList
         style={styles.container}
         data={apiClient.mentionsStore.replies}
-        onRefresh={() =>
-          void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt)
-        }
+        onRefresh={refresh}
+        onEndReached={nextPage}
         refreshing={apiClient.mentionsStore.isLoading}
         renderItem={Reply}
         ItemSeparatorComponent={() => (
@@ -85,66 +96,65 @@ function Replies() {
 
 function Reply({ item }: { item: CommentReplyView }) {
   const isRead = item.comment_reply.read;
-  const dateStr = makeDateString(item.comment_reply.published);
   return (
-    <View style={{ ...styles.comment, opacity: isRead ? 0.6 : 1 }}>
-      <View style={styles.topRow}>
-        <Text customColor={commonColors.author}>{item.creator.name}</Text>
-        <Text>in</Text>
-        <Text customColor={commonColors.community}>{item.community.name}</Text>
-        <Text style={{ marginLeft: "auto" }}>{dateStr}</Text>
-      </View>
-      <View>
-        <Text lines={2} style={commonStyles.title}>
-          {item.post.name}
-        </Text>
-        <Text lines={3} style={commonStyles.text}>
-          {item.comment.content}
-        </Text>
-      </View>
-      <View
-        style={{
-          ...commonStyles.iconsRow,
-          flexDirection: apiClient.profileStore.leftHanded
-            ? "row-reverse"
-            : "row",
-        }}
+    <View style={{ opacity: isRead ? 0.6 : 1 }}>
+      <MiniComment
+        published={item.comment_reply.published}
+        author={item.creator.name}
+        community={item.community.name}
+        title={item.post.name}
+        content={item.comment.content}
+        isSelf={false}
+      />
+      <ReplyActions item={item} />
+    </View>
+  );
+}
+
+function ReplyActions({ item }: { item: CommentReplyView }) {
+  return (
+    <View
+      style={{
+        ...commonStyles.iconsRow,
+        flexDirection: apiClient.profileStore.leftHanded
+          ? "row-reverse"
+          : "row",
+      }}
+    >
+      <TouchableOpacity
+        simple
+        onPressCb={() =>
+          Share.share({
+            url: item.comment.ap_id,
+            message: item.comment.ap_id,
+          })
+        }
       >
-        <TouchableOpacity
-          simple
-          onPressCb={() =>
-            Share.share({
-              url: item.comment.ap_id,
-              message: item.comment.ap_id,
-            })
-          }
-        >
-          <Icon name={"link"} size={24} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          simple
-          onPressCb={() =>
-            apiClient.mentionsStore.markReplyRead(
-              apiClient.loginDetails.jwt,
-              item.comment_reply.id
-            )
-          }
-        >
-          <Icon name={"check-square"} size={24} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          simple
-          onPressCb={() =>
-            ToastAndroid.showWithGravity(
-              "This feature is under construction",
-              ToastAndroid.SHORT,
-              ToastAndroid.CENTER
-            )
-          }
-        >
-          <Icon name={"corner-down-right"} size={24} />
-        </TouchableOpacity>
-      </View>
+        <Icon name={"link"} size={24} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        simple
+        onPressCb={() =>
+          apiClient.mentionsStore.markReplyRead(
+            apiClient.loginDetails.jwt,
+            item.comment_reply.id
+          )
+        }
+      >
+        <Icon name={"check-square"} size={24} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        simple
+        onPressCb={() =>
+          ToastAndroid.showWithGravity(
+            "This feature is under construction",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          )
+        }
+      >
+        <Icon name={"corner-down-right"} size={24} />
+      </TouchableOpacity>
     </View>
   );
 }

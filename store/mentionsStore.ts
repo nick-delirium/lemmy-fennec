@@ -75,12 +75,14 @@ class MentionsStore extends DataClass {
           comment_reply_id: replyId,
           read: true,
         }),
-      () =>
+      () => {
         this.setReplies(
           this.replies.map((r) =>
             r.comment_reply.id === replyId ? { ...r, read: true } : r
           )
-        ),
+        );
+        void this.fetchUnreads(auth);
+      },
       (error) => console.log(error),
       false,
       "mark reply read"

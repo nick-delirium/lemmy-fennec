@@ -19,21 +19,45 @@ const CommentFlatList = observer(
     footer,
     refreshing,
     colors,
+    getAuthor,
+    openComment,
   }: {
     colors: Theme["colors"];
     refreshing?: boolean;
     comments: CommentNode[];
+    openComment?: number;
     header?: React.ReactElement;
     footer?: React.ReactElement;
+    getAuthor?: (id: number) => void;
   }) => {
+    const listRef = React.useRef<FlatList<CommentNode>>(null);
     const extractor = React.useCallback((c) => c.comment.id.toString(), []);
     const renderer = React.useCallback(
-      ({ item }) => <CommentRenderer comment={item} colors={colors} />,
+      ({ item }) => (
+        <CommentRenderer getAuthor={getAuthor} comment={item} colors={colors} />
+      ),
       []
     );
 
+    React.useEffect(() => {
+      if (
+        listRef.current &&
+        comments?.length > 0 &&
+        openComment !== undefined
+      ) {
+        setTimeout(() => {
+          listRef.current.scrollToIndex({
+            index: openComment,
+            animated: false,
+          });
+          // idk why this is needed but it is
+        }, 125);
+      }
+    }, [comments, openComment, listRef.current]);
+
     return (
       <FlatList
+        ref={listRef}
         windowSize={10}
         maxToRenderPerBatch={10}
         removeClippedSubviews
@@ -51,7 +75,15 @@ const CommentFlatList = observer(
 );
 
 const CommentRenderer = React.memo(
-  ({ comment, colors }: { colors: Theme["colors"]; comment: CommentNode }) => {
+  ({
+    comment,
+    colors,
+    getAuthor,
+  }: {
+    colors: Theme["colors"];
+    comment: CommentNode;
+    getAuthor?: (id: number) => void;
+  }) => {
     const [isExpanded, setIsExpanded] = React.useState(true);
 
     const ownColor = React.useMemo(() => rainbow(), []);
@@ -68,13 +100,18 @@ const CommentRenderer = React.memo(
       return (
         <View>
           <Comment
+            getAuthor={getAuthor}
             comment={comment}
             isExpanded={isExpanded}
             hide={comment.children.length > 0 ? hide : undefined}
           />
           {comment.children.length > 0 ? (
             <View style={{ ...styles.subComment, borderLeftColor: ownColor }}>
-              <CommentFlatList colors={colors} comments={comment.children} />
+              <CommentFlatList
+                getAuthor={getAuthor}
+                colors={colors}
+                comments={comment.children}
+              />
             </View>
           ) : null}
         </View>

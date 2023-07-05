@@ -63,6 +63,11 @@ function Post({
     navigation.navigate("User", { personId: post.creator.id });
   };
 
+  const getComments = () => {
+    apiClient.postStore.setSinglePost(post);
+    navigation.navigate("Post", { post: post.post.id, openComment: 0 });
+  };
+
   const customReadColor = post.read ? "#ababab" : colors.text;
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
@@ -126,6 +131,7 @@ function Post({
         post={post}
         useCommunity={useCommunity}
         markRead={markRead}
+        getComments={getComments}
       />
     </View>
   );

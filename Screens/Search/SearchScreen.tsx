@@ -17,7 +17,6 @@ import {
 } from "../../ThemedComponents";
 import {
   CommunityView,
-  CommentView,
   PostView,
   PersonView,
   SearchResponse,
@@ -27,6 +26,7 @@ import { apiClient } from "../../store/apiClient";
 import SearchSettings from "./SearchSettings";
 import { Post, User, Community } from "./ListComponents";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import Pagination from "../../components/Pagination";
 
 interface SearchResult {
   title: "Communities" | "Users" | "Posts" | "Comments";
@@ -165,32 +165,13 @@ function SearchScreen({
           />
         ) : null}
       </View>
-      <View style={styles.paddedRow}>
-        {apiClient.searchStore.page > 1 ? (
-          <TouchableOpacity onPressCb={prevPage}>
-            <Text>Previous page</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={{ backgroundColor: colors.card }}
-            onPressCb={() => null}
-          >
-            <Text>Previous page</Text>
-          </TouchableOpacity>
-        )}
-        {searchResults?.length > 0 ? (
-          <TouchableOpacity onPressCb={nextPage}>
-            <Text>Next page</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={{ backgroundColor: colors.card }}
-            onPressCb={() => null}
-          >
-            <Text>Next page</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      <Pagination
+        prevPage={prevPage}
+        nextPage={nextPage}
+        page={apiClient.searchStore.page}
+        itemsLength={searchResults?.length ?? 0}
+      />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >

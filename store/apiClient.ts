@@ -52,7 +52,9 @@ class ApiClient {
           this.profileStore.setUsername(possibleUsername);
           void this.getGeneralData();
         } else {
-          const client: LemmyHttp = new LemmyHttp("https://lemmy.ml");
+          const client: LemmyHttp = new LemmyHttp(
+            possibleInstance || "https://lemmy.ml"
+          );
           this.setClient(client);
         }
       })

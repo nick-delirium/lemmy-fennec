@@ -97,7 +97,7 @@ function Replies() {
 function Reply({ item }: { item: CommentReplyView }) {
   const isRead = item.comment_reply.read;
   return (
-    <View style={{ opacity: isRead ? 0.6 : 1 }}>
+    <View style={{ opacity: isRead ? 0.6 : 1, paddingHorizontal: 6 }}>
       <MiniComment
         published={item.comment_reply.published}
         author={item.creator.name}
@@ -121,6 +121,19 @@ function ReplyActions({ item }: { item: CommentReplyView }) {
           : "row",
       }}
     >
+      <View style={{ flex: 1 }} />
+      <TouchableOpacity
+        simple
+        onPressCb={() =>
+          ToastAndroid.showWithGravity(
+            "This feature is under construction",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          )
+        }
+      >
+        <Icon name={"corner-down-right"} size={24} />
+      </TouchableOpacity>
       <TouchableOpacity
         simple
         onPressCb={() =>
@@ -142,18 +155,6 @@ function ReplyActions({ item }: { item: CommentReplyView }) {
         }
       >
         <Icon name={"check-square"} size={24} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        simple
-        onPressCb={() =>
-          ToastAndroid.showWithGravity(
-            "This feature is under construction",
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          )
-        }
-      >
-        <Icon name={"corner-down-right"} size={24} />
       </TouchableOpacity>
     </View>
   );

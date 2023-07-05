@@ -31,7 +31,7 @@ function HomeScreen() {
               return <Feather name={"user"} size={size} color={color} />;
             case "Search":
               return <Feather name={"search"} size={size} color={color} />;
-            case "Communities":
+            case "Followed Communities":
               return <Feather name={"star"} size={size} color={color} />;
             case "Unreads":
               if (apiClient.mentionsStore.unreadsCount !== 0) {
@@ -82,7 +82,7 @@ function HomeScreen() {
       />
       {apiClient.loginDetails?.jwt ? (
         <Tab.Screen
-          name={"Communities"}
+          name={"Followed Communities"}
           component={FollowsScreen}
           options={{ headerShown: false }}
         />

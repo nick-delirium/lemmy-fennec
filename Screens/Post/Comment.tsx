@@ -21,10 +21,12 @@ function Comment({
   comment,
   hide,
   isExpanded,
+  getAuthor,
 }: {
   comment: CommentNode;
   isExpanded: boolean;
   hide?: () => void;
+  getAuthor?: (author: number) => void;
 }) {
   const sch = useColorScheme();
   const { colors } = useTheme();
@@ -63,9 +65,22 @@ function Comment({
   return (
     <View style={{ ...styles.container, borderBottomColor: colors.card }}>
       <View style={styles.topRow}>
-        <Text style={styles.author}>
-          u/{comment.creator.display_name || comment.creator.name}
-        </Text>
+        <TouchableOpacity
+          simple
+          onPressCb={() => getAuthor(comment.creator.id)}
+        >
+          <View style={styles.row}>
+            <Text style={styles.author}>
+              u/{comment.creator.display_name || comment.creator.name}
+            </Text>
+            {comment.post.creator_id === comment.creator.id ? (
+              <View style={styles.op}>
+                <Text style={styles.opText}>OP</Text>
+              </View>
+            ) : null}
+            {comment.creator.admin ? <Icon name={"shield"} size={16} /> : null}
+          </View>
+        </TouchableOpacity>
         <Text style={styles.date}>{commentDate}</Text>
       </View>
       <View>
@@ -191,6 +206,21 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingTop: 4,
     paddingBottom: 4,
+  },
+  row: {
+    flexDirection: "row",
+    gap: 6,
+    alignItems: "center",
+  },
+  op: {
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 4,
+    backgroundColor: "red",
+  },
+  opText: {
+    fontSize: 10,
+    fontWeight: "600",
   },
 });
 

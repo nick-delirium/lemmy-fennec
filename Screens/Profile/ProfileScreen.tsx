@@ -2,6 +2,7 @@ import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Profile from "./Profile";
 import OwnComments from "./OwnComments";
+import OwnPosts from "./OwnPosts";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -21,6 +22,13 @@ function ProfileScreen() {
         }}
         name={"UserComments"}
         component={OwnComments}
+      />
+      <Tab.Screen
+        options={{
+          tabBarLabel: "Posts",
+        }}
+        name={"UserPosts"}
+        component={OwnPosts}
       />
     </Tab.Navigator>
   );

@@ -5,6 +5,7 @@ import { apiClient } from "../../store/apiClient";
 import { Community } from "../Search/ListComponents";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { useTheme } from "@react-navigation/native";
+import Pagination from "../../components/Pagination";
 
 function FollowsScreen({ navigation }) {
   const { colors } = useTheme();
@@ -49,32 +50,14 @@ function FollowsScreen({ navigation }) {
         keyExtractor={(item) => item.community.id.toString()}
       />
       {apiClient.communityStore.isLoading ? null : (
-        <View style={ownStyles.paddedRow}>
-          {apiClient.communityStore.page > 1 ? (
-            <TouchableOpacity onPressCb={prevPage}>
-              <Text>Previous page</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={{ backgroundColor: colors.card }}
-              onPressCb={() => null}
-            >
-              <Text>Previous page</Text>
-            </TouchableOpacity>
-          )}
-          {apiClient.communityStore.followedCommunities?.length > 0 ? (
-            <TouchableOpacity onPressCb={nextPage}>
-              <Text>Next page</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={{ backgroundColor: colors.card }}
-              onPressCb={() => null}
-            >
-              <Text>Next page</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        <Pagination
+          prevPage={prevPage}
+          nextPage={nextPage}
+          page={apiClient.communityStore.page}
+          itemsLength={
+            apiClient.communityStore.followedCommunities?.length ?? 0
+          }
+        />
       )}
     </View>
   );

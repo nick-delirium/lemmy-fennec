@@ -87,8 +87,13 @@ class CommunityStore extends DataClass {
     await this.fetchData<CommunityResponse>(
       () =>
         this.api.followCommunity({ auth: auth?.jwt, community_id: id, follow }),
-      (data) => this.setCommunity(data.community_view),
-      (error) => console.log(error)
+      (data) => {
+        console.log(data.community_view.subscribed);
+        this.setCommunity(data.community_view);
+      },
+      (error) => console.log(error),
+      true,
+      "follow community"
     );
   }
 }

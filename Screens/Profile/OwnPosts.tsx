@@ -3,17 +3,17 @@ import { observer } from "mobx-react-lite";
 import { View, FlatList, StyleSheet, Share } from "react-native";
 import { Text, Icon, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
-import { CommentView } from "lemmy-js-client";
 import { commonStyles, commonColors } from "../../commonStyles";
 import { useTheme } from "@react-navigation/native";
-import FAB from "../../components/FAB";
-import MiniComment from "../../components/TinyComment";
 import Pagination from "../../components/Pagination";
+import { PostView } from "lemmy-js-client";
+import MiniComment from "../../components/TinyComment";
+
 // TODO: FAB with sort type
 
-function OwnComments({ navigation }) {
+function OwnPosts({ navigation }) {
   const { colors } = useTheme();
-  const comments = apiClient.profileStore.userProfile?.comments ?? [];
+  const posts = apiClient.profileStore.userProfile?.posts ?? [];
 
   const refresh = () => {
     apiClient.profileStore.setProfilePage(1);
@@ -23,8 +23,8 @@ function OwnComments({ navigation }) {
     });
   };
 
-  const getPost = (comment: CommentView) => {
-    navigation.navigate("Post", { post: comment.post.id });
+  const getPost = (post: PostView) => {
+    navigation.navigate("Post", { post: post.post.id });
   };
 
   const nextPage = () => {
@@ -36,6 +36,7 @@ function OwnComments({ navigation }) {
       limit: 30,
     });
   };
+
   const prevPage = () => {
     if (apiClient.profileStore.profilePage === 1) return;
     apiClient.profileStore.setProfilePage(
@@ -50,7 +51,7 @@ function OwnComments({ navigation }) {
   return (
     <View style={{ flex: 1 }}>
       <FlatList
-        data={comments}
+        data={posts}
         onRefresh={refresh}
         style={styles.container}
         refreshing={apiClient.profileStore.isLoading}
@@ -64,35 +65,35 @@ function OwnComments({ navigation }) {
             <Text style={styles.empty}>Nothing is here for now...</Text>
           </View>
         }
-        keyExtractor={(item) => item.comment.id.toString()}
-        renderItem={({ item }) => <OwnComment item={item} getPost={getPost} />}
+        keyExtractor={(item) => item.post.id.toString()}
+        renderItem={({ item }) => <OwnPost item={item} getPost={getPost} />}
       />
       <Pagination
         page={apiClient.profileStore.profilePage}
         nextPage={nextPage}
         prevPage={prevPage}
-        itemsLength={comments?.length ?? 0}
+        itemsLength={posts?.length ?? 0}
       />
     </View>
   );
 }
 
-function OwnComment({
+function OwnPost({
   item,
   getPost,
 }: {
-  item: CommentView;
-  getPost: (comment: CommentView) => void;
+  item: PostView;
+  getPost: (post: PostView) => void;
 }) {
   return (
     <View>
       <MiniComment
-        published={item.comment.published}
+        published={item.post.published}
         author={""}
         isSelf
         community={item.community.name}
         title={item.post.name}
-        content={item.comment.content}
+        content={item.post.body}
       />
       <View
         style={{
@@ -110,8 +111,8 @@ function OwnComment({
           simple
           onPressCb={() =>
             Share.share({
-              url: item.comment.ap_id,
-              message: item.comment.ap_id,
+              url: item.post.ap_id,
+              message: item.post.ap_id,
             })
           }
         >
@@ -163,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(OwnComments);
+export default observer(OwnPosts);

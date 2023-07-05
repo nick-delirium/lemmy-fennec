@@ -10,9 +10,10 @@ interface Props {
   post: PostView;
   useCommunity?: boolean;
   markRead: () => void;
+  getComments?: () => void;
 }
 
-function PostIconRow({ post, useCommunity, markRead }: Props) {
+function PostIconRow({ post, useCommunity, markRead, getComments }: Props) {
   return (
     <View
       style={{
@@ -47,18 +48,20 @@ function PostIconRow({ post, useCommunity, markRead }: Props) {
         </Text>
       </View>
       <View style={{ flex: 1 }} />
-      <View style={styles.infoPiece}>
-        <Icon
-          accessibilityLabel={"total comments (+ unread)"}
-          name={"message-square"}
-          size={24}
-        />
-        <Text>
-          {`${post.counts.comments}${
-            post.unread_comments > 0 ? "(+" + post.unread_comments + ")" : ""
-          }`}
-        </Text>
-      </View>
+      <TouchableOpacity onPressCb={getComments} simple>
+        <View style={styles.infoPiece}>
+          <Icon
+            accessibilityLabel={"total comments (+ unread)"}
+            name={"message-square"}
+            size={24}
+          />
+          <Text>
+            {`${post.counts.comments}${
+              post.unread_comments > 0 ? "(+" + post.unread_comments + ")" : ""
+            }`}
+          </Text>
+        </View>
+      </TouchableOpacity>
 
       <TouchableOpacity
         simple

@@ -30,6 +30,14 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
   }, [apiClient.isLoggedIn]);
 
   const saveInstance = async () => {
+    if (login === "" || password === "") {
+      const client: LemmyHttp = new LemmyHttp(instanceHref);
+      apiClient.setClient(client);
+      asyncStorageHandler.setData(dataKeys.instance, instanceHref).then(() => {
+        navigation.replace("Home");
+      });
+    }
+
     const loginDetails = {
       username_or_email: login,
       password,
@@ -93,7 +101,20 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
             accessibilityLabel={"lemmy instance url"}
             onFocus={() => (instanceHref === "" ? setHref("https://") : null)}
           />
-          <Text>Login/email</Text>
+          <View
+            style={{
+              ...styles.container,
+              flexDirection: "row",
+              width: "100%",
+              marginTop: 12,
+            }}
+          >
+            <TouchableOpacity style={{ flex: 1 }} onPressCb={() => null}>
+              <Text>Connect</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={{ alignSelf: "center", marginVertical: 8 }}>or</Text>
+          <Text>Username/email</Text>
           <TextInput
             placeholder="king_julien"
             value={login}
@@ -136,24 +157,33 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
             }}
           >
             <TouchableOpacity style={{ flex: 1 }} onPressCb={saveInstance}>
-              <Text>Go!</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ flex: 1 }}
-              onPressCb={() => navigation.replace("Home")}
-            >
-              <Text>Skip for now</Text>
+              <Text>Log in</Text>
             </TouchableOpacity>
           </View>
         )}
-        <TouchableOpacity
-          style={{ width: "70%", marginTop: 12 }}
-          onPressCb={() =>
-            void Linking.openURL("https://join-lemmy.org/instances")
-          }
+        <View
+          style={{
+            ...styles.container,
+            flexDirection: "row",
+            width: "70%",
+            marginTop: 12,
+          }}
         >
-          <Text>Create account</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPressCb={() =>
+              void Linking.openURL("https://join-lemmy.org/instances")
+            }
+          >
+            <Text>Create account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPressCb={() => navigation.replace("Home")}
+          >
+            <Text>Skip for now</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaProvider>
   );

@@ -229,7 +229,7 @@ class PostStore extends DataClass {
           score: score,
         }),
       ({ post_view }) => {
-        this.updatePostById(postId, { my_vote: post_view.my_vote });
+        this.updatePostById(postId, post_view);
         if (this.singlePost) this.setSinglePost(post_view);
       },
       (e) => console.error(e),

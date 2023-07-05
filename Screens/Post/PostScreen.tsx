@@ -21,6 +21,8 @@ function PostScreen({
   route,
 }: NativeStackScreenProps<any, "Feed">) {
   const post = apiClient.postStore.singlePost;
+  const openComment = route.params.openComment;
+  console.log(route.params);
   const { colors } = useTheme();
   // const keyboardHeight = useKeyboard();
   // const height = useHeaderHeight();
@@ -54,14 +56,19 @@ function PostScreen({
 
   if (!post) return <ActivityIndicator />;
 
-  console.log(apiClient.commentsStore.commentTree.length);
+  const getAuthor = (id: number) => {
+    navigation.navigate("User", { personId: id });
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList
+        getAuthor={getAuthor}
         header={<ExpandedPost post={post} navigation={navigation} />}
         refreshing={apiClient.commentsStore.isLoading}
         comments={apiClient.commentsStore.commentTree}
         colors={colors}
+        openComment={openComment}
         footer={<View style={{ height: 72, width: "100%" }} />}
       />
       <CommentsFloatingMenu isLoading={apiClient.commentsStore.isLoading} />

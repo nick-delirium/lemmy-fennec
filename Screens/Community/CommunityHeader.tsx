@@ -45,13 +45,23 @@ function CommunityHeader({
 
   const showFollow = Boolean(apiClient.loginDetails?.jwt);
   const isFollowing = community.subscribed === "Subscribed";
+  const followingStr =
+    community.subscribed === "Pending"
+      ? community.subscribed
+      : isFollowing
+      ? "Unsubscribe"
+      : "Subscribe";
+
   const follow = () => {
+    if (community.subscribed === "Pending") return;
     void apiClient.communityStore.followCommunity(
       community.community.id,
       !isFollowing,
       apiClient.loginDetails
     );
   };
+
+  console.log(isFollowing);
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>
@@ -84,13 +94,13 @@ function CommunityHeader({
           </TouchableOpacity>
           {showFollow ? (
             <TouchableOpacity onPressCb={follow}>
-              <Text>{isFollowing ? "Unsubscribe" : "Subscribe"}</Text>
+              <Text>{followingStr}</Text>
             </TouchableOpacity>
           ) : null}
         </View>
       ) : showFollow ? (
         <TouchableOpacity onPressCb={follow}>
-          <Text>{isFollowing ? "Unsubscribe" : "Subscribe"}</Text>
+          <Text>{followingStr}</Text>
         </TouchableOpacity>
       ) : null}
       {showDescription ? (
@@ -115,7 +125,7 @@ const styles = StyleSheet.create({
   },
   communityIcon: { width: 48, height: 48, borderRadius: 48 },
   title: { fontSize: 22, fontWeight: "bold" },
-  wrapper: { flex: 1, width: "100%" },
+  wrapper: { flex: 1, width: "100%", paddingHorizontal: 6 },
   buttons: { flexDirection: "row", gap: 8, flex: 1 },
 });
 

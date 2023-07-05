@@ -18,7 +18,7 @@ function UserRow({ person }: { person: Person }) {
     <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
       <View style={{ gap: 8 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <Icon size={24} name={"info"} />
+          <Icon size={24} name={"user"} />
           <View>
             <Text>
               {person.display_name

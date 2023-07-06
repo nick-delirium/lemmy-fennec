@@ -73,6 +73,12 @@ function CommunityScreen({
     }
   }).current;
 
+  const createPost = () => {
+    navigation.navigate("PostWrite", {
+      communityName: community.community.name,
+      communityId: community.community.id,
+    });
+  };
   // feedKey is a hack for autoscroll; force rerender on each feed update
   return (
     <View style={commonStyles.container} key={apiClient.postStore.feedKey}>
@@ -99,7 +105,14 @@ function CommunityScreen({
         fadingEdgeLength={1}
         onViewableItemsChanged={onPostScroll}
       />
-      <FloatingMenu useCommunity />
+      <FloatingMenu
+        useCommunity
+        additional={
+          <TouchableOpacity simple onPressCb={createPost}>
+            <Text style={{ fontWeight: "500" }}>New Post</Text>
+          </TouchableOpacity>
+        }
+      />
     </View>
   );
 }

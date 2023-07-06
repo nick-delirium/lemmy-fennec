@@ -21,7 +21,13 @@ const listingTypes = Object.values(ListingTypeMap).map((type) => ({
   value: type,
 }));
 
-function FloatingMenu({ useCommunity }: { useCommunity?: boolean }) {
+function FloatingMenu({
+  useCommunity,
+  additional,
+}: {
+  useCommunity?: boolean;
+  additional?: React.ReactNode;
+}) {
   const { colors } = useTheme();
   const [isSortOpen, setIsSortOpen] = React.useState(false);
   const [isListingOpen, setIsListingOpen] = React.useState(false);
@@ -104,6 +110,7 @@ function FloatingMenu({ useCommunity }: { useCommunity?: boolean }) {
           <TouchableOpacity onPress={refresh}>
             <Text style={styles.bold}>Refresh</Text>
           </TouchableOpacity>
+          {additional}
         </View>
       ) : null}
       <TouchableOpacity onPress={() => (isOpen ? closeAll() : openMenu())}>

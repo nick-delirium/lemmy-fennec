@@ -18,6 +18,7 @@ import UserScreen from "./Screens/User/UserScreen";
 import SettingsScreen from "./Screens/SettingsScreen";
 import DebugScreen from "./Screens/DebugScreen";
 import CommentWrite from "./Screens/CommentWrite/CommentWrite";
+import PostWrite from "./Screens/PostWrite";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,7 +61,16 @@ const App = observer(() => {
             })}
           />
           <Stack.Screen name="Post" component={PostScreen} />
-          <Stack.Screen name={"CommentWrite"} component={CommentWrite} />
+          <Stack.Screen
+            options={{ headerTitle: "New Comment" }}
+            name={"CommentWrite"}
+            component={CommentWrite}
+          />
+          <Stack.Screen
+            options={{ headerTitle: "New Post" }}
+            name={"PostWrite"}
+            component={PostWrite}
+          />
           <Stack.Screen name="Community" component={CommunityScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="User" component={UserScreen} />

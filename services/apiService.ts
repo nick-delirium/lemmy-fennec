@@ -21,7 +21,7 @@ import {
   GetReplies,
   MarkCommentReplyAsRead,
   MarkAllAsRead,
-  CommentReply,
+  CreatePost,
   CreateComment,
 } from "lemmy-js-client";
 
@@ -127,5 +127,9 @@ export default class ApiService {
 
   createComment(form: CreateComment) {
     return this.client.createComment(form);
+  }
+
+  createPost(form: CreatePost) {
+    return this.client.createPost(form);
   }
 }

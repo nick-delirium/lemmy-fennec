@@ -61,7 +61,12 @@ function CommunityHeader({
     );
   };
 
-  console.log(isFollowing);
+  const createPost = () => {
+    navigation.navigate("PostWrite", {
+      communityName: community.community.name,
+      communityId: community.community.id,
+    });
+  };
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>
@@ -85,24 +90,25 @@ function CommunityHeader({
         <Text>{community.counts.subscribers} subscribers</Text>
         <Text>{community.counts.users_active_day} daily users</Text>
       </View>
-      {community.community.description ? (
-        <View style={styles.buttons}>
+      <View style={styles.buttons}>
+        {community.community.description ? (
           <TouchableOpacity
             onPressCb={() => setShowDescription(!showDescription)}
           >
             <Text>{showDescription ? "Hide" : "Show"} description</Text>
           </TouchableOpacity>
-          {showFollow ? (
-            <TouchableOpacity onPressCb={follow}>
-              <Text>{followingStr}</Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
-      ) : showFollow ? (
-        <TouchableOpacity onPressCb={follow}>
-          <Text>{followingStr}</Text>
-        </TouchableOpacity>
-      ) : null}
+        ) : null}
+        {showFollow ? (
+          <TouchableOpacity onPressCb={follow}>
+            <Text>{followingStr}</Text>
+          </TouchableOpacity>
+        ) : null}
+        {showFollow ? (
+          <TouchableOpacity onPressCb={createPost}>
+            <Text>New Post</Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
       {showDescription ? (
         <Markdown
           value={community.community.description}

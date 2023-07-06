@@ -16,6 +16,17 @@ function PostScreen({
   const openComment = route.params.openComment;
   const { colors } = useTheme();
 
+  const refreshAll = () => {
+    void apiClient.postStore.getSinglePost(
+      route.params.post,
+      apiClient.loginDetails
+    );
+    void apiClient.commentsStore.getComments(
+      post.post.id,
+      apiClient.loginDetails
+    );
+  };
+
   React.useEffect(() => {
     if (route.params.post) {
       void apiClient.postStore.getSinglePost(
@@ -60,6 +71,7 @@ function PostScreen({
         refreshing={apiClient.commentsStore.isLoading}
         comments={apiClient.commentsStore.commentTree}
         colors={colors}
+        onRefresh={refreshAll}
         openComment={openComment}
         openCommenting={openCommenting}
         footer={<View style={{ height: 72, width: "100%" }} />}

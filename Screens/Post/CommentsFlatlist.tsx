@@ -22,6 +22,7 @@ const CommentFlatList = observer(
     getAuthor,
     openComment,
     openCommenting,
+    onRefresh,
   }: {
     colors: Theme["colors"];
     refreshing?: boolean;
@@ -31,6 +32,7 @@ const CommentFlatList = observer(
     footer?: React.ReactElement;
     getAuthor?: (id: number) => void;
     openCommenting?: () => void;
+    onRefresh?: () => void;
   }) => {
     const listRef = React.useRef<FlatList<CommentNode>>(null);
     const extractor = React.useCallback((c) => c.comment.id.toString(), []);
@@ -64,6 +66,7 @@ const CommentFlatList = observer(
 
     return (
       <FlatList
+        onRefresh={onRefresh}
         ref={listRef}
         windowSize={10}
         maxToRenderPerBatch={10}

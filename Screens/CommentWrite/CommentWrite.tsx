@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  Platform,
-  KeyboardAvoidingView,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@react-navigation/native";
 import {
@@ -55,76 +48,12 @@ function CommentWrite({ navigation }) {
           />
         </ScrollView>
       </ScrollView>
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 12,
-          alignItems: "center",
-          paddingHorizontal: 6,
-          paddingVertical: 8,
-          backgroundColor: colors.card,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
-        }}
-      >
-        <TouchableOpacity onPressCb={() => setText(text + "**___**")} simple>
-          <Text
-            style={{ fontSize: 16, fontWeight: "bold" }}
-            customColor={colors.primary}
-          >
-            B
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPressCb={() => setText(text + "*___*")} simple>
-          <Icon name={"italic"} accessibilityLabel={"Italic text"} size={16} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPressCb={() => setText(text + "[text](url)")}
-          simple
-        >
-          <Icon name={"link"} accessibilityLabel={"Web link"} size={16} />
-        </TouchableOpacity>
-        <TouchableOpacity onPressCb={() => setText(text + "> ")} simple>
-          <Icon
-            name={"chevron-right"}
-            accessibilityLabel={"Quote text"}
-            size={16}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPressCb={() => setText(text + "*~~___~~*")} simple>
-          <Text
-            customColor={colors.primary}
-            style={{ textDecorationLine: "line-through", fontSize: 16 }}
-          >
-            S
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPressCb={() =>
-            setText(text + ":::spoiler SpoilerName\n" + "___\n" + ":::")
-          }
-          simple
-        >
-          <Icon
-            name={"alert-triangle"}
-            accessibilityLabel={"Spoiler text"}
-            size={16}
-          />
-        </TouchableOpacity>
-
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity
-          style={styles.additionalButtonStyle}
-          isSecondary
-          onPressCb={submit}
-        >
-          {!apiClient.commentsStore.isLoading ? (
-            <Icon name={"send"} accessibilityLabel={"Send text"} size={24} />
-          ) : (
-            <ActivityIndicator color={colors.primary} />
-          )}
-        </TouchableOpacity>
-      </View>
+      <ButtonsRow
+        isLoading={apiClient.commentsStore.isLoading}
+        setText={setText}
+        text={text}
+        submit={submit}
+      />
       <View style={{ ...styles.inputRow, backgroundColor: colors.card }}>
         <TextInput
           style={{ flex: 1 }}
@@ -144,15 +73,86 @@ function CommentWrite({ navigation }) {
   );
 }
 
+export function ButtonsRow({ setText, text, submit, isLoading }) {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={{
+        ...styles.iconsRow,
+        backgroundColor: colors.card,
+        borderTopColor: colors.border,
+      }}
+    >
+      <TouchableOpacity onPressCb={() => setText(text + "**___**")} simple>
+        <Text style={styles.bold} customColor={colors.primary}>
+          B
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPressCb={() => setText(text + "*___*")} simple>
+        <Icon name={"italic"} accessibilityLabel={"Italic text"} size={16} />
+      </TouchableOpacity>
+      <TouchableOpacity onPressCb={() => setText(text + "[text](url)")} simple>
+        <Icon name={"link"} accessibilityLabel={"Web link"} size={16} />
+      </TouchableOpacity>
+      <TouchableOpacity onPressCb={() => setText(text + "> ")} simple>
+        <Icon
+          name={"chevron-right"}
+          accessibilityLabel={"Quote text"}
+          size={16}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity onPressCb={() => setText(text + "~~___~~")} simple>
+        <Text customColor={colors.primary} style={styles.strike}>
+          S
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPressCb={() =>
+          setText(text + ":::spoiler SpoilerName\n" + "___\n" + ":::")
+        }
+        simple
+      >
+        <Icon
+          name={"alert-triangle"}
+          accessibilityLabel={"Spoiler text"}
+          size={16}
+        />
+      </TouchableOpacity>
+
+      <View style={{ flex: 1 }} />
+      <TouchableOpacity
+        style={styles.additionalButtonStyle}
+        isSecondary
+        onPressCb={submit}
+      >
+        {isLoading ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : (
+          <Icon name={"send"} accessibilityLabel={"Send text"} size={24} />
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   inputRow: {
     paddingHorizontal: 6,
     paddingBottom: 12,
     paddingTop: 4,
     flexDirection: "row",
-    gap: 6,
   },
   additionalButtonStyle: { justifyContent: "center" },
+  iconsRow: {
+    flexDirection: "row",
+    gap: 16,
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+  },
+  bold: { fontSize: 16, fontWeight: "bold" },
+  strike: { textDecorationLine: "line-through", fontSize: 16 },
 });
 
 export default observer(CommentWrite);

@@ -98,7 +98,7 @@ function SettingsScreen() {
   );
 }
 
-function Toggler({
+export function Toggler({
   useLogin,
   label,
   value,

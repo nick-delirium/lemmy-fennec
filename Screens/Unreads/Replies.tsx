@@ -5,11 +5,11 @@ import { Text, Icon, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { CommentReplyView } from "lemmy-js-client";
 import { commonStyles } from "../../commonStyles";
-import { useTheme } from "@react-navigation/native";
+import { useTheme, NavigationProp } from "@react-navigation/native";
 import FAB from "../../components/FAB";
 import MiniComment from "../../components/TinyComment";
 
-function Replies() {
+function Replies({ navigation }) {
   const { colors } = useTheme();
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -51,7 +51,7 @@ function Replies() {
         onRefresh={refresh}
         onEndReached={nextPage}
         refreshing={apiClient.mentionsStore.isLoading}
-        renderItem={Reply}
+        renderItem={({ item }) => <Reply item={item} navigation={navigation} />}
         ItemSeparatorComponent={() => (
           <View
             style={{ height: 1, width: "100%", backgroundColor: colors.border }}
@@ -94,7 +94,13 @@ function Replies() {
   );
 }
 
-function Reply({ item }: { item: CommentReplyView }) {
+function Reply({
+  item,
+  navigation,
+}: {
+  item: CommentReplyView;
+  navigation: any;
+}) {
   const isRead = item.comment_reply.read;
   return (
     <View style={{ opacity: isRead ? 0.6 : 1, paddingHorizontal: 6 }}>
@@ -106,12 +112,33 @@ function Reply({ item }: { item: CommentReplyView }) {
         content={item.comment.content}
         isSelf={false}
       />
-      <ReplyActions item={item} />
+      <ReplyActions item={item} navigation={navigation} />
     </View>
   );
 }
 
-function ReplyActions({ item }: { item: CommentReplyView }) {
+function ReplyActions({
+  item,
+  navigation,
+}: {
+  item: CommentReplyView;
+  navigation: any;
+}) {
+  const openReply = () => {
+    apiClient.commentsStore.setReplyTo({
+      postId: item.post.id,
+      parent_id: item.comment.id,
+      title: item.post.name,
+      community: item.community.name,
+      published: item.comment.published,
+      author: item.creator.name,
+      content: item.comment.content,
+    });
+    navigation.navigate("CommentWrite");
+  };
+  const openPost = () => {
+    navigation.navigate("Post", { post: item.post.id });
+  };
   return (
     <View
       style={{
@@ -122,17 +149,11 @@ function ReplyActions({ item }: { item: CommentReplyView }) {
       }}
     >
       <View style={{ flex: 1 }} />
-      <TouchableOpacity
-        simple
-        onPressCb={() =>
-          ToastAndroid.showWithGravity(
-            "This feature is under construction",
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          )
-        }
-      >
+      <TouchableOpacity simple onPressCb={openPost}>
         <Icon name={"corner-down-right"} size={24} />
+      </TouchableOpacity>
+      <TouchableOpacity simple onPressCb={openReply}>
+        <Icon name={"edit"} size={24} />
       </TouchableOpacity>
       <TouchableOpacity
         simple

@@ -8,6 +8,8 @@ import {
   CommentId,
   CommentView,
   GetCommentsResponse,
+  CreateComment,
+  CommentResponse,
 } from "lemmy-js-client";
 import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
@@ -36,9 +38,20 @@ export interface CommentNode extends CommentView {
 // !!!TODO!!!
 // grab sub comments and build subtrees (build tree and insert into children array)
 
+interface ReplyView {
+  title: string;
+  community: string;
+  published: string;
+  author: string;
+  content: string;
+  postId: number;
+  parent_id?: number;
+}
+
 class CommentsStore extends DataClass {
   public comments: CommentView[] = [];
   public commentTree: CommentNode[] = [];
+  public replyTo: ReplyView | null = null;
   public filters: Filters = {
     max_depth: 8,
     saved_only: false,
@@ -51,6 +64,7 @@ class CommentsStore extends DataClass {
     makeObservable(this, {
       comments: observable.deep,
       filters: observable.deep,
+      replyTo: observable,
       commentTree: observable.deep,
       setFilters: action,
       setComments: action,
@@ -61,6 +75,10 @@ class CommentsStore extends DataClass {
       updateCommentById: action,
       updateTreeCommentRating: action,
     });
+  }
+
+  setReplyTo(comment: ReplyView | null) {
+    this.replyTo = comment;
   }
 
   setFilters(filters: Partial<Filters>) {
@@ -107,7 +125,7 @@ class CommentsStore extends DataClass {
     score: (typeof Score)[keyof typeof Score]
   ) {
     // update local comment rating because api is slow
-    this.updateTreeCommentRating(this.commentTree, commentId, score);
+    this.updateTreeCommentRating(this.commentTree, commentId, undefined, score);
     await this.fetchData(
       () =>
         this.api.rateComment({
@@ -120,6 +138,7 @@ class CommentsStore extends DataClass {
         this.updateTreeCommentRating(
           this.commentTree,
           commentId,
+          undefined,
           score,
           comment_view.counts
         );
@@ -141,12 +160,14 @@ class CommentsStore extends DataClass {
   updateTreeCommentRating(
     commentTree: CommentNode[],
     commentId: number,
-    vote: (typeof Score)[keyof typeof Score],
+    child?: CommentNode,
+    vote?: (typeof Score)[keyof typeof Score],
     counts?: CommentNode["counts"]
   ): boolean {
     for (const commentNode of commentTree) {
       if (commentNode.comment.id === commentId) {
-        commentNode.my_vote = vote;
+        if (child) commentNode.children.unshift(child);
+        if (vote) commentNode.my_vote = vote;
         if (counts) commentNode.counts = counts;
         return true;
       }
@@ -154,6 +175,7 @@ class CommentsStore extends DataClass {
         this.updateTreeCommentRating(
           commentNode.children,
           commentId,
+          child,
           vote,
           counts
         )
@@ -162,6 +184,29 @@ class CommentsStore extends DataClass {
       }
     }
     return false;
+  }
+
+  async createComment(form: CreateComment, isRoot?: boolean) {
+    // post_id || parent_id
+    await this.fetchData<CommentResponse>(
+      () => this.api.createComment({ ...form }),
+      ({ comment_view }) => {
+        if (!isRoot) {
+          this.setComments([...this.comments, comment_view]);
+          this.comments.push(comment_view);
+          this.updateTreeCommentRating(this.commentTree, form.parent_id, {
+            ...comment_view,
+            children: [],
+          });
+        } else {
+          this.setComments([...this.comments, comment_view]);
+          this.commentTree.unshift({ ...comment_view, children: [] });
+        }
+      },
+      (e) => console.error(e),
+      false,
+      "createComment request"
+    );
   }
 }
 

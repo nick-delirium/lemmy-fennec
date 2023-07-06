@@ -1,8 +1,10 @@
 import { makeDateString } from "../utils/utils";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, useColorScheme, View } from "react-native";
 import { Text } from "../ThemedComponents";
-import { commonColors, commonStyles } from "../commonStyles";
+import { commonColors, commonStyles, mdTheme } from "../commonStyles";
 import React from "react";
+import Markdown from "react-native-marked";
+import { useTheme } from "@react-navigation/native";
 
 function MiniComment({
   published,
@@ -11,15 +13,19 @@ function MiniComment({
   title,
   content,
   isSelf,
+  useMd,
 }: {
   published: string;
   author: string;
   community: string;
   title: string;
   content: string;
-  isSelf: boolean;
+  isSelf?: boolean;
+  useMd?: boolean;
 }) {
   const dateStr = makeDateString(published);
+  const sch = useColorScheme();
+  const { colors } = useTheme();
   return (
     <View style={styles.comment}>
       <View style={styles.topRow}>
@@ -34,9 +40,21 @@ function MiniComment({
         <Text lines={2} style={commonStyles.title}>
           {title}
         </Text>
-        <Text lines={4} style={commonStyles.text}>
-          {content}
-        </Text>
+        {useMd ? (
+          <Markdown
+            value={content}
+            styles={{
+              paragraph: {
+                backgroundColor: colors.background,
+              },
+            }}
+            theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
+          />
+        ) : (
+          <Text lines={4} style={commonStyles.text}>
+            {content}
+          </Text>
+        )}
       </View>
     </View>
   );

@@ -71,6 +71,18 @@ function Post({
 
   const customReadColor = post.read ? "#ababab" : colors.text;
 
+  const openCommenting = () => {
+    apiClient.commentsStore.setReplyTo({
+      postId: post.post.id,
+      parent_id: undefined,
+      title: post.post.name,
+      community: post.community.name,
+      published: post.post.published,
+      author: post.creator.name,
+      content: post.post.body,
+    });
+    navigation.navigate("CommentWrite");
+  };
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
       <ImageView
@@ -131,6 +143,7 @@ function Post({
       <PostIconRow
         post={post}
         markRead={markRead}
+        getComments={openCommenting}
         useCommunity={useCommunity}
       />
     </View>

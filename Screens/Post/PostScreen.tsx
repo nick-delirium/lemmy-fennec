@@ -1,19 +1,11 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import {
-  ActivityIndicator,
-  View,
-  // KeyboardAvoidingView,
-  // Platform,
-  // StyleSheet,
-} from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { apiClient } from "../../store/apiClient";
 import ExpandedPost from "../../components/Post/ExpandedPost";
 import { useTheme } from "@react-navigation/native";
 import CommentsFloatingMenu from "./CommentsFloatingMenu";
 import CommentFlatList from "./CommentsFlatlist";
-// import useKeyboard from "../../utils/useKeyboard";
-// import { useHeaderHeight } from "@react-navigation/elements";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 function PostScreen({
@@ -22,10 +14,7 @@ function PostScreen({
 }: NativeStackScreenProps<any, "Feed">) {
   const post = apiClient.postStore.singlePost;
   const openComment = route.params.openComment;
-  console.log(route.params);
   const { colors } = useTheme();
-  // const keyboardHeight = useKeyboard();
-  // const height = useHeaderHeight();
 
   React.useEffect(() => {
     if (route.params.post) {
@@ -60,6 +49,9 @@ function PostScreen({
     navigation.navigate("User", { personId: id });
   };
 
+  const openCommenting = () => {
+    navigation.navigate("CommentWrite");
+  };
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList
@@ -69,20 +61,10 @@ function PostScreen({
         comments={apiClient.commentsStore.commentTree}
         colors={colors}
         openComment={openComment}
+        openCommenting={openCommenting}
         footer={<View style={{ height: 72, width: "100%" }} />}
       />
       <CommentsFloatingMenu isLoading={apiClient.commentsStore.isLoading} />
-      {/* adding this later <KeyboardAvoidingView*/}
-      {/*    behavior={Platform.OS === "ios" ? "padding" : "height"}*/}
-      {/*    style={{ position: 'absolute', bottom: 0, width: '100%' }}*/}
-      {/*  >*/}
-      {/*    <View style={{ ...styles.inputRow, backgroundColor: colors.card }}>*/}
-      {/*      <TextInput style={{ flex: 1 }} />*/}
-      {/*      <TouchableOpacity style={styles.additionalButtonStyle} isSecondary onPressCb={() => console.log('Keyboard.dismiss()')}>*/}
-      {/*        <Icon name={"send"} accessibilityLabel={'Send text'} size={24} />*/}
-      {/*      </TouchableOpacity>*/}
-      {/*    </View>*/}
-      {/*</KeyboardAvoidingView>*/}
     </View>
   );
 }

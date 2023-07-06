@@ -21,6 +21,7 @@ const CommentFlatList = observer(
     colors,
     getAuthor,
     openComment,
+    openCommenting,
   }: {
     colors: Theme["colors"];
     refreshing?: boolean;
@@ -29,12 +30,18 @@ const CommentFlatList = observer(
     header?: React.ReactElement;
     footer?: React.ReactElement;
     getAuthor?: (id: number) => void;
+    openCommenting?: () => void;
   }) => {
     const listRef = React.useRef<FlatList<CommentNode>>(null);
     const extractor = React.useCallback((c) => c.comment.id.toString(), []);
     const renderer = React.useCallback(
       ({ item }) => (
-        <CommentRenderer getAuthor={getAuthor} comment={item} colors={colors} />
+        <CommentRenderer
+          openCommenting={openCommenting}
+          getAuthor={getAuthor}
+          comment={item}
+          colors={colors}
+        />
       ),
       []
     );
@@ -79,10 +86,12 @@ const CommentRenderer = React.memo(
     comment,
     colors,
     getAuthor,
+    openCommenting,
   }: {
     colors: Theme["colors"];
     comment: CommentNode;
     getAuthor?: (id: number) => void;
+    openCommenting?: () => void;
   }) => {
     const [isExpanded, setIsExpanded] = React.useState(true);
 
@@ -103,6 +112,7 @@ const CommentRenderer = React.memo(
             getAuthor={getAuthor}
             comment={comment}
             isExpanded={isExpanded}
+            openCommenting={openCommenting}
             hide={comment.children.length > 0 ? hide : undefined}
           />
           {comment.children.length > 0 ? (
@@ -110,6 +120,7 @@ const CommentRenderer = React.memo(
               <CommentFlatList
                 getAuthor={getAuthor}
                 colors={colors}
+                openCommenting={openCommenting}
                 comments={comment.children}
               />
             </View>
@@ -119,7 +130,11 @@ const CommentRenderer = React.memo(
     } else {
       return (
         <View>
-          <Comment isExpanded={isExpanded} comment={comment} />
+          <Comment
+            openCommenting={openCommenting}
+            isExpanded={isExpanded}
+            comment={comment}
+          />
           <TouchableOpacity onPress={show}>
             <Text
               style={{

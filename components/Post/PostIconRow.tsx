@@ -14,6 +14,11 @@ interface Props {
 }
 
 function PostIconRow({ post, useCommunity, markRead, getComments }: Props) {
+  const scoreColor = !post.my_vote
+    ? undefined
+    : post.my_vote === 1
+    ? commonColors.upvote
+    : commonColors.downvote;
   return (
     <View
       style={{
@@ -28,16 +33,9 @@ function PostIconRow({ post, useCommunity, markRead, getComments }: Props) {
           accessibilityLabel={"total rating"}
           name={"chevrons-up"}
           size={24}
+          color={scoreColor}
         />
-        <Text
-          customColor={
-            !post.my_vote
-              ? undefined
-              : post.my_vote === 1
-              ? commonColors.upvote
-              : commonColors.downvote
-          }
-        >
+        <Text customColor={scoreColor}>
           {post.counts.score} (
           {Math.ceil(
             (post.counts.upvotes /

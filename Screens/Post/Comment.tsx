@@ -22,11 +22,13 @@ function Comment({
   hide,
   isExpanded,
   getAuthor,
+  openCommenting,
 }: {
   comment: CommentNode;
   isExpanded: boolean;
   hide?: () => void;
   getAuthor?: (author: number) => void;
+  openCommenting?: () => void;
 }) {
   const sch = useColorScheme();
   const { colors } = useTheme();
@@ -62,6 +64,27 @@ function Comment({
     );
   }, []);
 
+  const replyToComment = React.useCallback(() => {
+    if (!openCommenting) return;
+    apiClient.commentsStore.setReplyTo({
+      postId: comment.post.id,
+      parent_id: comment.comment.id,
+      title: comment.post.name,
+      community: comment.community.name,
+      published: comment.comment.published,
+      author: comment.creator.name,
+      content: comment.comment.content,
+    });
+    openCommenting();
+  }, [openCommenting]);
+
+  const scoreColor = React.useMemo(() => {
+    return comment.my_vote
+      ? comment.my_vote === Score.Upvote
+        ? commonColors.upvote
+        : commonColors.downvote
+      : undefined;
+  }, []);
   return (
     <View style={{ ...styles.container, borderBottomColor: colors.card }}>
       <View style={styles.topRow}>
@@ -113,8 +136,9 @@ function Comment({
             accessibilityLabel={"total rating (upvote percent)"}
             name={"chevrons-up"}
             size={24}
+            color={scoreColor}
           />
-          <Text>
+          <Text customColor={scoreColor}>
             {comment.counts.score} (
             {Math.ceil(
               (comment.counts.upvotes /
@@ -125,22 +149,24 @@ function Comment({
           </Text>
         </View>
         {comment.children.length > 0 ? (
-          <View style={styles.infoPiece}>
-            <Icon
-              accessibilityLabel={"sub comments amount"}
-              name={"message-square"}
-              size={24}
-            />
-            <Text>{comment.children.length}</Text>
-          </View>
+          hide ? (
+            <TouchableOpacity style={styles.infoPiece} simple onPressCb={hide}>
+              <Icon
+                accessibilityLabel={"hide sub comment tree"}
+                name={"eye-off"}
+                size={24}
+              />
+              <Text>{comment.children.length}</Text>
+            </TouchableOpacity>
+          ) : null
         ) : null}
 
         <View style={{ flex: 1 }} />
-        {hide ? (
-          <TouchableOpacity simple onPressCb={hide}>
+        {openCommenting ? (
+          <TouchableOpacity simple onPressCb={replyToComment}>
             <Icon
-              accessibilityLabel={"hide sub comment tree"}
-              name={"eye-off"}
+              accessibilityLabel={"Write a comment on this comment"}
+              name={"message-square"}
               size={24}
             />
           </TouchableOpacity>

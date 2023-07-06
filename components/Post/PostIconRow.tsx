@@ -11,14 +11,25 @@ interface Props {
   useCommunity?: boolean;
   markRead: () => void;
   getComments?: () => void;
+  onDelete?: () => void;
 }
 
-function PostIconRow({ post, useCommunity, markRead, getComments }: Props) {
+function PostIconRow({
+  post,
+  useCommunity,
+  markRead,
+  getComments,
+  onDelete,
+}: Props) {
+  const isSelf =
+    post.creator.id === apiClient.profileStore.localUser.local_user.person_id;
+
   const scoreColor = !post.my_vote
     ? undefined
     : post.my_vote === 1
     ? commonColors.upvote
     : commonColors.downvote;
+
   return (
     <View
       style={{
@@ -46,6 +57,11 @@ function PostIconRow({ post, useCommunity, markRead, getComments }: Props) {
         </Text>
       </View>
       <View style={{ flex: 1 }} />
+      {isSelf ? (
+        <TouchableOpacity onPressCb={onDelete} simple>
+          <Icon name={"trash"} size={24} />
+        </TouchableOpacity>
+      ) : null}
       <TouchableOpacity onPressCb={getComments} simple>
         <View style={styles.infoPiece}>
           <Icon
@@ -60,7 +76,6 @@ function PostIconRow({ post, useCommunity, markRead, getComments }: Props) {
           </Text>
         </View>
       </TouchableOpacity>
-
       <TouchableOpacity
         simple
         onPressCb={() => {

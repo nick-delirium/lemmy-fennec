@@ -15,6 +15,7 @@ function CommunityScreen({
   route,
 }: NativeStackScreenProps<any, "Community">) {
   const commId = route.params.id;
+  const { community } = apiClient.communityStore;
 
   React.useEffect(() => {
     const getData = () => {

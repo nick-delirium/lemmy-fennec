@@ -3,7 +3,14 @@ import { PostView } from "lemmy-js-client";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import Markdown from "react-native-marked";
-import { View, StyleSheet, useColorScheme, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  useColorScheme,
+  Image,
+  ToastAndroid,
+  Alert,
+} from "react-native";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { mdTheme } from "../../commonStyles";
 import { apiClient } from "../../store/apiClient";
@@ -28,6 +35,8 @@ function Post({
   useCommunity?: boolean;
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
 }) {
+  const scheme = useColorScheme();
+
   const [visible, setIsVisible] = React.useState(false);
   const { colors } = useTheme();
   const sch = useColorScheme();
@@ -82,6 +91,40 @@ function Post({
       content: post.post.body,
     });
     navigation.navigate("CommentWrite");
+  };
+
+  const onDelete = () => {
+    const onConfirm = () => {
+      apiClient.postStore
+        .deletePost({
+          auth: apiClient.loginDetails.jwt,
+          post_id: post.post.id,
+          deleted: true,
+        })
+        .then(() => {
+          ToastAndroid.show("Post deleted", ToastAndroid.SHORT);
+          navigation.goBack();
+        });
+    };
+    console.log(scheme);
+    if (!apiClient.loginDetails.jwt) return;
+    Alert.alert(
+      "Delete post?",
+      "Are you sure you want to delete this post?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => onConfirm(),
+        },
+      ],
+      {
+        userInterfaceStyle: scheme,
+      }
+    );
   };
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
@@ -143,6 +186,7 @@ function Post({
       <PostIconRow
         post={post}
         markRead={markRead}
+        onDelete={onDelete}
         getComments={openCommenting}
         useCommunity={useCommunity}
       />

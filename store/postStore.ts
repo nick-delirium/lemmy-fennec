@@ -11,6 +11,7 @@ import {
   CommunityId,
   SavePost,
   MarkPostAsRead,
+  DeletePost,
 } from "lemmy-js-client";
 import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
@@ -287,6 +288,16 @@ class PostStore extends DataClass {
       (e) => console.error(e),
       true,
       "mark post read"
+    );
+  }
+
+  async deletePost(form: DeletePost) {
+    await this.fetchData<PostResponse>(
+      () => this.api.deletePost(form),
+      () => null,
+      (e) => console.error(e),
+      false,
+      "delete post"
     );
   }
 }

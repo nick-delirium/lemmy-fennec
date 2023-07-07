@@ -33,7 +33,7 @@ function Replies({ navigation }) {
   };
 
   const nextPage = () => {
-    if (apiClient.mentionsStore.replies.length > 0) {
+    if (apiClient.mentionsStore.replies.length > 5) {
       apiClient.mentionsStore.setPage(apiClient.mentionsStore.page + 1);
       void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
     }
@@ -57,6 +57,7 @@ function Replies({ navigation }) {
             style={{ height: 1, width: "100%", backgroundColor: colors.border }}
           />
         )}
+        onEndReachedThreshold={0.5}
         ListEmptyComponent={
           <View style={styles.container}>
             <Text style={styles.empty}>Nothing is here for now...</Text>

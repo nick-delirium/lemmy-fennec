@@ -41,6 +41,7 @@ function PostScreen({
 
   React.useEffect(() => {
     if (post && apiClient.commentsStore.comments.length === 0) {
+      apiClient.commentsStore.setPage(1);
       void apiClient.commentsStore.getComments(
         post.post.id,
         apiClient.loginDetails
@@ -50,6 +51,7 @@ function PostScreen({
 
   React.useEffect(() => {
     return () => {
+      apiClient.commentsStore.setPage(1);
       apiClient.commentsStore.setComments([]);
     };
   }, []);
@@ -63,6 +65,23 @@ function PostScreen({
   const openCommenting = () => {
     navigation.navigate("CommentWrite");
   };
+
+  const onEndReached = () => {
+    // I'm fairly sure that they return everything at the moment, no matter the limit/page.
+    return console.log(apiClient.commentsStore.comments.length);
+    if (
+      apiClient.commentsStore.comments.length >=
+      apiClient.postStore.singlePost.counts.comments - 1
+    ) {
+      return;
+    } else {
+      void apiClient.commentsStore.nextPage(
+        post.post.id,
+        apiClient.loginDetails
+      );
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList
@@ -72,6 +91,7 @@ function PostScreen({
         comments={apiClient.commentsStore.commentTree}
         colors={colors}
         onRefresh={refreshAll}
+        onEndReached={onEndReached}
         openComment={openComment}
         openCommenting={openCommenting}
         footer={<View style={{ height: 72, width: "100%" }} />}

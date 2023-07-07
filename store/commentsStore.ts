@@ -52,8 +52,9 @@ class CommentsStore extends DataClass {
   public comments: CommentView[] = [];
   public commentTree: CommentNode[] = [];
   public replyTo: ReplyView | null = null;
+  public page = 1;
   public filters: Filters = {
-    max_depth: 8,
+    max_depth: 2,
     saved_only: false,
     sort: CommentSortTypeMap.Hot,
     type_: ListingTypeMap.All,
@@ -66,6 +67,8 @@ class CommentsStore extends DataClass {
       filters: observable.deep,
       replyTo: observable,
       commentTree: observable.deep,
+      page: observable,
+      setPage: action,
       setFilters: action,
       setComments: action,
       buildTree: action,
@@ -75,6 +78,10 @@ class CommentsStore extends DataClass {
       updateCommentById: action,
       updateTreeCommentRating: action,
     });
+  }
+
+  setPage(page: number) {
+    this.page = page;
   }
 
   setReplyTo(comment: ReplyView | null) {
@@ -94,18 +101,68 @@ class CommentsStore extends DataClass {
     loginDetails?: LoginResponse,
     parentId?: number
   ) {
+    const additionalFilters = parentId
+      ? {
+          parent_id: parentId,
+          max_depth: 8,
+          limit: 999,
+        }
+      : {
+          limit: 40,
+          max_depth: 2,
+        };
+    await this.fetchData<GetCommentsResponse>(
+      () =>
+        this.api.getComments({
+          ...this.filters,
+          ...additionalFilters,
+          auth: loginDetails?.jwt,
+          post_id: postId,
+        }),
+      ({ comments }) => {
+        if (parentId) {
+          // removing parent
+          comments.shift();
+          const tree = buildCommentTree(comments);
+          this.updateTreeCommentRating(this.commentTree, parentId, tree);
+          this.concatComments(comments);
+        } else {
+          this.setComments(comments);
+        }
+      },
+      (e) => console.error(e),
+      false,
+      "get comments"
+    );
+  }
+
+  async nextPage(postId: PostId | null, loginDetails?: LoginResponse) {
+    if (this.isLoading || this.comments.length < 5) return;
+    this.setPage(this.page + 1);
+
     await this.fetchData<GetCommentsResponse>(
       () =>
         this.api.getComments({
           ...this.filters,
           auth: loginDetails?.jwt,
           post_id: postId,
-          parent_id: parentId,
+          limit: 40,
+          page: this.page,
         }),
-      ({ comments }) => this.setComments(comments),
+      ({ comments }) => {
+        const uniqueComments = comments.filter(
+          (c) =>
+            this.comments.findIndex((c2) => c2.comment.id === c.comment.id) ===
+            -1
+        );
+        if (uniqueComments.length > 0) {
+          const newComments = this.comments.concat(uniqueComments);
+          this.setComments(newComments);
+        }
+      },
       (e) => console.error(e),
       false,
-      "get comments"
+      "get comments next page: " + this.page
     );
   }
 
@@ -113,6 +170,10 @@ class CommentsStore extends DataClass {
     this.comments = comments;
     // easier for rendering
     this.buildTree(comments);
+  }
+
+  concatComments(comments: CommentView[]) {
+    this.comments = this.comments.concat(comments);
   }
 
   buildTree(comments: CommentView[]) {
@@ -160,26 +221,32 @@ class CommentsStore extends DataClass {
   updateTreeCommentRating(
     commentTree: CommentNode[],
     commentId: number,
-    child?: CommentNode,
+    children?: CommentNode | CommentNode[],
     vote?: (typeof Score)[keyof typeof Score],
     counts?: CommentNode["counts"]
   ): boolean {
     for (const commentNode of commentTree) {
       if (commentNode.comment.id === commentId) {
-        if (child) commentNode.children.unshift(child);
+        if (children) {
+          if (Array.isArray(children))
+            commentNode.children.unshift(...children);
+          else commentNode.children.unshift(children);
+        }
         if (vote) commentNode.my_vote = vote;
         if (counts) commentNode.counts = counts;
+        this.commentTree = commentTree;
         return true;
       }
       if (
         this.updateTreeCommentRating(
           commentNode.children,
           commentId,
-          child,
+          children,
           vote,
           counts
         )
       ) {
+        this.commentTree = commentTree;
         return true;
       }
     }

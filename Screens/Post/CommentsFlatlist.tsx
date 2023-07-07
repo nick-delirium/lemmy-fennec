@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import Comment from "./Comment";
+import { apiClient } from "../../store/apiClient";
 
 const CommentFlatList = observer(
   ({
@@ -23,6 +24,7 @@ const CommentFlatList = observer(
     openComment,
     openCommenting,
     onRefresh,
+    onEndReached,
   }: {
     colors: Theme["colors"];
     refreshing?: boolean;
@@ -33,6 +35,7 @@ const CommentFlatList = observer(
     getAuthor?: (id: number) => void;
     openCommenting?: () => void;
     onRefresh?: () => void;
+    onEndReached?: () => void;
   }) => {
     const listRef = React.useRef<FlatList<CommentNode>>(null);
     const extractor = React.useCallback((c) => c.comment.id.toString(), []);
@@ -68,10 +71,12 @@ const CommentFlatList = observer(
       <FlatList
         onRefresh={onRefresh}
         ref={listRef}
-        windowSize={10}
-        maxToRenderPerBatch={10}
+        windowSize={15}
+        maxToRenderPerBatch={15}
         removeClippedSubviews
-        initialNumToRender={5}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.5}
+        initialNumToRender={10}
         ListHeaderComponent={header}
         ListFooterComponent={footer}
         data={comments}
@@ -84,7 +89,7 @@ const CommentFlatList = observer(
   }
 );
 
-const CommentRenderer = React.memo(
+const CommentRenderer = observer(
   ({
     comment,
     colors,
@@ -108,6 +113,15 @@ const CommentRenderer = React.memo(
       setIsExpanded(true);
     };
 
+    const loadMore = () => {
+      setIsExpanded(true);
+      void apiClient.commentsStore.getComments(
+        undefined,
+        apiClient.loginDetails,
+        comment.comment.id
+      );
+    };
+
     if (isExpanded) {
       return (
         <View>
@@ -127,6 +141,20 @@ const CommentRenderer = React.memo(
                 comments={comment.children}
               />
             </View>
+          ) : comment.counts.child_count > 0 ? (
+            <TouchableOpacity onPress={loadMore}>
+              <Text
+                style={{
+                  ...styles.subComment,
+                  padding: 8,
+                  paddingTop: 8,
+                  borderLeftColor: ownColor,
+                  color: colors.primary,
+                }}
+              >
+                Load {comment.counts.child_count} more
+              </Text>
+            </TouchableOpacity>
           ) : null}
         </View>
       );

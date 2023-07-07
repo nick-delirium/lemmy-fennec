@@ -10,8 +10,9 @@ import {
   Image,
   ToastAndroid,
   Alert,
+  Share,
 } from "react-native";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { mdTheme } from "../../commonStyles";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -126,6 +127,14 @@ function Post({
       }
     );
   };
+
+  const shareImage = () => {
+    void Share.share({
+      url: post.post.url,
+      message: post.post.url,
+      title: "Share post image",
+    });
+  };
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
       <ImageView
@@ -133,6 +142,13 @@ function Post({
         imageIndex={0}
         visible={visible}
         onRequestClose={() => setIsVisible(false)}
+        FooterComponent={() => (
+          <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
+            <TouchableOpacity onPressCb={shareImage} simple>
+              <Icon name={"share-2"} size={24} />
+            </TouchableOpacity>
+          </View>
+        )}
         HeaderComponent={() => (
           <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
             <Text style={{ fontSize: 16 }}>{post.post.name}</Text>
@@ -212,7 +228,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   postImg: { width: "100%", height: 340 },
-  imgHeader: { padding: 12, justifyContent: "center", alignItems: "center" },
+  imgHeader: {
+    padding: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 16,
+  },
 });
 
 export default observer(Post);

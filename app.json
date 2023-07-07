@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#2b4777"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -20,9 +20,16 @@
     },
     "android": {
       "jsEngine": "hermes",
+      "icon": "./assets/icon.png",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#2b4777"
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#2b4777",
+        "monochromeImage": "./assets/monochrome.png"
       },
       "package": "com.nick.delirium.fennec"
     },

@@ -63,6 +63,7 @@ class CommunityStore extends DataClass {
           limit: 30,
           page: this.page,
           sort: "TopAll",
+          show_nsfw: true,
         }),
       (data) => {
         this.setFollowedCommunities(data.communities);

@@ -22,7 +22,7 @@ function PostIconRow({
   onDelete,
 }: Props) {
   const isSelf =
-    post.creator.id === apiClient.profileStore.localUser.local_user.person_id;
+    post.creator.id === apiClient.profileStore.localUser?.local_user.person_id;
 
   const scoreColor = !post.my_vote
     ? undefined

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  ActivityIndicator,
   Linking,
   RefreshControl,
   ScrollView,
@@ -17,7 +16,6 @@ import Bio from "./Bio";
 import { Icon, TouchableOpacity, Text } from "../../ThemedComponents";
 import { asyncStorageHandler } from "../../asyncStorage";
 import { useTheme } from "@react-navigation/native";
-import { profileStore } from "../../store/profileStore";
 
 // even though its actually inside tab, main nav context is a stack right now
 function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
@@ -84,7 +82,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
         <TouchableOpacity
           style={styles.row}
           simple
-          onPressCb={() => Linking.openURL("https://lemmy.world/c/fennec")}
+          onPressCb={() => navigation.navigate("Community", { id: 61020 })}
         >
           <Icon size={24} name={"message-circle"} />
           <Text

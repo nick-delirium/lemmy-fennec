@@ -144,14 +144,10 @@ function Post({
         onRequestClose={() => setIsVisible(false)}
         FooterComponent={() => (
           <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
+            <Text style={{ fontSize: 16 }}>{post.post.name}</Text>
             <TouchableOpacity onPressCb={shareImage} simple>
               <Icon name={"share-2"} size={24} />
             </TouchableOpacity>
-          </View>
-        )}
-        HeaderComponent={() => (
-          <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
-            <Text style={{ fontSize: 16 }}>{post.post.name}</Text>
           </View>
         )}
       />

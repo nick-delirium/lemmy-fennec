@@ -29,9 +29,6 @@ function UserScreen({
         person_id: route.params.personId,
       });
     }
-    return () => {
-      apiClient.profileStore.setProfile(null);
-    };
   }, [route.params.personId]);
 
   if (!person || apiClient.profileStore.isLoading) {

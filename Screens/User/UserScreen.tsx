@@ -3,6 +3,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import User from "./User";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import OwnComments from "../Profile/OwnComments";
+import OwnPosts from "../Profile/OwnPosts";
 import { apiClient } from "../../store/apiClient";
 import { ActivityIndicator, View } from "react-native";
 import { observer } from "mobx-react-lite";
@@ -53,6 +54,13 @@ function UserScreen({
         }}
         name={"ForeignUserComments"}
         component={OwnComments}
+      />
+      <Tab.Screen
+        options={{
+          tabBarLabel: "Posts",
+        }}
+        name={"ForeignUserPosts"}
+        component={OwnPosts}
       />
     </Tab.Navigator>
   );

@@ -74,6 +74,7 @@ function Comment({
       published: comment.comment.published,
       author: comment.creator.name,
       content: comment.comment.content,
+      language_id: comment.comment.language_id,
     });
     openCommenting();
   }, [openCommenting]);
@@ -84,7 +85,7 @@ function Comment({
         ? commonColors.upvote
         : commonColors.downvote
       : undefined;
-  }, []);
+  }, [comment.my_vote]);
   return (
     <View style={{ ...styles.container, borderBottomColor: colors.card }}>
       <View style={styles.topRow}>
@@ -156,7 +157,7 @@ function Comment({
                 name={"eye-off"}
                 size={24}
               />
-              <Text>{comment.children.length}</Text>
+              <Text>{comment.counts.child_count}</Text>
             </TouchableOpacity>
           ) : null
         ) : null}

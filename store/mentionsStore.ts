@@ -3,15 +3,33 @@ import DataClass from "./dataClass";
 import {
   CommentReplyResponse,
   CommentReplyView,
+  GetPersonMentionsResponse,
+  PrivateMessagesResponse,
+  PrivateMessageView,
   GetRepliesResponse,
   GetUnreadCountResponse,
-  MarkAllAsRead,
+  PersonMentionView,
 } from "lemmy-js-client";
+
+interface Unreads {
+  replies: number;
+  mentions: number;
+  messages: number;
+}
 
 class MentionsStore extends DataClass {
   unreadsCount = 0;
+  unreads: Unreads = {
+    replies: 0,
+    mentions: 0,
+    messages: 0,
+  };
   page = 1;
+  mentionsPage = 1;
+  messagesPage = 1;
   replies: CommentReplyView[] = [];
+  mentions: PersonMentionView[] = [];
+  messages: PrivateMessageView[] = [];
 
   constructor() {
     super();
@@ -19,6 +37,16 @@ class MentionsStore extends DataClass {
       unreadsCount: observable,
       replies: observable,
       page: observable,
+      unreads: observable,
+      mentions: observable,
+      messages: observable,
+      messagesPage: observable,
+      mentionsPage: observable,
+      setMentionsPage: action,
+      setMessagesPage: action,
+      setMessages: action,
+      setUnreads: action,
+      setMentions: action,
       setUnreadsCount: action,
       setReplies: action,
       setPage: action,
@@ -27,12 +55,32 @@ class MentionsStore extends DataClass {
     });
   }
 
+  setUnreads(unreads: Unreads) {
+    this.unreads = unreads;
+  }
+
+  setMessages(messages: PrivateMessageView[]) {
+    this.messages = messages;
+  }
+
+  setMessagesPage(page: number) {
+    this.messagesPage = page;
+  }
+
   setPage(page: number) {
     this.page = page;
   }
 
+  setMentionsPage(page: number) {
+    this.mentionsPage = page;
+  }
+
   setReplies(replies: CommentReplyView[]) {
     this.replies = replies;
+  }
+
+  setMentions(mentions: PersonMentionView[]) {
+    this.mentions = mentions;
   }
 
   setUnreadsCount(count: number) {
@@ -44,6 +92,7 @@ class MentionsStore extends DataClass {
       () => this.api.getUnreads({ auth }),
       ({ mentions, replies, private_messages }) => {
         this.setUnreadsCount(mentions + replies + private_messages);
+        this.setUnreads({ mentions, replies, messages: private_messages });
       },
       (error) => console.log(error),
       false,
@@ -64,6 +113,43 @@ class MentionsStore extends DataClass {
       (error) => console.log(error),
       false,
       "fetch comment replies"
+    );
+  }
+
+  async getMessages(auth: string) {
+    await this.fetchData<PrivateMessagesResponse>(
+      () =>
+        this.api.getMessages({
+          auth,
+          limit: 30,
+          page: this.page,
+          unread_only: false,
+        }),
+      ({ private_messages }) => {
+        console.log(private_messages.length);
+        this.setMessages(private_messages);
+      },
+      (error) => console.log(error),
+      false,
+      "fetch private messages"
+    );
+  }
+
+  async getMentions(auth: string) {
+    await this.fetchData<GetPersonMentionsResponse>(
+      () =>
+        this.api.getMentions({
+          auth,
+          sort: "New",
+          limit: 30,
+          page: this.mentionsPage,
+        }),
+      ({ mentions }) => {
+        this.setMentions(mentions);
+      },
+      (error) => console.log(error),
+      false,
+      "fetch user mentions"
     );
   }
 

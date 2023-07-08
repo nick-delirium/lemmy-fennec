@@ -24,6 +24,8 @@ import {
   CreatePost,
   DeletePost,
   CreateComment,
+  GetPersonMentions,
+  GetPrivateMessages,
 } from "lemmy-js-client";
 
 // !!!TODO!!!
@@ -116,6 +118,14 @@ export default class ApiService {
 
   getReplies(form: GetReplies) {
     return this.client.getReplies(form);
+  }
+
+  getMentions(form: GetPersonMentions) {
+    return this.client.getPersonMentions(form);
+  }
+
+  getMessages(form: GetPrivateMessages) {
+    return this.client.getPrivateMessages(form);
   }
 
   markReplyRead(form: MarkCommentReplyAsRead) {

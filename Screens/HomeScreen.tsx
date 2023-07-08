@@ -36,36 +36,7 @@ function HomeScreen() {
             case "Followed Communities":
               return <Feather name={"star"} size={size} color={color} />;
             case "Unreads":
-              if (unreadCount > 0) {
-                return (
-                  <View>
-                    <Feather name={"mail"} size={size} color={color} />
-                    <View
-                      style={{
-                        position: "absolute",
-                        top: -4,
-                        right: -4,
-                        backgroundColor: "red",
-                        borderRadius: 100,
-                        width: 16,
-                        height: 16,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: "white",
-                          fontSize: 10,
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {displayedUnreads}
-                      </Text>
-                    </View>
-                  </View>
-                );
-              } else return <Feather name={"mail"} size={size} color={color} />;
+              return <Feather name={"mail"} size={size} color={color} />;
             default:
               return <Feather name={"heart"} size={size} color={color} />;
           }
@@ -98,7 +69,10 @@ function HomeScreen() {
         <Tab.Screen
           name={"Unreads"}
           component={Unreads}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+            tabBarBadge: unreadCount > 0 ? displayedUnreads : undefined,
+          }}
         />
       ) : null}
       <Tab.Screen

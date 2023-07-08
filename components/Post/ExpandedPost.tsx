@@ -90,6 +90,7 @@ function Post({
       published: post.post.published,
       author: post.creator.name,
       content: post.post.body,
+      language_id: post.post.language_id,
     });
     navigation.navigate("CommentWrite");
   };

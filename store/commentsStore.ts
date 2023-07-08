@@ -46,6 +46,7 @@ interface ReplyView {
   content: string;
   postId: number;
   parent_id?: number;
+  language_id?: number;
 }
 
 class CommentsStore extends DataClass {

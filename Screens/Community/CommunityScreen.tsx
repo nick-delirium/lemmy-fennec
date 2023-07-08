@@ -8,7 +8,7 @@ import FloatingMenu from "../Feed/FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CommunityHeader from "./CommunityHeader";
 import { communityStore } from "../../store/communityStore";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
+import { Text, TouchableOpacity, Icon } from "../../ThemedComponents";
 import TinyPost from "../../components/Post/TinyPost";
 
 function CommunityScreen({
@@ -116,9 +116,11 @@ function CommunityScreen({
       <FloatingMenu
         useCommunity
         additional={
-          <TouchableOpacity simple onPressCb={createPost}>
-            <Text style={{ fontWeight: "500" }}>New Post</Text>
-          </TouchableOpacity>
+          !community?.community.posting_restricted_to_mods ? (
+            <TouchableOpacity simple onPressCb={createPost}>
+              <Text style={{ fontWeight: "500" }}>New Post</Text>
+            </TouchableOpacity>
+          ) : null
         }
       />
     </View>

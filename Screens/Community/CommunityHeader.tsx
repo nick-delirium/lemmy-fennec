@@ -11,7 +11,7 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
+import { Text, TouchableOpacity, Icon } from "../../ThemedComponents";
 import { mdTheme } from "../../commonStyles";
 import Markdown from "react-native-marked";
 
@@ -93,9 +93,15 @@ function CommunityHeader({
       <View style={styles.buttons}>
         {community.community.description ? (
           <TouchableOpacity
+            style={{ flexDirection: "row" }}
             onPressCb={() => setShowDescription(!showDescription)}
           >
-            <Text>{showDescription ? "Hide" : "Show"} description</Text>
+            <Icon
+              name={showDescription ? "chevron-up" : "chevron-down"}
+              size={18}
+              color={"white"}
+            />
+            <Text>Description</Text>
           </TouchableOpacity>
         ) : null}
         {showFollow ? (
@@ -103,7 +109,7 @@ function CommunityHeader({
             <Text>{followingStr}</Text>
           </TouchableOpacity>
         ) : null}
-        {showFollow ? (
+        {showFollow && !community?.community.posting_restricted_to_mods ? (
           <TouchableOpacity onPressCb={createPost}>
             <Text>New Post</Text>
           </TouchableOpacity>

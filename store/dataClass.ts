@@ -28,8 +28,15 @@ export default class DataClass {
       const data = await fetcher();
       onSuccess(data);
     } catch (e) {
-      ToastAndroid.show("Network error", ToastAndroid.SHORT);
-      debugStore.addError(`${label} --- ${e.name}: ${e.message}; ${e.stack}`);
+      const errStr = `Network${
+        typeof e === "string" ? "error: " + e : "error"
+      }`;
+      ToastAndroid.show(errStr, ToastAndroid.SHORT);
+      debugStore.addError(
+        typeof e === "string"
+          ? `${label} ${e}`
+          : `${label} --- ${e.name}: ${e.message}; ${e.stack}`
+      );
       onError(e);
     } finally {
       if (!isUnimportant) this.setIsLoading(false);

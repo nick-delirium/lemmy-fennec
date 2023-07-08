@@ -1,24 +1,24 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { View, FlatList, StyleSheet, Share, ToastAndroid } from "react-native";
+import { View, FlatList, StyleSheet, Share } from "react-native";
 import { Text, Icon, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
-import { CommentReplyView } from "lemmy-js-client";
+import { PersonMentionView } from "lemmy-js-client";
 import { commonStyles } from "../../commonStyles";
-import { useTheme, NavigationProp } from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 import FAB from "../../components/FAB";
 import MiniComment from "../../components/TinyComment";
 
-function Replies({ navigation }) {
+function Mentions({ navigation }) {
   const { colors } = useTheme();
   const [isOpen, setIsOpen] = React.useState(false);
 
   // only logged user can see this component
   React.useEffect(() => {
     const unsub = navigation.addListener("focus", () => {
-      if (apiClient.mentionsStore.unreads.replies !== 0) return;
+      if (apiClient.mentionsStore.unreads.mentions !== 0) return;
       else {
-        void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
+        void apiClient.mentionsStore.getMentions(apiClient.loginDetails.jwt);
       }
     });
 
@@ -26,7 +26,7 @@ function Replies({ navigation }) {
       closeAll();
       unsub();
     };
-  }, [apiClient.mentionsStore.unreads.replies]);
+  }, [apiClient.mentionsStore.unreads.mentions]);
 
   const openMenu = () => {
     setIsOpen(true);
@@ -44,28 +44,33 @@ function Replies({ navigation }) {
   };
 
   const nextPage = () => {
-    if (apiClient.mentionsStore.replies.length > 5) {
-      apiClient.mentionsStore.setPage(apiClient.mentionsStore.page + 1);
-      void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
+    if (apiClient.mentionsStore.mentions.length > 5) {
+      apiClient.mentionsStore.setMentionsPage(
+        apiClient.mentionsStore.mentionsPage + 1
+      );
+      void apiClient.mentionsStore.getMentions(apiClient.loginDetails.jwt);
     }
   };
 
   const refresh = () => {
-    apiClient.mentionsStore.setPage(1);
+    apiClient.mentionsStore.setMentionsPage(1);
     apiClient.mentionsStore
       .fetchUnreads(apiClient.loginDetails.jwt)
       .then(() => {
-        void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
+        void apiClient.mentionsStore.getMentions(apiClient.loginDetails.jwt);
       });
   };
+
   return (
     <View style={{ flex: 1 }}>
       <FlatList
         style={styles.container}
-        data={apiClient.mentionsStore.replies}
+        data={apiClient.mentionsStore.mentions}
         onRefresh={refresh}
         refreshing={apiClient.mentionsStore.isLoading}
-        renderItem={({ item }) => <Reply item={item} navigation={navigation} />}
+        renderItem={({ item }) => (
+          <Mention item={item} navigation={navigation} />
+        )}
         ItemSeparatorComponent={() => (
           <View
             style={{ height: 1, width: "100%", backgroundColor: colors.border }}
@@ -74,9 +79,7 @@ function Replies({ navigation }) {
         onEndReachedThreshold={0.5}
         ListEmptyComponent={
           <View style={styles.container}>
-            <Text style={styles.empty}>
-              No replies yet. Try posting something?
-            </Text>
+            <Text style={styles.empty}>No mentions... Yet!</Text>
           </View>
         }
       />
@@ -111,18 +114,18 @@ function Replies({ navigation }) {
   );
 }
 
-function Reply({
+function Mention({
   item,
   navigation,
 }: {
-  item: CommentReplyView;
+  item: PersonMentionView;
   navigation: any;
 }) {
-  const isRead = item.comment_reply.read;
+  const isRead = item.person_mention.read;
   return (
     <View style={{ opacity: isRead ? 0.6 : 1, paddingHorizontal: 6 }}>
       <MiniComment
-        published={item.comment_reply.published}
+        published={item.person_mention.published}
         author={item.creator.name}
         community={item.community.name}
         title={item.post.name}
@@ -138,7 +141,7 @@ function ReplyActions({
   item,
   navigation,
 }: {
-  item: CommentReplyView;
+  item: PersonMentionView;
   navigation: any;
 }) {
   const openReply = () => {
@@ -169,11 +172,12 @@ function ReplyActions({
 
   const markRead = () => {
     void apiClient.mentionsStore
-      .markReplyRead(apiClient.loginDetails.jwt, item.comment_reply.id)
+      .markReplyRead(apiClient.loginDetails.jwt, item.person_mention.id)
       .then(() => {
         void apiClient.mentionsStore.fetchUnreads(apiClient.loginDetails.jwt);
       });
   };
+
   return (
     <View
       style={{
@@ -227,4 +231,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(Replies);
+export default observer(Mentions);

@@ -12,6 +12,7 @@ export const dataKeys = {
   blurNsfw: "fennec-blur-nsfw",
   leftHanded: "fennec-left-handed",
   collapseParent: "fennec-collapse-parent",
+  compactPostLayout: "fennec-compact-post-layout",
 } as const;
 
 type Keys = keyof typeof dataKeys;

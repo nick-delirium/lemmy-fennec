@@ -6,9 +6,10 @@ import { apiClient } from "../../store/apiClient";
 import { CommentView } from "lemmy-js-client";
 import { commonStyles, commonColors } from "../../commonStyles";
 import { useTheme } from "@react-navigation/native";
-import FAB from "../../components/FAB";
+// import FAB from "../../components/FAB";
 import MiniComment from "../../components/TinyComment";
 import Pagination from "../../components/Pagination";
+
 // TODO: FAB with sort type
 
 function OwnComments({ navigation }) {
@@ -24,7 +25,11 @@ function OwnComments({ navigation }) {
   };
 
   const getPost = (comment: CommentView) => {
-    navigation.navigate("Post", { post: comment.post.id });
+    navigation.navigate("Post", {
+      post: comment.post.id,
+      openComment: 0,
+      parentId: comment.comment.path.split(".")[1],
+    });
   };
 
   const nextPage = () => {

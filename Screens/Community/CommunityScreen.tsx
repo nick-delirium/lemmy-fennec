@@ -9,6 +9,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import CommunityHeader from "./CommunityHeader";
 import { communityStore } from "../../store/communityStore";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
+import TinyPost from "../../components/Post/TinyPost";
 
 function CommunityScreen({
   navigation,
@@ -44,11 +45,17 @@ function CommunityScreen({
     return unsubscribe;
   }, [commId, navigation, apiClient.postStore, communityStore.community]);
 
-  // some optimizations
   const renderPost = React.useCallback(
-    // @ts-ignore
-    ({ item }) => <FeedPost post={item} navigation={navigation} useCommunity />,
-    []
+    ({ item }) => {
+      return apiClient.profileStore.compactPostLayout ? (
+        // @ts-ignore
+        <TinyPost post={item} navigation={navigation} useCommunity />
+      ) : (
+        // @ts-ignore
+        <FeedPost post={item} navigation={navigation} useCommunity />
+      );
+    },
+    [apiClient.profileStore.compactPostLayout]
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {

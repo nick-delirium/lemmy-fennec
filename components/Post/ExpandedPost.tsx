@@ -107,7 +107,7 @@ function Post({
           navigation.goBack();
         });
     };
-    console.log(scheme);
+
     if (!apiClient.loginDetails.jwt) return;
     Alert.alert(
       "Delete post?",
@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   postName: {
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
     marginTop: 4,
     marginBottom: 8,
   },

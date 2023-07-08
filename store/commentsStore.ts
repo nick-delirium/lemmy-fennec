@@ -99,7 +99,8 @@ class CommentsStore extends DataClass {
   async getComments(
     postId: PostId | null,
     loginDetails?: LoginResponse,
-    parentId?: number
+    parentId?: number,
+    singleComment?: boolean
   ) {
     const additionalFilters = parentId
       ? {
@@ -120,7 +121,7 @@ class CommentsStore extends DataClass {
           post_id: postId,
         }),
       ({ comments }) => {
-        if (parentId) {
+        if (parentId && !singleComment) {
           // removing parent
           comments.shift();
           const tree = buildCommentTree(comments);
@@ -305,7 +306,6 @@ function buildCommentTree(comments: CommentView[]) {
       commentTree.push(commentNode);
     }
   }
-
   return commentTree;
 }
 

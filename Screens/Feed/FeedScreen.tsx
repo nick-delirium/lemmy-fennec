@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { commonStyles } from "../../commonStyles";
 import { apiClient } from "../../store/apiClient";
 import FeedPost from "../../components/Post/FeedPost";
+import TinyPost from "../../components/Post/TinyPost";
 import FloatingMenu from "./FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -25,8 +26,14 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   }, [apiClient.api, navigation, isFocused]);
 
   const renderPost = React.useCallback(
-    ({ item }) => <FeedPost post={item} navigation={navigation} />,
-    []
+    ({ item }) => {
+      return apiClient.profileStore.compactPostLayout ? (
+        <TinyPost post={item} navigation={navigation} />
+      ) : (
+        <FeedPost post={item} navigation={navigation} />
+      );
+    },
+    [apiClient.profileStore.compactPostLayout]
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {

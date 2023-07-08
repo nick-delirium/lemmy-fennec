@@ -145,7 +145,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   postName: {
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
     marginTop: 4,
     marginBottom: 8,
   },

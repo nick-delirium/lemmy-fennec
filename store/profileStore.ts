@@ -18,6 +18,7 @@ class ProfileStore extends DataClass {
   public unblurNsfw = false;
   public leftHanded = false;
   public collapseParentComment = false;
+  public compactPostLayout = false;
   public profilePage = 1;
   public profileSort: SortType = "New";
 
@@ -33,6 +34,7 @@ class ProfileStore extends DataClass {
       profileSort: observable,
       profilePage: observable,
       leftHanded: observable,
+      compactPostLayout: observable,
       unblurNsfw: observable,
       setLeftHanded: action,
       setReadOnScroll: action,
@@ -44,6 +46,7 @@ class ProfileStore extends DataClass {
       setLocalUser: action,
       setBlurNsfw: action,
       setProfilePage: action,
+      setPostLayout: action,
       setProfileSort: action,
     });
     asyncStorageHandler.readData(dataKeys.readScroll).then((value) => {
@@ -58,6 +61,17 @@ class ProfileStore extends DataClass {
     asyncStorageHandler.readData(dataKeys.collapseParent).then((value) => {
       this.collapseParentComment = value === "1";
     });
+    asyncStorageHandler.readData(dataKeys.compactPostLayout).then((value) => {
+      this.compactPostLayout = value === "1";
+    });
+  }
+
+  setPostLayout(compactPostLayout: boolean) {
+    this.compactPostLayout = compactPostLayout;
+    void asyncStorageHandler.setData(
+      dataKeys.compactPostLayout,
+      compactPostLayout ? "1" : "0"
+    );
   }
 
   setProfilePage(page: number) {
@@ -90,7 +104,6 @@ class ProfileStore extends DataClass {
   }
 
   setReadOnScroll(readOnScroll: boolean) {
-    console.log(readOnScroll);
     this.readOnScroll = readOnScroll;
     void asyncStorageHandler.setData(
       dataKeys.readScroll,

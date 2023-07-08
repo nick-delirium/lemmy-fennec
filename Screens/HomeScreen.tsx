@@ -20,6 +20,8 @@ function HomeScreen() {
       void apiClient.mentionsStore.fetchUnreads(jwt);
     }
   }, [jwt]);
+  const unreadCount = apiClient.mentionsStore.unreadsCount;
+  const displayedUnreads = unreadCount > 99 ? "99+" : unreadCount;
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -34,7 +36,7 @@ function HomeScreen() {
             case "Followed Communities":
               return <Feather name={"star"} size={size} color={color} />;
             case "Unreads":
-              if (apiClient.mentionsStore.unreadsCount !== 0) {
+              if (unreadCount > 0) {
                 return (
                   <View>
                     <Feather name={"mail"} size={size} color={color} />
@@ -58,7 +60,7 @@ function HomeScreen() {
                           fontWeight: "bold",
                         }}
                       >
-                        {apiClient.mentionsStore.unreadsCount}
+                        {displayedUnreads}
                       </Text>
                     </View>
                   </View>

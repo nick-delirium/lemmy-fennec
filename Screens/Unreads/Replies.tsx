@@ -28,7 +28,11 @@ function Replies({ navigation }) {
     setIsOpen(false);
   };
   const markAllRead = () => {
-    void apiClient.mentionsStore.markAllRepliesRead(apiClient.loginDetails.jwt);
+    apiClient.mentionsStore
+      .markAllRepliesRead(apiClient.loginDetails.jwt)
+      .then(() => {
+        void apiClient.mentionsStore.fetchUnreads(apiClient.loginDetails.jwt);
+      });
     closeAll();
   };
 
@@ -41,7 +45,11 @@ function Replies({ navigation }) {
 
   const refresh = () => {
     apiClient.mentionsStore.setPage(1);
-    void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
+    apiClient.mentionsStore
+      .fetchUnreads(apiClient.loginDetails.jwt)
+      .then(() => {
+        void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
+      });
   };
   return (
     <View style={{ flex: 1 }}>
@@ -126,6 +134,7 @@ function ReplyActions({
   navigation: any;
 }) {
   const openReply = () => {
+    markRead();
     apiClient.commentsStore.setReplyTo({
       postId: item.post.id,
       parent_id: item.comment.id,
@@ -138,7 +147,23 @@ function ReplyActions({
     navigation.navigate("CommentWrite");
   };
   const openPost = () => {
-    navigation.navigate("Post", { post: item.post.id });
+    const path = item.comment.path.split(".");
+    const replyId = path.findIndex(
+      (id) => parseInt(id, 10) === item.comment.id
+    );
+    navigation.navigate("Post", {
+      post: item.post.id,
+      parentId: path[replyId - 1],
+      openComment: 0,
+    });
+  };
+
+  const markRead = () => {
+    void apiClient.mentionsStore
+      .markReplyRead(apiClient.loginDetails.jwt, item.comment_reply.id)
+      .then(() => {
+        void apiClient.mentionsStore.fetchUnreads(apiClient.loginDetails.jwt);
+      });
   };
   return (
     <View
@@ -167,15 +192,7 @@ function ReplyActions({
       >
         <Icon name={"link"} size={24} />
       </TouchableOpacity>
-      <TouchableOpacity
-        simple
-        onPressCb={() =>
-          apiClient.mentionsStore.markReplyRead(
-            apiClient.loginDetails.jwt,
-            item.comment_reply.id
-          )
-        }
-      >
+      <TouchableOpacity simple onPressCb={markRead}>
         <Icon name={"check-square"} size={24} />
       </TouchableOpacity>
     </View>

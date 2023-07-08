@@ -48,7 +48,7 @@ const defaultFilters: Filters = {
   type_: ListingTypeMap.Local,
   sort: SortTypeMap.New,
   saved_only: false,
-  limit: 25,
+  limit: 15,
 };
 
 class PostStore extends DataClass {

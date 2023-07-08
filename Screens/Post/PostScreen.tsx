@@ -14,6 +14,7 @@ function PostScreen({
 }: NativeStackScreenProps<any, "Feed">) {
   const post = apiClient.postStore.singlePost;
   const openComment = route.params.openComment;
+  const parentId = route.params.parentId;
   const { colors } = useTheme();
 
   const refreshAll = () => {
@@ -23,7 +24,8 @@ function PostScreen({
     );
     void apiClient.commentsStore.getComments(
       post.post.id,
-      apiClient.loginDetails
+      apiClient.loginDetails,
+      parentId
     );
   };
 
@@ -40,12 +42,20 @@ function PostScreen({
   }, [route.params.post]);
 
   React.useEffect(() => {
-    if (post && apiClient.commentsStore.comments.length === 0) {
-      apiClient.commentsStore.setPage(1);
-      void apiClient.commentsStore.getComments(
-        post.post.id,
-        apiClient.loginDetails
-      );
+    if (post) {
+      if (
+        post.counts.comments > 0
+        // apiClient.commentsStore.comments.length === 0
+      ) {
+        console.log("fetching parent", parentId);
+        apiClient.commentsStore.setPage(1);
+        void apiClient.commentsStore.getComments(
+          post.post.id,
+          apiClient.loginDetails,
+          parentId,
+          Boolean(parentId)
+        );
+      }
     }
   }, [post]);
 
@@ -68,7 +78,7 @@ function PostScreen({
 
   const onEndReached = () => {
     // I'm fairly sure that they return everything at the moment, no matter the limit/page.
-    return console.log(apiClient.commentsStore.comments.length);
+    return console.log("endreached", apiClient.commentsStore.comments.length);
     if (
       apiClient.commentsStore.comments.length >=
       apiClient.postStore.singlePost.counts.comments - 1
@@ -82,6 +92,7 @@ function PostScreen({
     }
   };
 
+  console.log(apiClient.commentsStore.commentTree.length);
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList
@@ -100,11 +111,5 @@ function PostScreen({
     </View>
   );
 }
-
-//
-// const styles = StyleSheet.create({
-//   inputRow: { paddingHorizontal: 6, paddingVertical: 12, flexDirection: 'row', gap: 6 },
-//   additionalButtonStyle: { justifyContent: 'center' },
-// })
 
 export default observer(PostScreen);

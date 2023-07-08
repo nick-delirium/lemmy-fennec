@@ -75,6 +75,15 @@ function SettingsScreen() {
           )
         }
       />
+      <Toggler
+        label={"Compact post layout in feed"}
+        value={apiClient.profileStore.compactPostLayout}
+        onValueChange={() =>
+          apiClient.profileStore.setPostLayout(
+            !apiClient.profileStore.compactPostLayout
+          )
+        }
+      />
       {apiClient.profileStore.isLoading ? (
         <View
           style={{

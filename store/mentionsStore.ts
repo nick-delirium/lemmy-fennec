@@ -47,7 +47,7 @@ class MentionsStore extends DataClass {
       },
       (error) => console.log(error),
       false,
-      "unreads count"
+      "fetch unreads count"
     );
   }
 
@@ -81,7 +81,6 @@ class MentionsStore extends DataClass {
             r.comment_reply.id === replyId ? { ...r, read: true } : r
           )
         );
-        void this.fetchUnreads(auth);
       },
       (error) => console.log(error),
       false,

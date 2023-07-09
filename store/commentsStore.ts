@@ -73,6 +73,7 @@ class CommentsStore extends DataClass {
       setFilters: action,
       setComments: action,
       buildTree: action,
+      addComment: action,
       isLoading: observable,
       setIsLoading: action,
       setClient: action,
@@ -182,6 +183,12 @@ class CommentsStore extends DataClass {
     this.commentTree = buildCommentTree(comments);
   }
 
+  addComment(comment: CommentNode) {
+    const tree = this.commentTree;
+    tree.unshift(comment);
+    this.commentTree = tree;
+  }
+
   async rateComment(
     commentId: CommentId,
     loginDetails: LoginResponse,
@@ -261,15 +268,12 @@ class CommentsStore extends DataClass {
       () => this.api.createComment({ ...form }),
       ({ comment_view }) => {
         if (!isRoot) {
-          this.setComments([...this.comments, comment_view]);
-          this.comments.push(comment_view);
           this.updateTreeCommentRating(this.commentTree, form.parent_id, {
             ...comment_view,
             children: [],
           });
         } else {
-          this.setComments([...this.comments, comment_view]);
-          this.commentTree.unshift({ ...comment_view, children: [] });
+          this.addComment({ ...comment_view, children: [] });
         }
       },
       (e) => console.error(e),

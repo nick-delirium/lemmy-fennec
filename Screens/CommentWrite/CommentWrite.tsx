@@ -21,12 +21,15 @@ function CommentWrite({ navigation }) {
 
   const submit = () => {
     apiClient.commentsStore
-      .createComment({
-        auth: apiClient.loginDetails.jwt,
-        content: text,
-        parent_id: apiClient.commentsStore.replyTo.parent_id,
-        post_id: apiClient.commentsStore.replyTo.postId,
-      })
+      .createComment(
+        {
+          auth: apiClient.loginDetails.jwt,
+          content: text,
+          parent_id: apiClient.commentsStore.replyTo.parent_id,
+          post_id: apiClient.commentsStore.replyTo.postId,
+        },
+        item.parent_id === undefined
+      )
       .then(() => {
         navigation.goBack();
       });

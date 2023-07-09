@@ -17,7 +17,7 @@ function Replies({ navigation }) {
   // only logged user can see this component
   React.useEffect(() => {
     const unsub = navigation.addListener("focus", () => {
-      if (apiClient.mentionsStore.unreads.replies !== 0) return;
+      if (apiClient.mentionsStore.replies.length !== 0) return;
       else {
         void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
       }
@@ -27,7 +27,7 @@ function Replies({ navigation }) {
       closeAll();
       unsub();
     };
-  }, [apiClient.mentionsStore.unreads.replies]);
+  }, [apiClient.mentionsStore.replies.length]);
 
   const openMenu = () => {
     setIsOpen(true);

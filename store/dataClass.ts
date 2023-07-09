@@ -22,7 +22,7 @@ export default class DataClass {
     label?: string
   ) {
     if (this.isLoading) return;
-    console.log("fetching", label, +new Date());
+    console.log(new Date().getTime(), "fetching", label);
     if (!isUnimportant) this.setIsLoading(true);
     try {
       const data = await fetcher();

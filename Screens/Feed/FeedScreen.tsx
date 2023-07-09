@@ -69,6 +69,8 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
         renderItem={renderPost}
         data={apiClient.postStore.posts}
         onRefresh={onRefresh}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
         onEndReached={onEndReached}
         refreshing={apiClient.postStore.isLoading}
         onEndReachedThreshold={1}

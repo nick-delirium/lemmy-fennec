@@ -26,34 +26,34 @@ export class Preferences {
   constructor() {
     makeAutoObservable(this);
     asyncStorageHandler.readData(dataKeys.readScroll).then((value) => {
-      this.readOnScroll = value === "1";
+      this.setReadOnScroll(value === "1");
     });
     asyncStorageHandler.readData(dataKeys.blurNsfw).then((value) => {
-      this.unblurNsfw = value === "1";
+      this.setBlurNsfw(value === "1");
     });
     asyncStorageHandler.readData(dataKeys.leftHanded).then((value) => {
-      this.leftHanded = value === "1";
+      this.setLeftHanded(value === "1");
     });
     asyncStorageHandler.readData(dataKeys.collapseParent).then((value) => {
-      this.collapseParentComment = value === "1";
+      this.setCollapseParentComment(value === "1");
     });
     asyncStorageHandler.readData(dataKeys.compactPostLayout).then((value) => {
-      this.compactPostLayout = value === "1";
+      this.setPostLayout(value === "1");
     });
     asyncStorageHandler.readData(dataKeys.theme).then((value) => {
       switch (value) {
         case "1":
-          this.theme = Theme.Light;
+          this.setTheme(Theme.Light);
           break;
         case "2":
-          this.theme = Theme.Dark;
+          this.setTheme(Theme.Dark);
           break;
         case "3":
-          this.theme = Theme.Amoled;
+          this.setTheme(Theme.Amoled);
           break;
         case "0":
         default:
-          this.theme = Theme.System;
+          this.setTheme(Theme.System);
           break;
       }
     });

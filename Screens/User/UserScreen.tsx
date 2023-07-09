@@ -18,11 +18,9 @@ function UserScreen({
   const person = loadedProfile?.person_view?.person;
 
   React.useEffect(() => {
-    if (person) {
-      navigation.setOptions({
-        title: person.name,
-      });
-    }
+    navigation.setOptions({
+      title: person?.name || "User",
+    });
   }, [person]);
   React.useEffect(() => {
     if (route.params?.personId) {

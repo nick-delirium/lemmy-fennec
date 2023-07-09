@@ -12,14 +12,14 @@ function Messages({ navigation }) {
 
   React.useEffect(() => {
     const unsub = navigation.addListener("focus", () => {
-      if (apiClient.mentionsStore.unreads.messages !== 0) return;
+      if (apiClient.mentionsStore.messages.length !== 0) return;
       void apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt);
     });
 
     return () => {
       unsub();
     };
-  }, [apiClient.mentionsStore.unreads.messages]);
+  }, [apiClient.mentionsStore.messages.length]);
   return (
     <FlatList
       data={apiClient.mentionsStore.messages}

@@ -92,7 +92,6 @@ function PostScreen({
     }
   };
 
-  console.log(apiClient.commentsStore.commentTree.length);
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList

@@ -126,7 +126,6 @@ class MentionsStore extends DataClass {
           unread_only: false,
         }),
       ({ private_messages }) => {
-        console.log(private_messages.length);
         this.setMessages(private_messages);
       },
       (error) => console.log(error),

@@ -5,15 +5,13 @@ import {
   StyleSheet,
   ActivityIndicator,
   Image,
-  useColorScheme,
   Linking,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Text, TouchableOpacity, Icon } from "../../ThemedComponents";
-import { mdTheme } from "../../commonStyles";
-import Markdown from "react-native-marked";
+import MdRenderer from "../../components/MdRenderer";
 
 function CommunityHeader({
   navigation,
@@ -21,7 +19,6 @@ function CommunityHeader({
 }: NativeStackScreenProps<any, "Community">) {
   const [showDescription, setShowDescription] = React.useState(false);
   const { colors } = useTheme();
-  const sch = useColorScheme();
   const { community } = apiClient.communityStore;
   React.useEffect(() => {
     if (community === null && !apiClient.communityStore.isLoading) {
@@ -116,12 +113,7 @@ function CommunityHeader({
         ) : null}
       </View>
       {showDescription ? (
-        <Markdown
-          value={community.community.description}
-          theme={{
-            colors: sch === "dark" ? mdTheme.dark : mdTheme.light,
-          }}
-        />
+        <MdRenderer value={community.community.description} />
       ) : null}
     </View>
   );

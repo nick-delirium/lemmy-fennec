@@ -13,6 +13,7 @@ export const dataKeys = {
   leftHanded: "fennec-left-handed",
   collapseParent: "fennec-collapse-parent",
   compactPostLayout: "fennec-compact-post-layout",
+  theme: "fennec-theme",
 } as const;
 
 type Keys = keyof typeof dataKeys;

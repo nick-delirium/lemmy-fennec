@@ -5,6 +5,7 @@ import { commonColors, commonStyles, mdTheme } from "../commonStyles";
 import React from "react";
 import Markdown from "react-native-marked";
 import { useTheme } from "@react-navigation/native";
+import MdRenderer from "./MdRenderer";
 
 function MiniComment({
   published,
@@ -41,15 +42,7 @@ function MiniComment({
           {title}
         </Text>
         {useMd ? (
-          <Markdown
-            value={content}
-            styles={{
-              paragraph: {
-                backgroundColor: colors.background,
-              },
-            }}
-            theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
-          />
+          <MdRenderer value={content} />
         ) : (
           <Text lines={4} style={commonStyles.text}>
             {content}

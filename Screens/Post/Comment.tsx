@@ -1,21 +1,14 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import {
-  View,
-  StyleSheet,
-  useColorScheme,
-  Share,
-  Platform,
-  Vibration,
-} from "react-native";
+import { View, StyleSheet, Share, Platform, Vibration } from "react-native";
 import { apiClient, Score } from "../../store/apiClient";
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { CommentNode } from "../../store/commentsStore";
 import { makeDateString } from "../../utils/utils";
-import Markdown from "react-native-marked";
-import { mdTheme } from "../../commonStyles";
 import { useTheme } from "@react-navigation/native";
 import { commonColors } from "../../commonStyles";
+import MdRenderer from "../../components/MdRenderer";
+import { preferences } from "../../store/preferences";
 
 function Comment({
   comment,
@@ -30,7 +23,6 @@ function Comment({
   getAuthor?: (author: number) => void;
   openCommenting?: () => void;
 }) {
-  const sch = useColorScheme();
   const { colors } = useTheme();
 
   const commentDate = React.useMemo(
@@ -108,28 +100,18 @@ function Comment({
         <Text style={styles.date}>{commentDate}</Text>
       </View>
       <View>
-        {!isExpanded && apiClient.profileStore.collapseParentComment ? (
+        {!isExpanded && preferences.collapseParentComment ? (
           <Text style={{ fontSize: 16 }} lines={1}>
             {comment.comment.content}
           </Text>
         ) : (
-          <Markdown
-            value={comment.comment.content}
-            styles={{
-              paragraph: {
-                backgroundColor: colors.background,
-              },
-            }}
-            theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}
-          />
+          <MdRenderer value={comment.comment.content} />
         )}
       </View>
       <View
         style={{
           ...styles.bottomRow,
-          flexDirection: apiClient.profileStore.leftHanded
-            ? "row-reverse"
-            : "row",
+          flexDirection: preferences.leftHanded ? "row-reverse" : "row",
         }}
       >
         <View style={styles.infoPiece}>

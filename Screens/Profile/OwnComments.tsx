@@ -9,6 +9,7 @@ import { useTheme } from "@react-navigation/native";
 // import FAB from "../../components/FAB";
 import MiniComment from "../../components/TinyComment";
 import Pagination from "../../components/Pagination";
+import { preferences } from "../../store/preferences";
 
 // TODO: FAB with sort type
 
@@ -102,9 +103,7 @@ function OwnComment({
       <View
         style={{
           ...commonStyles.iconsRow,
-          flexDirection: apiClient.profileStore.leftHanded
-            ? "row-reverse"
-            : "row",
+          flexDirection: preferences.leftHanded ? "row-reverse" : "row",
         }}
       >
         <View style={{ flex: 1 }} />
@@ -153,13 +152,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-  },
-  paddedRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
   },
   topRow: {
     flexDirection: "row",

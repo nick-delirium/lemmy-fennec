@@ -16,12 +16,22 @@ export const AppDarkTheme = {
     ...DarkTheme.colors,
     primary: "#57bcd9", // 2142AB
     border: "#637ac4",
+    background: "#1c1c1c",
+    card: "#2c2c2c",
+  },
+};
+export const AppAmoledTheme = {
+  dark: true,
+  colors: {
+    ...DarkTheme.colors,
+    primary: "#57bcd9", // 2142AB
+    border: "#637ac4",
+    background: "#000000",
   },
 };
 
 export const mdTheme = {
   light: {
-    background: "#ffffff",
     code: "#f6f8fa",
     link: "#58a6ff",
     text: "#333333",
@@ -29,10 +39,9 @@ export const mdTheme = {
     ...AppTheme.colors,
   },
   dark: {
-    background: "#000000",
     code: "#161b22",
     link: "#58a6ff",
-    text: "#ffffff",
+    text: "#eeeeee",
     border: "#30363d",
     ...AppDarkTheme.colors,
   },

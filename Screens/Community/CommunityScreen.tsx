@@ -10,6 +10,7 @@ import CommunityHeader from "./CommunityHeader";
 import { communityStore } from "../../store/communityStore";
 import { Text, TouchableOpacity, Icon } from "../../ThemedComponents";
 import TinyPost from "../../components/Post/TinyPost";
+import { preferences } from "../../store/preferences";
 
 function CommunityScreen({
   navigation,
@@ -47,7 +48,7 @@ function CommunityScreen({
 
   const renderPost = React.useCallback(
     ({ item }) => {
-      return apiClient.profileStore.compactPostLayout ? (
+      return preferences.compactPostLayout ? (
         // @ts-ignore
         <TinyPost post={item} navigation={navigation} useCommunity />
       ) : (
@@ -55,7 +56,7 @@ function CommunityScreen({
         <FeedPost post={item} navigation={navigation} useCommunity />
       );
     },
-    [apiClient.profileStore.compactPostLayout]
+    [preferences.compactPostLayout]
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {
@@ -70,7 +71,7 @@ function CommunityScreen({
   const onPostScroll = React.useRef(({ changed }) => {
     if (changed.length > 0 && apiClient.loginDetails?.jwt) {
       changed.forEach((item) => {
-        if (!item.isViewable && apiClient.profileStore.getReadOnScroll()) {
+        if (!item.isViewable && preferences.getReadOnScroll()) {
           void apiClient.postStore.markPostRead({
             post_id: item.item.post.id,
             read: true,

@@ -7,8 +7,11 @@ import {
   View,
   Dimensions,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { Text } from "../ThemedComponents";
 import { apiClient } from "../store/apiClient";
+import { preferences, Theme, ThemeMap } from "../store/preferences";
+import { useTheme } from "@react-navigation/native";
 
 function SettingsScreen() {
   const { localUser: profile } = apiClient.profileStore;
@@ -26,11 +29,11 @@ function SettingsScreen() {
     });
   };
   const toggleBlurNsfw = () => {
-    apiClient.profileStore.setBlurNsfw(!apiClient.profileStore.unblurNsfw);
+    preferences.setBlurNsfw(!preferences.unblurNsfw);
   };
 
   const toggleLeftHanded = () => {
-    apiClient.profileStore.setLeftHanded(!apiClient.profileStore.leftHanded);
+    preferences.setLeftHanded(!preferences.leftHanded);
   };
   return (
     <View style={styles.container}>
@@ -42,7 +45,7 @@ function SettingsScreen() {
       />
       <Toggler
         label={"Blur NSFW posts?"}
-        value={!apiClient.profileStore.unblurNsfw}
+        value={!preferences.unblurNsfw}
         onValueChange={toggleBlurNsfw}
       />
       <Toggler
@@ -54,36 +57,34 @@ function SettingsScreen() {
       <Toggler
         useLogin
         label={"Mark posts read while scrolling?"}
-        value={apiClient.profileStore.readOnScroll}
+        value={preferences.readOnScroll}
         onValueChange={() =>
-          apiClient.profileStore.setReadOnScroll(
-            !apiClient.profileStore.readOnScroll
-          )
+          preferences.setReadOnScroll(!preferences.readOnScroll)
         }
       />
       <Toggler
         label={"Left handed layout?"}
-        value={apiClient.profileStore.leftHanded}
+        value={preferences.leftHanded}
         onValueChange={toggleLeftHanded}
       />
       <Toggler
         label={"Collapse parent comments?"}
-        value={apiClient.profileStore.collapseParentComment}
+        value={preferences.collapseParentComment}
         onValueChange={() =>
-          apiClient.profileStore.setCollapseParentComment(
-            !apiClient.profileStore.collapseParentComment
+          preferences.setCollapseParentComment(
+            !preferences.collapseParentComment
           )
         }
       />
       <Toggler
         label={"Compact post layout in feed"}
-        value={apiClient.profileStore.compactPostLayout}
+        value={preferences.compactPostLayout}
         onValueChange={() =>
-          apiClient.profileStore.setPostLayout(
-            !apiClient.profileStore.compactPostLayout
-          )
+          preferences.setPostLayout(!preferences.compactPostLayout)
         }
       />
+      <ThemePicker />
+
       {apiClient.profileStore.isLoading ? (
         <View
           style={{
@@ -131,6 +132,33 @@ export function Toggler({
     </View>
   );
 }
+
+const ThemePicker = observer(() => {
+  const { colors } = useTheme();
+  return (
+    <View style={styles.longRow}>
+      <Text>Theme</Text>
+      <Picker
+        style={{
+          height: 50,
+          width: 200,
+          color: colors.text,
+          borderColor: colors.border,
+          borderWidth: 1,
+        }}
+        selectedValue={preferences.theme}
+        mode={"dropdown"}
+        dropdownIconColor={colors.text}
+        itemStyle={{ color: colors.text, backgroundColor: colors.card }}
+        onValueChange={(itemValue) => preferences.setTheme(itemValue)}
+      >
+        {[Theme.System, Theme.Light, Theme.Dark, Theme.Amoled].map((type) => (
+          <Picker.Item key={type} label={ThemeMap[type]} value={type} />
+        ))}
+      </Picker>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

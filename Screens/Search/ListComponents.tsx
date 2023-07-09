@@ -1,14 +1,15 @@
 import React from "react";
-import {
-  CommunityFollowerView,
-  CommunityView,
-  PersonView,
-  PostView,
-} from "lemmy-js-client";
+import { CommunityView, PersonView, PostView } from "lemmy-js-client";
 import { Image, StyleSheet, View } from "react-native";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { makeDateString } from "../../utils/utils";
 import { apiClient } from "../../store/apiClient";
+
+export function hostname(url: string): string {
+  const matches = url.match(/^https?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+
+  return matches ? matches[1] : "";
+}
 
 export function Community({
   sublemmy,
@@ -22,6 +23,11 @@ export function Community({
     apiClient.communityStore.setCommunity(null);
     navigation.navigate("Community", { id: sublemmy.community.id });
   };
+
+  const name = sublemmy.community.local
+    ? sublemmy.community.name
+    : `${sublemmy.community.name}@${hostname(sublemmy.community.actor_id)}`;
+
   return (
     <TouchableOpacity simple onPressCb={getCommunity}>
       <View style={styles.community}>
@@ -31,7 +37,7 @@ export function Community({
             style={styles.communityIcon}
           />
         ) : null}
-        <Text style={styles.communityName}>{sublemmy.community.name}</Text>
+        <Text style={styles.communityName}>{name}</Text>
         <Text>{sublemmy.counts.subscribers} subscribers</Text>
       </View>
     </TouchableOpacity>

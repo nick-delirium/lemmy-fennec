@@ -40,6 +40,9 @@ function Bio({ profile }: { profile: PersonView }) {
         styles={{
           text: { fontSize: 14, color: colors.text },
         }}
+        flatListProps={{
+          style: { backgroundColor: colors.background },
+        }}
         renderer={new CustomRenderer()}
         value={profile.person.bio}
         theme={{ colors: sch === "dark" ? mdTheme.dark : mdTheme.light }}

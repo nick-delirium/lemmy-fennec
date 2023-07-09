@@ -33,6 +33,7 @@ class ApiClient {
   public searchStore = searchStore;
   public communityStore = communityStore;
   public mentionsStore = mentionsStore;
+  public currentInstance = "";
 
   constructor() {
     makeAutoObservable(this);
@@ -43,6 +44,7 @@ class ApiClient {
     ])
       .then((values) => {
         const [possibleInstance, possibleUser, possibleUsername] = values;
+        this.currentInstance = possibleInstance ?? "https://lemmy.ml";
         if (possibleInstance && possibleUser && possibleUsername) {
           const auth: LoginResponse = JSON.parse(possibleUser);
           const client: LemmyHttp = new LemmyHttp(possibleInstance);

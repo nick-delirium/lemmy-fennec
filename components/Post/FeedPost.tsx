@@ -2,16 +2,16 @@ import React from "react";
 import { PostView } from "lemmy-js-client";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import Markdown from "react-native-marked";
-import { View, StyleSheet, useColorScheme, Image } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
-import { mdTheme } from "../../commonStyles";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { makeDateString } from "../../utils/utils";
 import Embed from "./Embed";
 import PostTitle from "./PostTitle";
 import PostIconRow from "./PostIconRow";
+import MdRenderer from "../MdRenderer";
+import { preferences } from "../../store/preferences";
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -27,7 +27,6 @@ function Post({
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
 }) {
   const { colors } = useTheme();
-  const sch = useColorScheme();
 
   // flags to mark the post
   const isNsfw = post.post.nsfw || post.community.nsfw;
@@ -107,7 +106,7 @@ function Post({
             progressiveRenderingEnabled
             resizeMode={"contain"}
             alt={"Post image"}
-            blurRadius={isNsfw && !apiClient.profileStore.unblurNsfw ? 15 : 0}
+            blurRadius={isNsfw && !preferences.unblurNsfw ? 15 : 0}
           />
         ) : (
           <View style={{ maxHeight: 200, overflow: "hidden" }}>
@@ -118,12 +117,7 @@ function Post({
                 url={post.post.url}
               />
             ) : null}
-            <Markdown
-              value={safeDescription}
-              theme={{
-                colors: sch === "dark" ? mdTheme.dark : mdTheme.light,
-              }}
-            />
+            <MdRenderer value={safeDescription} />
           </View>
         )}
       </TouchableOpacity>

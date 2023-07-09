@@ -10,6 +10,7 @@ import { apiClient } from "../../store/apiClient";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { PostView } from "lemmy-js-client";
+import { preferences } from "../../store/preferences";
 
 function TinyPost({
   post,
@@ -82,7 +83,7 @@ function TinyPost({
               progressiveRenderingEnabled
               resizeMode={"cover"}
               alt={"Post image"}
-              blurRadius={isNsfw && !apiClient.profileStore.unblurNsfw ? 15 : 0}
+              blurRadius={isNsfw && !preferences.unblurNsfw ? 15 : 0}
             />
           ) : (
             <View style={{ ...styles.imageLike, backgroundColor: colors.card }}>

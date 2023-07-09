@@ -5,6 +5,7 @@ import { Platform, Share, StyleSheet, Vibration, View } from "react-native";
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { commonColors, commonStyles } from "../../commonStyles";
 import { PostView } from "lemmy-js-client";
+import { preferences } from "../../store/preferences";
 
 interface Props {
   post: PostView;
@@ -34,9 +35,7 @@ function PostIconRow({
     <View
       style={{
         ...commonStyles.iconsRow,
-        flexDirection: apiClient.profileStore.leftHanded
-          ? "row-reverse"
-          : "row",
+        flexDirection: preferences.leftHanded ? "row-reverse" : "row",
       }}
     >
       <View style={styles.infoPiece}>

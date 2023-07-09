@@ -7,6 +7,7 @@ import FeedPost from "../../components/Post/FeedPost";
 import TinyPost from "../../components/Post/TinyPost";
 import FloatingMenu from "./FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { preferences } from "../../store/preferences";
 
 function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   const isFocused = navigation.isFocused();
@@ -27,13 +28,13 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
 
   const renderPost = React.useCallback(
     ({ item }) => {
-      return apiClient.profileStore.compactPostLayout ? (
+      return preferences.compactPostLayout ? (
         <TinyPost post={item} navigation={navigation} />
       ) : (
         <FeedPost post={item} navigation={navigation} />
       );
     },
-    [apiClient.profileStore.compactPostLayout]
+    [preferences.compactPostLayout]
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {
@@ -49,7 +50,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   const onPostScroll = React.useRef(({ changed }) => {
     if (changed.length > 0 && apiClient.loginDetails?.jwt) {
       changed.forEach((item) => {
-        if (!item.isViewable && apiClient.profileStore.getReadOnScroll()) {
+        if (!item.isViewable && preferences.getReadOnScroll()) {
           void apiClient.postStore.markPostRead({
             post_id: item.item.post.id,
             read: true,

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { observer } from "mobx-react-lite";
-import { apiClient } from "../store/apiClient";
+import { preferences } from "../store/preferences";
 
 function FAB({
   children,
@@ -10,7 +10,7 @@ function FAB({
   children: React.ReactNode;
   elevated?: boolean;
 }) {
-  const position = apiClient.profileStore.leftHanded
+  const position = preferences.leftHanded
     ? styles.leftButton
     : styles.rightButton;
   return <View style={{ ...styles.container, ...position }}>{children}</View>;

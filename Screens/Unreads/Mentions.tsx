@@ -8,6 +8,7 @@ import { commonStyles } from "../../commonStyles";
 import { useTheme } from "@react-navigation/native";
 import FAB from "../../components/FAB";
 import MiniComment from "../../components/TinyComment";
+import { preferences } from "../../store/preferences";
 
 function Mentions({ navigation }) {
   const { colors } = useTheme();
@@ -182,9 +183,7 @@ function ReplyActions({
     <View
       style={{
         ...commonStyles.iconsRow,
-        flexDirection: apiClient.profileStore.leftHanded
-          ? "row-reverse"
-          : "row",
+        flexDirection: preferences.leftHanded ? "row-reverse" : "row",
       }}
     >
       <View style={{ flex: 1 }} />

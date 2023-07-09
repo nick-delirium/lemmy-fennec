@@ -222,12 +222,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 6,
   },
-  paddedRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingVertical: 6,
-  },
   additionalButtonStyle: { justifyContent: "center" },
   community: { flexDirection: "row", alignItems: "center", gap: 8, padding: 4 },
   searchItem: { borderBottomWidth: 1, marginBottom: 6, paddingBottom: 6 },

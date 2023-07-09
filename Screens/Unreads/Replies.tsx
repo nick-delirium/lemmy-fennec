@@ -8,6 +8,7 @@ import { commonStyles } from "../../commonStyles";
 import { useTheme, NavigationProp } from "@react-navigation/native";
 import FAB from "../../components/FAB";
 import MiniComment from "../../components/TinyComment";
+import { preferences } from "../../store/preferences";
 
 function Replies({ navigation }) {
   const { colors } = useTheme();
@@ -160,9 +161,10 @@ function ReplyActions({
     const replyId = path.findIndex(
       (id) => parseInt(id, 10) === item.comment.id
     );
+    const parentId = path.length > 2 ? path[replyId - 1] : path[1];
     navigation.navigate("Post", {
       post: item.post.id,
-      parentId: path[replyId - 1],
+      parentId: parentId,
       openComment: 0,
     });
   };
@@ -178,9 +180,7 @@ function ReplyActions({
     <View
       style={{
         ...commonStyles.iconsRow,
-        flexDirection: apiClient.profileStore.leftHanded
-          ? "row-reverse"
-          : "row",
+        flexDirection: preferences.leftHanded ? "row-reverse" : "row",
       }}
     >
       <View style={{ flex: 1 }} />

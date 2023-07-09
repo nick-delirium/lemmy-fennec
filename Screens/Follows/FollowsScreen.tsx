@@ -3,12 +3,10 @@ import { View, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 import { observer } from "mobx-react-lite";
 import { apiClient } from "../../store/apiClient";
 import { Community } from "../Search/ListComponents";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
-import { useTheme } from "@react-navigation/native";
+import { Text } from "../../ThemedComponents";
 import Pagination from "../../components/Pagination";
 
 function FollowsScreen({ navigation }) {
-  const { colors } = useTheme();
   React.useEffect(() => {
     if (apiClient.communityStore.followedCommunities.length === 0) {
       apiClient.communityStore.setPage(1);
@@ -81,13 +79,6 @@ const ownStyles = StyleSheet.create({
   },
   empty: {
     fontSize: 16,
-  },
-  paddedRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
   },
 });
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { CommunityView, PersonView, PostView } from "lemmy-js-client";
-import { Image, StyleSheet, View } from "react-native";
+import { Dimensions, Image, StyleSheet, View } from "react-native";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { makeDateString } from "../../utils/utils";
 import { apiClient } from "../../store/apiClient";
@@ -36,9 +36,13 @@ export function Community({
             source={{ uri: sublemmy.community.icon }}
             style={styles.communityIcon}
           />
-        ) : null}
-        <Text style={styles.communityName}>{name}</Text>
-        <Text>{sublemmy.counts.subscribers} subscribers</Text>
+        ) : (
+          <View style={styles.communityIcon} />
+        )}
+        <View>
+          <Text style={styles.communityName}>{name}</Text>
+          <Text>{sublemmy.counts.subscribers} subscribers</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -108,8 +112,25 @@ export function Post({
 }
 
 const styles = StyleSheet.create({
-  communityIcon: { width: 24, height: 24, borderRadius: 24 },
-  communityName: { color: "violet", fontSize: 16 },
+  communityIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 28,
+    backgroundColor: "#cecece",
+  },
+  communityName: {
+    color: "violet",
+    fontSize: 16,
+    maxWidth: Dimensions.get("window").width - 75,
+    flexWrap: "wrap",
+  },
   postIcon: { width: 72, height: 72 },
-  community: { flexDirection: "row", alignItems: "center", gap: 8, padding: 4 },
+  community: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 4,
+    width: "100%",
+    flex: 1,
+  },
 });

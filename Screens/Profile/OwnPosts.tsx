@@ -49,6 +49,7 @@ function OwnPosts({ navigation }) {
     });
   };
 
+  const renderItem = ({ item }) => <OwnPost item={item} getPost={getPost} />;
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -67,7 +68,7 @@ function OwnPosts({ navigation }) {
           </View>
         }
         keyExtractor={(item) => item.post.id.toString()}
-        renderItem={({ item }) => <OwnPost item={item} getPost={getPost} />}
+        renderItem={renderItem}
       />
       <Pagination
         page={apiClient.profileStore.profilePage}

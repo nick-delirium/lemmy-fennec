@@ -1,6 +1,7 @@
 import React from "react";
 import { FlatList, View } from "react-native";
 import { observer } from "mobx-react-lite";
+import { PostView } from "lemmy-js-client";
 import { commonStyles } from "../../commonStyles";
 import { apiClient } from "../../store/apiClient";
 import FeedPost from "../../components/Post/FeedPost";
@@ -8,9 +9,12 @@ import TinyPost from "../../components/Post/TinyPost";
 import FloatingMenu from "./FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { preferences } from "../../store/preferences";
+import { TouchableOpacity, Icon, Text } from "../../ThemedComponents";
 
 function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   const isFocused = navigation.isFocused();
+  const listRef = React.useRef<FlatList<PostView>>(null);
+
   React.useEffect(() => {
     const getPosts = () => {
       if (apiClient.api && apiClient.postStore.posts.length === 0) {
@@ -25,6 +29,21 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     getPosts();
     return unsubscribe;
   }, [apiClient.api, navigation, isFocused]);
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          style={{ marginRight: 10 }}
+          simple
+          onPressCb={() =>
+            listRef.current?.scrollToOffset({ animated: true, offset: 0 })
+          }
+        >
+          <Icon name={"arrow-up"} size={24} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const renderPost = React.useCallback(
     ({ item }) => {
@@ -65,10 +84,12 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   return (
     <View style={commonStyles.container} key={apiClient.postStore.feedKey}>
       <FlatList
+        ref={listRef}
         style={{ flex: 1 }}
         renderItem={renderPost}
         data={apiClient.postStore.posts}
         onRefresh={onRefresh}
+        windowSize={10}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
         onEndReached={onEndReached}

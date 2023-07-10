@@ -14,6 +14,8 @@ export const dataKeys = {
   collapseParent: "fennec-collapse-parent",
   compactPostLayout: "fennec-compact-post-layout",
   theme: "fennec-theme",
+  hapticsOff: "fennec-haptics-off",
+  favCommunities: "fennec-fav-communities",
 } as const;
 
 type Keys = keyof typeof dataKeys;

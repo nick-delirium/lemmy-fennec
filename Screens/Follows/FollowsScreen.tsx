@@ -2,11 +2,11 @@ import React from "react";
 import { View, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 import { observer } from "mobx-react-lite";
 import { apiClient } from "../../store/apiClient";
-import { Community } from "../Search/ListComponents";
 import { Text } from "../../ThemedComponents";
 import Pagination from "../../components/Pagination";
+import FollowedCommunity from "./FollowedCommunity";
 
-function FollowsScreen({ navigation }) {
+function FollowsScreen() {
   React.useEffect(() => {
     if (apiClient.communityStore.followedCommunities.length === 0) {
       apiClient.communityStore.setPage(1);
@@ -23,6 +23,7 @@ function FollowsScreen({ navigation }) {
     apiClient.communityStore.prevPage(apiClient.loginDetails);
   };
 
+  const renderItem = ({ item }) => <FollowedCommunity item={item} />;
   return (
     <View style={{ flex: 1 }}>
       {apiClient.communityStore.isLoading ? <ActivityIndicator /> : null}
@@ -40,11 +41,12 @@ function FollowsScreen({ navigation }) {
             apiClient.loginDetails
           )
         }
-        data={apiClient.communityStore.followedCommunities}
+        data={[
+          ...apiClient.communityStore.favoriteCommunities,
+          ...apiClient.communityStore.regularFollowedCommunities,
+        ]}
         refreshing={apiClient.communityStore.isLoading}
-        renderItem={({ item }) => (
-          <Community navigation={navigation} sublemmy={item} />
-        )}
+        renderItem={renderItem}
         keyExtractor={(item) => item.community.id.toString()}
       />
       {apiClient.communityStore.isLoading ? null : (

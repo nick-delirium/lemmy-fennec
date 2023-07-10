@@ -114,6 +114,16 @@ function SearchScreen({
     apiClient.searchStore.fetchSearch(apiClient.loginDetails).then(processData);
   };
 
+  const renderItem = ({ item, section }) => {
+    if (section.title === "Communities")
+      return (
+        <Community navigation={navigation} sublemmy={item as CommunityView} />
+      );
+    if (section.title === "Users")
+      return <User navigation={navigation} user={item as PersonView} />;
+    if (section.title === "Posts")
+      return <Post navigation={navigation} post={item as PostView} />;
+  };
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
@@ -140,21 +150,7 @@ function SearchScreen({
                 </TouchableOpacity>
               </View>
             )}
-            renderItem={({ item, section }) => {
-              if (section.title === "Communities")
-                return (
-                  <Community
-                    navigation={navigation}
-                    sublemmy={item as CommunityView}
-                  />
-                );
-              if (section.title === "Users")
-                return (
-                  <User navigation={navigation} user={item as PersonView} />
-                );
-              if (section.title === "Posts")
-                return <Post navigation={navigation} post={item as PostView} />;
-            }}
+            renderItem={renderItem}
             keyExtractor={(item, ind) => {
               return (
                 (item.community?.id || item.person?.id || item.post?.id) +

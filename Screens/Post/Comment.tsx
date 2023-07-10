@@ -40,7 +40,6 @@ function Comment({
     );
   }, []);
   const upvoteComment = React.useCallback(() => {
-    Vibration.vibrate(50);
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
       apiClient.loginDetails,
@@ -48,7 +47,6 @@ function Comment({
     );
   }, []);
   const downvoteComment = React.useCallback(() => {
-    Vibration.vibrate(50);
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
       apiClient.loginDetails,
@@ -161,7 +159,7 @@ function Comment({
             size={24}
           />
         </TouchableOpacity>
-        <TouchableOpacity simple onPressCb={downvoteComment}>
+        <TouchableOpacity feedback simple onPressCb={downvoteComment}>
           <Icon
             accessibilityLabel={"downvote comment"}
             name={"arrow-down"}
@@ -173,7 +171,7 @@ function Comment({
             }
           />
         </TouchableOpacity>
-        <TouchableOpacity onPressCb={upvoteComment} simple>
+        <TouchableOpacity feedback onPressCb={upvoteComment} simple>
           <Icon
             accessibilityLabel={"upvote comment"}
             name={"arrow-up"}

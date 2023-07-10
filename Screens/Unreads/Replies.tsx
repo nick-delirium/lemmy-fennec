@@ -59,6 +59,10 @@ function Replies({ navigation }) {
         void apiClient.mentionsStore.getReplies(apiClient.loginDetails.jwt);
       });
   };
+
+  const renderItem = ({ item }) => (
+    <Reply item={item} navigation={navigation} />
+  );
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -66,7 +70,7 @@ function Replies({ navigation }) {
         data={apiClient.mentionsStore.replies}
         onRefresh={refresh}
         refreshing={apiClient.mentionsStore.isLoading}
-        renderItem={({ item }) => <Reply item={item} navigation={navigation} />}
+        renderItem={renderItem}
         ItemSeparatorComponent={() => (
           <View
             style={{ height: 1, width: "100%", backgroundColor: colors.border }}

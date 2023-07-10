@@ -22,6 +22,7 @@ export class Preferences {
   public leftHanded = false;
   public collapseParentComment = false;
   public compactPostLayout = false;
+  public hapticsOff = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -57,6 +58,13 @@ export class Preferences {
           break;
       }
     });
+    asyncStorageHandler.readData(dataKeys.hapticsOff).then((value) => {
+      this.setHapticsOff(value === "1");
+    });
+  }
+
+  setHapticsOff(hapticsOff: boolean) {
+    this.hapticsOff = hapticsOff;
   }
 
   setTheme(theme: Theme) {

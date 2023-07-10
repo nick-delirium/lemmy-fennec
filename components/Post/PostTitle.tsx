@@ -25,16 +25,16 @@ function PostTitle({
     : `c/${post.community.name}@${hostname(post.community.actor_id)}`;
 
   const safeCommunityName =
-    communityName.length > 30
-      ? communityName.slice(0, 30) + "..."
+    communityName.length > 50
+      ? communityName.slice(0, 50) + "..."
       : communityName;
 
   const authorDisplayName = `u/${
     post.creator.display_name || post.creator.name
   }`;
   const safeAuthorName =
-    authorDisplayName.length > 30
-      ? authorDisplayName.slice(0, 20) + "..."
+    authorDisplayName.length > 50
+      ? authorDisplayName.slice(0, 50) + "..."
       : authorDisplayName;
 
   return (
@@ -47,22 +47,23 @@ function PostTitle({
           />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity simple onPressCb={getCommunity}>
-        <Text
-          lines={1}
-          customColor={customReadColor}
-          style={styles.communityName}
-        >
-          {safeCommunityName}
-        </Text>
-      </TouchableOpacity>
-      <Text>by</Text>
-      <TouchableOpacity simple onPressCb={getAuthor}>
-        <Text customColor={customReadColor} style={styles.authorName}>
-          {safeAuthorName}
-        </Text>
-      </TouchableOpacity>
-      <Text customColor={customReadColor} style={{ marginLeft: "auto" }}>
+      <View>
+        <TouchableOpacity simple onPressCb={getCommunity}>
+          <Text
+            lines={1}
+            customColor={customReadColor}
+            style={styles.communityName}
+          >
+            {safeCommunityName}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity simple onPressCb={getAuthor}>
+          <Text customColor={customReadColor} style={styles.authorName}>
+            {safeAuthorName}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.date} customColor={customReadColor}>
         {dateStr}
       </Text>
     </View>
@@ -86,7 +87,16 @@ const styles = StyleSheet.create({
     height: 28,
   },
   communityIcon: { width: 28, height: 28, borderRadius: 28 },
-  authorName: { fontSize: 13, fontWeight: "500", color: "orange" },
+  authorName: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: "orange",
+    marginTop: 2,
+  },
+  date: {
+    alignSelf: "flex-start",
+    marginLeft: "auto",
+  },
   communityName: {
     fontSize: 13,
     fontWeight: "500",

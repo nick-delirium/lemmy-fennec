@@ -1,6 +1,9 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { StyleSheet, ViewStyle, Pressable } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { impactAsync, ImpactFeedbackStyle } from "expo-haptics";
+import { preferences } from "../store/preferences";
 
 interface Props {
   isOutlined?: boolean;
@@ -9,12 +12,20 @@ interface Props {
   children: React.ReactNode;
   isSecondary?: boolean;
   simple?: boolean;
+  feedback?: boolean;
 
   [key: string]: any;
 }
 
 function ThemedTouchableOpacity(props: Props) {
   const { colors } = useTheme();
+
+  const onPress = () => {
+    if (!preferences.hapticsOff && props.feedback) {
+      void impactAsync(ImpactFeedbackStyle.Light);
+    }
+    props.onPressCb();
+  };
 
   return (
     <Pressable
@@ -38,7 +49,7 @@ function ThemedTouchableOpacity(props: Props) {
               ...props.style,
             }
       }
-      onPress={props.onPressCb}
+      onPress={onPress}
     >
       {props.children}
     </Pressable>
@@ -53,4 +64,4 @@ const styleSheet = StyleSheet.create({
   },
 });
 
-export default ThemedTouchableOpacity;
+export default observer(ThemedTouchableOpacity);

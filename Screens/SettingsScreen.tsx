@@ -37,22 +37,11 @@ function SettingsScreen() {
   };
   return (
     <View style={styles.container}>
-      <Toggler
-        useLogin
-        label={"Hide NSFW posts?"}
-        value={!profile?.local_user.show_nsfw}
-        onValueChange={toggleNSFW}
-      />
+      <Text style={styles.title}>App Behavior</Text>
       <Toggler
         label={"Blur NSFW posts?"}
         value={!preferences.unblurNsfw}
         onValueChange={toggleBlurNsfw}
-      />
-      <Toggler
-        useLogin
-        label={"Hide read posts?"}
-        value={!profile?.local_user.show_read_posts}
-        onValueChange={toggleReadPosts}
       />
       <Toggler
         useLogin
@@ -83,7 +72,26 @@ function SettingsScreen() {
           preferences.setPostLayout(!preferences.compactPostLayout)
         }
       />
+      <Toggler
+        label={"Turn off Haptic Feedback"}
+        value={preferences.hapticsOff}
+        onValueChange={() => preferences.setHapticsOff(!preferences.hapticsOff)}
+      />
       <ThemePicker />
+
+      <Text style={styles.title}>Profile Settings</Text>
+      <Toggler
+        useLogin
+        label={"Hide read posts?"}
+        value={!profile?.local_user.show_read_posts}
+        onValueChange={toggleReadPosts}
+      />
+      <Toggler
+        useLogin
+        label={"Hide NSFW posts?"}
+        value={!profile?.local_user.show_nsfw}
+        onValueChange={toggleNSFW}
+      />
 
       {apiClient.profileStore.isLoading ? (
         <View
@@ -140,14 +148,14 @@ const ThemePicker = observer(() => {
       <Text>Theme</Text>
       <Picker
         style={{
-          height: 50,
-          width: 200,
+          width: "50%",
           color: colors.text,
           borderColor: colors.border,
           borderWidth: 1,
         }}
         selectedValue={preferences.theme}
         mode={"dropdown"}
+        accessibilityLabel={"App Theme Picker"}
         dropdownIconColor={colors.text}
         itemStyle={{ color: colors.text, backgroundColor: colors.card }}
         onValueChange={(itemValue) => preferences.setTheme(itemValue)}
@@ -175,6 +183,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     justifyContent: "space-between",
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 

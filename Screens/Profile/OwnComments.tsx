@@ -53,6 +53,7 @@ function OwnComments({ navigation }) {
     });
   };
 
+  const renderItem = ({ item }) => <OwnComment item={item} getPost={getPost} />;
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -71,7 +72,7 @@ function OwnComments({ navigation }) {
           </View>
         }
         keyExtractor={(item) => item.comment.id.toString()}
-        renderItem={({ item }) => <OwnComment item={item} getPost={getPost} />}
+        renderItem={renderItem}
       />
       <Pagination
         page={apiClient.profileStore.profilePage}

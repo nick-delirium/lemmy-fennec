@@ -62,6 +62,9 @@ function Mentions({ navigation }) {
       });
   };
 
+  const renderItem = ({ item }) => (
+    <Mention item={item} navigation={navigation} />
+  );
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -69,9 +72,7 @@ function Mentions({ navigation }) {
         data={apiClient.mentionsStore.mentions}
         onRefresh={refresh}
         refreshing={apiClient.mentionsStore.isLoading}
-        renderItem={({ item }) => (
-          <Mention item={item} navigation={navigation} />
-        )}
+        renderItem={renderItem}
         ItemSeparatorComponent={() => (
           <View
             style={{ height: 1, width: "100%", backgroundColor: colors.border }}

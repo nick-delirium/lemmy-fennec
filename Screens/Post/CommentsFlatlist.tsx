@@ -1,17 +1,11 @@
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { Theme } from "@react-navigation/native";
 import { CommentNode } from "../../store/commentsStore";
-import React from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Vibration,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import Comment from "./Comment";
 import { apiClient } from "../../store/apiClient";
+import { TouchableOpacity } from "../../ThemedComponents";
 
 const CommentFlatList = observer(
   ({
@@ -105,11 +99,9 @@ const CommentRenderer = observer(
 
     const ownColor = React.useMemo(() => rainbow(), []);
     const hide = () => {
-      Vibration.vibrate(50);
       setIsExpanded(false);
     };
     const show = () => {
-      Vibration.vibrate(50);
       setIsExpanded(true);
     };
 
@@ -142,7 +134,7 @@ const CommentRenderer = observer(
               />
             </View>
           ) : comment.counts.child_count > 0 ? (
-            <TouchableOpacity onPress={loadMore}>
+            <TouchableOpacity feedback simple onPressCb={loadMore}>
               <Text
                 style={{
                   ...styles.subComment,
@@ -166,7 +158,7 @@ const CommentRenderer = observer(
             isExpanded={isExpanded}
             comment={comment}
           />
-          <TouchableOpacity onPress={show}>
+          <TouchableOpacity simple feedback onPressCb={show}>
             <Text
               style={{
                 ...styles.subComment,

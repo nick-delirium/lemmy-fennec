@@ -1,5 +1,4 @@
 import React from "react";
-import { View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { Feather } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -9,7 +8,13 @@ import Search from "./Search/SearchScreen";
 import FollowsScreen from "./Follows/FollowsScreen";
 import Unreads from "./Unreads/Unreads";
 import { apiClient } from "../store/apiClient";
-import { Text } from "../ThemedComponents";
+import { Icon, Text } from "../ThemedComponents";
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+
+const getTitle = (route, title) => {
+  const parsed = getFocusedRouteNameFromRoute(route) ?? "Feed";
+  return parsed === "Feed" ? title : parsed;
+};
 
 const Tab = createBottomTabNavigator();
 
@@ -22,6 +27,19 @@ function HomeScreen() {
   }, [jwt]);
   const unreadCount = apiClient.mentionsStore.unreadsCount;
   const displayedUnreads = unreadCount > 99 ? "99+" : unreadCount;
+
+  const [title, setTitle] = React.useState<string>("Feed");
+  React.useEffect(() => {
+    setTitle(
+      `Feed | ${
+        apiClient.postStore.filters.type_
+      } | ${apiClient.postStore.filters.sort.replace(
+        /([a-z])([A-Z])/g,
+        "$1 $2"
+      )}`
+    );
+  }, [apiClient.postStore.filters.type_, apiClient.postStore.filters.sort]);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -49,39 +67,25 @@ function HomeScreen() {
       <Tab.Screen
         name="Feed"
         component={Feed}
-        options={{
-          headerShown: false,
-        }}
+        options={(route) => ({
+          headerTitle: getTitle(route, title),
+          headerRight: () => <Icon name={"arrow-up"} size={24} />,
+        })}
       />
       {apiClient.loginDetails?.jwt ? (
-        <Tab.Screen
-          name={"Followed Communities"}
-          component={FollowsScreen}
-          options={{ headerShown: false }}
-        />
+        <Tab.Screen name={"Followed Communities"} component={FollowsScreen} />
       ) : null}
-      <Tab.Screen
-        name={"Search"}
-        component={Search}
-        options={{ headerShown: false }}
-      />
+      <Tab.Screen name={"Search"} component={Search} />
       {apiClient.loginDetails?.jwt ? (
         <Tab.Screen
           name={"Unreads"}
           component={Unreads}
           options={{
-            headerShown: false,
             tabBarBadge: unreadCount > 0 ? displayedUnreads : undefined,
           }}
         />
       ) : null}
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          headerShown: false,
-        }}
-      />
+      <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
 }

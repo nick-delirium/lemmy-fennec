@@ -1,4 +1,4 @@
-import { makeObservable, observable, action } from "mobx";
+import { makeObservable, observable, action, computed } from "mobx";
 import DataClass from "./dataClass";
 import {
   CommunityView,
@@ -7,11 +7,13 @@ import {
   ListCommunitiesResponse,
   CommunityResponse,
 } from "lemmy-js-client";
+import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 
 class CommunityStore extends DataClass {
   communityId = 0;
   community: CommunityView | null = null;
   followedCommunities: CommunityView[] = [];
+  favoriteCommunities: CommunityView[] = [];
   page = 1;
 
   constructor() {
@@ -21,13 +23,58 @@ class CommunityStore extends DataClass {
       isLoading: observable,
       community: observable,
       followedCommunities: observable,
+      favoriteCommunities: observable,
       page: observable,
+      setFavoriteCommunities: action,
       setCommunityId: action,
       setCommunity: action,
       setIsLoading: action,
       setFollowedCommunities: action,
       setPage: action,
     });
+
+    asyncStorageHandler.readData(dataKeys.favCommunities).then((value) => {
+      if (value) {
+        this.setFavoriteCommunities(JSON.parse(value));
+      }
+    });
+  }
+
+  setFavoriteCommunities(communities: CommunityView[]) {
+    communities.forEach((c) => {
+      c.community.description = "";
+    });
+    this.favoriteCommunities = communities;
+    void asyncStorageHandler.setData(
+      dataKeys.favCommunities,
+      JSON.stringify(communities)
+    );
+  }
+
+  get regularFollowedCommunities() {
+    return this.followedCommunities.filter(
+      (c) =>
+        this.favoriteCommunities.findIndex(
+          (f) => f.community.id === c.community.id
+        ) === -1
+    );
+  }
+
+  addToFavorites(community: CommunityView) {
+    const communities = [...this.favoriteCommunities];
+    communities.push(community);
+    this.setFavoriteCommunities(communities);
+  }
+
+  removeFromFavorites(community: CommunityView) {
+    const communities = [...this.favoriteCommunities];
+    const index = communities.findIndex(
+      (c) => c.community.id === community.community.id
+    );
+    if (index > -1) {
+      communities.splice(index, 1);
+    }
+    this.setFavoriteCommunities(communities);
   }
 
   setPage(page: number) {

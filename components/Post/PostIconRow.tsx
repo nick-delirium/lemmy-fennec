@@ -77,8 +77,8 @@ function PostIconRow({
       </TouchableOpacity>
       <TouchableOpacity
         simple
+        feedback
         onPressCb={() => {
-          Vibration.vibrate(50);
           void apiClient.postStore.savePost({
             post_id: post.post.id,
             save: !post.saved,
@@ -114,8 +114,8 @@ function PostIconRow({
       </TouchableOpacity>
       <TouchableOpacity
         simple
+        feedback
         onPressCb={() => {
-          Vibration.vibrate(50);
           markRead();
           void apiClient.postStore.ratePost(
             post.post.id,
@@ -134,8 +134,8 @@ function PostIconRow({
       </TouchableOpacity>
       <TouchableOpacity
         simple
+        feedback
         onPressCb={() => {
-          Vibration.vibrate(50);
           markRead();
           void apiClient.postStore.ratePost(
             post.post.id,

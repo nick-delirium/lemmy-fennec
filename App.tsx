@@ -19,28 +19,12 @@ import DebugScreen from "./Screens/DebugScreen";
 import CommentWrite from "./Screens/CommentWrite/CommentWrite";
 import PostWrite from "./Screens/PostWrite";
 import { preferences, Theme } from "./store/preferences";
+import { Icon } from "./ThemedComponents";
 
 const Stack = createNativeStackNavigator();
 
 const App = observer(() => {
-  const [title, setTitle] = React.useState<string>("Feed");
   const scheme = useColorScheme();
-
-  const getTitle = (route) => {
-    const parsed = getFocusedRouteNameFromRoute(route) ?? "Feed";
-    return parsed === "Feed" ? title : parsed;
-  };
-
-  React.useEffect(() => {
-    setTitle(
-      `Feed | ${
-        apiClient.postStore.filters.type_
-      } | ${apiClient.postStore.filters.sort.replace(
-        /([a-z])([A-Z])/g,
-        "$1 $2"
-      )}`
-    );
-  }, [apiClient.postStore.filters.type_, apiClient.postStore.filters.sort]);
 
   const systemTheme = scheme === "dark" ? AppDarkTheme : AppTheme;
   const isLightStatusBar =
@@ -67,9 +51,7 @@ const App = observer(() => {
           <Stack.Screen
             name="Home"
             component={HomeScreen}
-            options={({ route }) => ({
-              headerTitle: getTitle(route),
-            })}
+            options={{ headerShown: false }}
           />
           <Stack.Screen name="Post" component={PostScreen} />
           <Stack.Screen
@@ -82,7 +64,13 @@ const App = observer(() => {
             name={"PostWrite"}
             component={PostWrite}
           />
-          <Stack.Screen name="Community" component={CommunityScreen} />
+          <Stack.Screen
+            options={{
+              headerRight: () => <Icon name={"arrow-up"} size={24} />,
+            }}
+            name="Community"
+            component={CommunityScreen}
+          />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="User" component={UserScreen} />
           <Stack.Screen name="Settings" component={SettingsScreen} />

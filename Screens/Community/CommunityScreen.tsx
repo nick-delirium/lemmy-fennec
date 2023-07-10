@@ -1,16 +1,14 @@
 import React from "react";
-import { FlatList, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
-import { commonStyles } from "../../commonStyles";
+import { ActivityIndicator } from "react-native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import CommunityFeed from "./CommunityFeed";
+import CommunityInfos from "./CommunityInfos";
+
+const Tab = createMaterialTopTabNavigator();
 import { apiClient } from "../../store/apiClient";
-import FeedPost from "../../components/Post/FeedPost";
-import FloatingMenu from "../Feed/FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import CommunityHeader from "./CommunityHeader";
 import { communityStore } from "../../store/communityStore";
-import { Text, TouchableOpacity, Icon } from "../../ThemedComponents";
-import TinyPost from "../../components/Post/TinyPost";
-import { preferences } from "../../store/preferences";
 
 function CommunityScreen({
   navigation,
@@ -21,6 +19,7 @@ function CommunityScreen({
 
   React.useEffect(() => {
     const getData = () => {
+      console.log("requesting community data");
       if (communityStore.community?.community.id === commId) return;
       if (commId) {
         apiClient.postStore.setPage(1);
@@ -46,96 +45,27 @@ function CommunityScreen({
     return unsubscribe;
   }, [commId, navigation, apiClient.postStore, communityStore.community]);
 
-  const renderPost = React.useCallback(
-    ({ item }) => {
-      return preferences.compactPostLayout ? (
-        // @ts-ignore
-        <TinyPost post={item} navigation={navigation} useCommunity />
-      ) : (
-        // @ts-ignore
-        <FeedPost post={item} navigation={navigation} useCommunity />
-      );
-    },
-    [preferences.compactPostLayout]
-  );
-  const extractor = React.useCallback((p) => p.post.id.toString(), []);
-  const onEndReached = React.useCallback(() => {
-    if (apiClient.postStore.posts.length === 0) return;
-    void apiClient.postStore.nextPage(apiClient.loginDetails, commId);
-  }, [commId]);
-  const onRefresh = React.useCallback(() => {
-    apiClient.postStore.setCommPage(1);
-    void apiClient.postStore.getPosts(apiClient.loginDetails, commId);
-  }, [commId]);
+  if (apiClient.communityStore.isLoading || community === null)
+    return <ActivityIndicator />;
 
-  const onPostScroll = React.useRef(({ changed }) => {
-    if (changed.length > 0 && apiClient.loginDetails?.jwt) {
-      changed.forEach((item) => {
-        if (!item.isViewable && preferences.getReadOnScroll()) {
-          void apiClient.postStore.markPostRead({
-            post_id: item.item.post.id,
-            read: true,
-            auth: apiClient.loginDetails.jwt,
-          });
-        }
-      });
-    }
-  }).current;
-
-  const createPost = () => {
-    navigation.navigate("PostWrite", {
-      communityName: community.community.name,
-      communityId: community.community.id,
-    });
-  };
-  // feedKey is a hack for autoscroll; force rerender on each feed update
   return (
-    <View style={commonStyles.container} key={apiClient.postStore.feedKey}>
-      <FlatList
-        ListHeaderComponent={
-          <CommunityHeader navigation={navigation} route={route} />
-        }
-        ListEmptyComponent={
-          <View style={ownStyles.emptyContainer}>
-            <Text style={ownStyles.empty}>No posts here so far...</Text>
-            <TouchableOpacity onPressCb={onRefresh}>
-              <Text>Refresh</Text>
-            </TouchableOpacity>
-          </View>
-        }
-        style={{ flex: 1, width: "100%" }}
-        renderItem={renderPost}
-        data={apiClient.postStore.communityPosts}
-        onRefresh={onRefresh}
-        onEndReached={onEndReached}
-        refreshing={apiClient.postStore.isLoading}
-        onEndReachedThreshold={1}
-        keyExtractor={extractor}
-        fadingEdgeLength={1}
-        onViewableItemsChanged={onPostScroll}
+    <Tab.Navigator initialRouteName={"CommunityFeed"}>
+      <Tab.Screen
+        options={{
+          tabBarLabel: "Posts",
+        }}
+        name={"CommunityFeed"}
+        component={CommunityFeed}
       />
-      <FloatingMenu
-        useCommunity
-        additional={
-          !community?.community.posting_restricted_to_mods ? (
-            <TouchableOpacity simple onPressCb={createPost}>
-              <Text style={{ fontWeight: "500" }}>New Post</Text>
-            </TouchableOpacity>
-          ) : null
-        }
+      <Tab.Screen
+        options={{
+          tabBarLabel: "About",
+        }}
+        name={"CommunityInfos"}
+        component={CommunityInfos}
       />
-    </View>
+    </Tab.Navigator>
   );
 }
-
-const ownStyles = StyleSheet.create({
-  emptyContainer: {
-    padding: 12,
-    flex: 1,
-  },
-  empty: {
-    fontSize: 16,
-  },
-});
 
 export default observer(CommunityScreen);

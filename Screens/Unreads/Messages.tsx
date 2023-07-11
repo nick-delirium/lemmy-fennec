@@ -1,11 +1,13 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { View, FlatList, StyleSheet } from "react-native";
-import { Text } from "../../ThemedComponents";
+import { Text, TouchableOpacity, Icon } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { PrivateMessageView } from "lemmy-js-client";
 import { commonColors } from "../../commonStyles";
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
+import { makeDateString } from "../../utils/utils";
+import { PrivateMessageId } from "lemmy-js-client/dist/types/PrivateMessageId";
 
 function Messages({ navigation }) {
   const { colors } = useTheme();
@@ -20,25 +22,20 @@ function Messages({ navigation }) {
       unsub();
     };
   }, [apiClient.mentionsStore.messages.length]);
+
+  const renderItem = ({ item }) => <Message item={item} />;
   return (
     <FlatList
       data={apiClient.mentionsStore.messages}
-      renderItem={Message}
+      renderItem={renderItem}
+      onRefresh={() =>
+        apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt)
+      }
+      refreshing={apiClient.mentionsStore.isLoading}
       ItemSeparatorComponent={() => (
         <View
           style={{ height: 1, width: "100%", backgroundColor: colors.border }}
         />
-      )}
-      ListFooterComponent={() => (
-        <View
-          style={{
-            justifyContent: "center",
-            padding: 12,
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ opacity: 0.6 }}>This area is still in progress.</Text>
-        </View>
       )}
       ListEmptyComponent={
         <View style={styles.emptyContainer}>
@@ -53,30 +50,103 @@ function Messages({ navigation }) {
 }
 
 function Message({ item }: { item: PrivateMessageView }) {
+  const navigation = useNavigation();
+
   const isFromLocalUser =
     item.creator.id === apiClient.profileStore.localUser.person.id;
   const toLocalUser =
     item.recipient.id === apiClient.profileStore.localUser.person.id;
-
   const borderColor = isFromLocalUser ? commonColors.author : "#cecece";
+
+  const messageDate = makeDateString(
+    item.private_message.updated || item.private_message.published
+  );
+  const toWriting = () => {
+    // @ts-ignore
+    navigation.navigate("MessageWrite", {
+      isFromLocalUser,
+      toLocalUser,
+      item,
+      messageDate,
+      borderColor,
+      recipient: item.creator.id,
+      messageId: item.private_message.id,
+    });
+  };
+
+  const removeMessage = () => {
+    apiClient.api
+      .deletePrivateMessage({
+        private_message_id: item.private_message.id,
+        deleted: true,
+        auth: apiClient.loginDetails.jwt,
+      })
+      .then(() => {
+        apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt);
+      });
+  };
+
+  const markRead = () => null;
   return (
-    <View style={styles.message}>
-      {isFromLocalUser ? null : (
-        <View style={styles.title}>
-          <Text>From:</Text>
-          <Text customColor={commonColors.author}>{item.creator.name}</Text>
-        </View>
-      )}
-      {toLocalUser ? null : (
-        <View style={styles.title}>
-          <Text>To:</Text>
-          <Text customColor={commonColors.author}>{item.recipient.name}</Text>
-        </View>
-      )}
+    <View
+      style={{
+        ...styles.message,
+        opacity: item.private_message.read ? 0.6 : 1,
+      }}
+    >
+      <MessageBody
+        isFromLocalUser={isFromLocalUser}
+        toLocalUser={toLocalUser}
+        item={item}
+        messageDate={messageDate}
+        borderColor={borderColor}
+      />
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <View style={{ flex: 1 }} />
+        {isFromLocalUser ? (
+          <TouchableOpacity simple onPressCb={removeMessage}>
+            <Icon name={"trash"} size={24} />
+          </TouchableOpacity>
+        ) : null}
+        <TouchableOpacity simple onPressCb={toWriting}>
+          <Icon name={"edit"} size={24} />
+        </TouchableOpacity>
+        <TouchableOpacity simple onPressCb={markRead}>
+          <Icon name={"check-square"} size={24} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+export function MessageBody({
+  isFromLocalUser,
+  toLocalUser,
+  item,
+  messageDate,
+  borderColor,
+}) {
+  return (
+    <>
+      <View style={styles.title}>
+        {isFromLocalUser ? null : (
+          <>
+            <Text>From:</Text>
+            <Text customColor={commonColors.author}>{item.creator.name}</Text>
+          </>
+        )}
+        {toLocalUser ? null : (
+          <>
+            <Text>To:</Text>
+            <Text customColor={commonColors.author}>{item.recipient.name}</Text>
+          </>
+        )}
+        <Text style={{ marginLeft: "auto" }}>{messageDate}</Text>
+      </View>
       <View style={{ ...styles.messageContent, borderLeftColor: borderColor }}>
         <Text>{item.private_message.content || "Empty message"}</Text>
       </View>
-    </View>
+    </>
   );
 }
 

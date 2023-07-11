@@ -9,32 +9,52 @@ import {
   Icon,
 } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
-import MiniComment from "../../components/TinyComment";
+import { MessageBody } from "./Messages";
 
-function CommentWrite({ navigation }) {
+function MessageWrite({ navigation, route }) {
   const [text, setText] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { colors } = useTheme();
+  const {
+    isFromLocalUser,
+    toLocalUser,
+    item,
+    messageDate,
+    borderColor,
+    recipient,
+    messageId,
+  } = route.params;
 
-  const item = apiClient.commentsStore.replyTo;
-
-  if (!item) return <ActivityIndicator />;
+  React.useEffect(() => {
+    if (isFromLocalUser) {
+      navigation.setOptions({
+        headerTitle: "Edit Message",
+      });
+      setText(item.private_message.content);
+    }
+  }, [navigation, route.params?.isFromLocalUser]);
 
   const submit = () => {
     if (text.length === 0) return;
-    apiClient.commentsStore
-      .createComment(
-        {
-          auth: apiClient.loginDetails.jwt,
+    setIsSubmitting(true);
+    const promise = isFromLocalUser
+      ? apiClient.api.editPrivateMessage({
+          private_message_id: messageId,
           content: text,
-          parent_id: apiClient.commentsStore.replyTo.parent_id,
-          post_id: apiClient.commentsStore.replyTo.postId,
-        },
-        item.parent_id === undefined
-      )
-      .then(() => {
-        navigation.goBack();
-      });
+          auth: apiClient.loginDetails.jwt,
+        })
+      : apiClient.api.createPrivateMessage({
+          content: text,
+          recipient_id: recipient,
+          auth: apiClient.loginDetails.jwt,
+        });
+    promise.then(() => {
+      setIsSubmitting(false);
+      void apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt);
+      navigation.goBack();
+    });
   };
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }}>
@@ -42,18 +62,19 @@ function CommentWrite({ navigation }) {
           horizontal={true}
           contentContainerStyle={{ width: "100%", height: "100%" }}
         >
-          <MiniComment
-            title={item.title}
-            community={item.community}
-            published={item.published}
-            author={item.author}
-            content={item.content}
-            useMd
-          />
+          <View style={{ padding: 12 }}>
+            <MessageBody
+              isFromLocalUser={isFromLocalUser}
+              toLocalUser={toLocalUser}
+              item={item}
+              messageDate={messageDate}
+              borderColor={borderColor}
+            />
+          </View>
         </ScrollView>
       </ScrollView>
       <ButtonsRow
-        isLoading={apiClient.commentsStore.isLoading}
+        isLoading={isSubmitting}
         setText={setText}
         text={text}
         submit={submit}
@@ -70,7 +91,7 @@ function CommentWrite({ navigation }) {
           placeholderTextColor={colors.border}
           keyboardType="default"
           multiline
-          accessibilityLabel={"Comment input"}
+          accessibilityLabel={"Message input"}
         />
       </View>
     </View>
@@ -159,4 +180,4 @@ const styles = StyleSheet.create({
   strike: { textDecorationLine: "line-through", fontSize: 16 },
 });
 
-export default observer(CommentWrite);
+export default observer(MessageWrite);

@@ -26,6 +26,9 @@ import {
   CreateComment,
   GetPersonMentions,
   GetPrivateMessages,
+  CreatePrivateMessage,
+  DeletePrivateMessage,
+  EditPrivateMessage,
 } from "lemmy-js-client";
 
 // !!!TODO!!!
@@ -146,5 +149,17 @@ export default class ApiService {
 
   deletePost(form: DeletePost) {
     return this.client.deletePost(form);
+  }
+
+  createPrivateMessage(form: CreatePrivateMessage) {
+    return this.client.createPrivateMessage(form);
+  }
+
+  deletePrivateMessage(form: DeletePrivateMessage) {
+    return this.client.deletePrivateMessage(form);
+  }
+
+  editPrivateMessage(form: EditPrivateMessage) {
+    return this.client.editPrivateMessage(form);
   }
 }

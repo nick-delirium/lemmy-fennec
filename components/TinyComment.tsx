@@ -25,8 +25,6 @@ function MiniComment({
   useMd?: boolean;
 }) {
   const dateStr = makeDateString(published);
-  const sch = useColorScheme();
-  const { colors } = useTheme();
   return (
     <View style={styles.comment}>
       <View style={styles.topRow}>

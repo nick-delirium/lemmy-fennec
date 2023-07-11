@@ -18,10 +18,14 @@ function UserScreen({
   const person = loadedProfile?.person_view?.person;
 
   React.useEffect(() => {
+    const title =
+      apiClient.profileStore.isLoading || !person ? "User" : person.name;
+    console.log(title, "setting");
     navigation.setOptions({
-      title: person?.name || "User",
+      title: title,
     });
-  }, [person]);
+  }, [person, navigation, apiClient.profileStore.isLoading]);
+
   React.useEffect(() => {
     if (route.params?.personId) {
       void apiClient.profileStore.getProfile(apiClient.loginDetails, {

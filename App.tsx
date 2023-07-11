@@ -20,6 +20,7 @@ import CommentWrite from "./Screens/CommentWrite/CommentWrite";
 import PostWrite from "./Screens/PostWrite";
 import { preferences, Theme } from "./store/preferences";
 import { Icon } from "./ThemedComponents";
+import MessageWrite from "./Screens/Unreads/MessageWrite";
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +64,11 @@ const App = observer(() => {
             options={{ headerTitle: "New Post" }}
             name={"PostWrite"}
             component={PostWrite}
+          />
+          <Stack.Screen
+            options={{ headerTitle: "Message" }}
+            name={"MessageWrite"}
+            component={MessageWrite}
           />
           <Stack.Screen
             options={{

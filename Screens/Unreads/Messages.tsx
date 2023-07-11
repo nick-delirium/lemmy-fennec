@@ -125,20 +125,39 @@ export function MessageBody({
   item,
   messageDate,
   borderColor,
+}: {
+  isFromLocalUser: boolean;
+  toLocalUser: boolean;
+  item: PrivateMessageView;
+  messageDate: string;
+  borderColor: string;
 }) {
+  const navigation = useNavigation();
+  const openUser = () => {
+    // @ts-ignore
+    navigation.navigate("User", {
+      personId: item.creator.id,
+    });
+  };
   return (
     <>
       <View style={styles.title}>
         {isFromLocalUser ? null : (
           <>
             <Text>From:</Text>
-            <Text customColor={commonColors.author}>{item.creator.name}</Text>
+            <TouchableOpacity simple onPressCb={openUser}>
+              <Text customColor={commonColors.author}>{item.creator.name}</Text>
+            </TouchableOpacity>
           </>
         )}
         {toLocalUser ? null : (
           <>
             <Text>To:</Text>
-            <Text customColor={commonColors.author}>{item.recipient.name}</Text>
+            <TouchableOpacity simple onPressCb={openUser}>
+              <Text customColor={commonColors.author}>
+                {item.recipient.name}
+              </Text>
+            </TouchableOpacity>
           </>
         )}
         <Text style={{ marginLeft: "auto" }}>{messageDate}</Text>

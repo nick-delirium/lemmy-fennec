@@ -106,7 +106,8 @@ function CommunityFeed({
       <FloatingMenu
         useCommunity
         additional={
-          !community?.community.posting_restricted_to_mods ? (
+          !community?.community.posting_restricted_to_mods &&
+          apiClient.loginDetails?.jwt ? (
             <TouchableOpacity simple onPressCb={createPost}>
               <Text style={{ fontWeight: "500" }}>New Post</Text>
             </TouchableOpacity>

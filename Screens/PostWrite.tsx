@@ -23,6 +23,7 @@ function PostWrite({
 
   const submit = async () => {
     setIsLoading(true);
+    if (!apiClient.loginDetails.jwt || title === "") return;
     apiClient.api
       .createPost({
         community_id: communityId,

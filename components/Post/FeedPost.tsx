@@ -105,7 +105,8 @@ function Post({
             style={styles.postImg}
             progressiveRenderingEnabled
             resizeMode={"contain"}
-            alt={"Post image"}
+            alt={"Image for post" + post.post.name}
+            accessibilityLabel={"Image for post" + post.post.name}
             blurRadius={isNsfw && !preferences.unblurNsfw ? 55 : 0}
           />
         ) : (

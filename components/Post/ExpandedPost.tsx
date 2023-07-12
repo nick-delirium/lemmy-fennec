@@ -95,6 +95,7 @@ function Post({
   };
 
   const onDelete = () => {
+    if (!apiClient.loginDetails?.jwt) return;
     const onConfirm = () => {
       apiClient.postStore
         .deletePost({
@@ -108,7 +109,6 @@ function Post({
         });
     };
 
-    if (!apiClient.loginDetails.jwt) return;
     Alert.alert(
       "Delete post?",
       "Are you sure you want to delete this post?",
@@ -146,7 +146,11 @@ function Post({
           <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
             <Text style={{ fontSize: 16 }}>{post.post.name}</Text>
             <TouchableOpacity onPressCb={shareImage} simple>
-              <Icon name={"share-2"} size={24} />
+              <Icon
+                name={"share-2"}
+                accessibilityLabel={"share post button"}
+                size={24}
+              />
             </TouchableOpacity>
           </View>
         )}
@@ -175,7 +179,8 @@ function Post({
                 style={styles.postImg}
                 progressiveRenderingEnabled
                 resizeMode={"contain"}
-                alt={"Post image"}
+                alt={"Image for post" + post.post.name}
+                accessibilityLabel={"Image for post" + post.post.name}
               />
             </TouchableOpacity>
           </View>

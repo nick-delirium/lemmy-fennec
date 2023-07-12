@@ -20,7 +20,7 @@ function CommentWrite({ navigation }) {
   if (!item) return <ActivityIndicator />;
 
   const submit = () => {
-    if (text.length === 0) return;
+    if (text.length === 0 || !apiClient.loginDetails?.jwt) return;
     apiClient.commentsStore
       .createComment(
         {
@@ -70,7 +70,7 @@ function CommentWrite({ navigation }) {
           placeholderTextColor={colors.border}
           keyboardType="default"
           multiline
-          accessibilityLabel={"Comment input"}
+          accessibilityLabel={"Comment text input"}
         />
       </View>
     </View>

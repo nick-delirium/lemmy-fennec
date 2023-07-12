@@ -11,7 +11,7 @@ import {
   CreateComment,
   CommentResponse,
 } from "lemmy-js-client";
-import { Score } from "./apiClient";
+import { apiClient, Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 import { ListingTypeMap } from "./postStore";
 
@@ -194,6 +194,7 @@ class CommentsStore extends DataClass {
     loginDetails: LoginResponse,
     score: (typeof Score)[keyof typeof Score]
   ) {
+    if (!loginDetails.jwt) return;
     // update local comment rating because api is slow
     this.updateTreeCommentRating(this.commentTree, commentId, undefined, score);
     await this.fetchData(

@@ -40,9 +40,11 @@ function User() {
       <UserRating counts={profile.counts} />
       <Bio profile={profile} />
       <Counters profile={profile} />
-      <TouchableOpacity onPressCb={onMessagePress}>
-        <Text>Message User</Text>
-      </TouchableOpacity>
+      {apiClient.loginDetails.jwt ? (
+        <TouchableOpacity onPressCb={onMessagePress}>
+          <Text>Message User</Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 }

@@ -44,6 +44,7 @@ function PostTitle({
           <Image
             source={{ uri: post.community.icon }}
             style={styles.communityIcon}
+            accessibilityLabel={"Icon for community: " + post.community.name}
           />
         </TouchableOpacity>
       </View>

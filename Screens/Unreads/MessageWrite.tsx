@@ -93,7 +93,7 @@ function MessageWrite({ navigation, route }) {
           placeholderTextColor={colors.border}
           keyboardType="default"
           multiline
-          accessibilityLabel={"Message input"}
+          accessibilityLabel={"Message text input"}
         />
       </View>
     </View>

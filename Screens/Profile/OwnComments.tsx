@@ -120,7 +120,11 @@ function OwnComment({
             })
           }
         >
-          <Icon name={"share-2"} size={24} />
+          <Icon
+            name={"share-2"}
+            accessibilityLabel={"share comment button"}
+            size={24}
+          />
         </TouchableOpacity>
         <View style={styles.row}>
           <Icon name={"arrow-up"} color={commonColors.upvote} size={24} />

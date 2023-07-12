@@ -16,6 +16,7 @@ export const dataKeys = {
   theme: "fennec-theme",
   hapticsOff: "fennec-haptics-off",
   favCommunities: "fennec-fav-communities",
+  paginatedFeed: "fennec-paginated-feed",
 } as const;
 
 type Keys = keyof typeof dataKeys;

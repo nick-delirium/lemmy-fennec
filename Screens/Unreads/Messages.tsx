@@ -125,15 +125,18 @@ export function MessageBody({
   item,
   messageDate,
   borderColor,
+  newMessage,
 }: {
   isFromLocalUser: boolean;
   toLocalUser: boolean;
   item: PrivateMessageView;
   messageDate: string;
   borderColor: string;
+  newMessage?: boolean;
 }) {
   const navigation = useNavigation();
   const openUser = () => {
+    if (newMessage) return;
     // @ts-ignore
     navigation.navigate("User", {
       personId: item.creator.id,

@@ -20,19 +20,21 @@ function UserScreen({
   React.useEffect(() => {
     const title =
       apiClient.profileStore.isLoading || !person ? "User" : person.name;
-    console.log(title, "setting");
     navigation.setOptions({
       title: title,
     });
   }, [person, navigation, apiClient.profileStore.isLoading]);
 
   React.useEffect(() => {
-    if (route.params?.personId) {
+    const paramsPresent = route.params?.personId || route.params?.username;
+    if (paramsPresent) {
+      console.log(route.params?.username);
       void apiClient.profileStore.getProfile(apiClient.loginDetails, {
         person_id: route.params.personId,
+        username: route.params.username,
       });
     }
-  }, [route.params.personId]);
+  }, [route.params?.personId, route.params?.username]);
 
   if (!person || apiClient.profileStore.isLoading) {
     return (

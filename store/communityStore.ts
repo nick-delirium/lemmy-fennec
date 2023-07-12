@@ -93,9 +93,9 @@ class CommunityStore extends DataClass {
     this.community = community;
   }
 
-  async getCommunity(id: number, auth?: LoginResponse) {
+  async getCommunity(auth?: LoginResponse, id?: number, name?: string) {
     await this.fetchData<GetCommunityResponse>(
-      () => this.api.fetchCommunity({ auth: auth?.jwt, id }),
+      () => this.api.fetchCommunity({ auth: auth?.jwt, id, name }),
       (data) => this.setCommunity(data.community_view),
       (error) => console.log(error)
     );

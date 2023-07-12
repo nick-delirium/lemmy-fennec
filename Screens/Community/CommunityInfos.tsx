@@ -12,8 +12,9 @@ function CommunityInfos({ navigation, route }) {
   React.useEffect(() => {
     if (community === null && !apiClient.communityStore.isLoading) {
       void apiClient.communityStore.getCommunity(
+        apiClient.loginDetails,
         route.params.id,
-        apiClient.loginDetails
+        route.params.name
       );
     }
   }, [community, navigation]);

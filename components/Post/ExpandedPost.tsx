@@ -176,7 +176,6 @@ function Post({
                 progressiveRenderingEnabled
                 resizeMode={"contain"}
                 alt={"Post image"}
-                blurRadius={isNsfw && !preferences.unblurNsfw ? 15 : 0}
               />
             </TouchableOpacity>
           </View>

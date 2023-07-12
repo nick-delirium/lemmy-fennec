@@ -39,25 +39,25 @@ function SettingsScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>App Behavior</Text>
       <Toggler
-        label={"Blur NSFW posts?"}
+        label={"Blur NSFW posts"}
         value={!preferences.unblurNsfw}
         onValueChange={toggleBlurNsfw}
       />
       <Toggler
         useLogin
-        label={"Mark posts read while scrolling?"}
+        label={"Mark posts read while scrolling"}
         value={preferences.readOnScroll}
         onValueChange={() =>
           preferences.setReadOnScroll(!preferences.readOnScroll)
         }
       />
       <Toggler
-        label={"Left handed layout?"}
+        label={"Left handed layout"}
         value={preferences.leftHanded}
         onValueChange={toggleLeftHanded}
       />
       <Toggler
-        label={"Collapse parent comments?"}
+        label={"Collapse parent comments"}
         value={preferences.collapseParentComment}
         onValueChange={() =>
           preferences.setCollapseParentComment(
@@ -77,18 +77,25 @@ function SettingsScreen() {
         value={preferences.hapticsOff}
         onValueChange={() => preferences.setHapticsOff(!preferences.hapticsOff)}
       />
+      <Toggler
+        label={"Use paginated feed"}
+        value={preferences.paginatedFeed}
+        onValueChange={() =>
+          preferences.setPaginatedFeed(!preferences.paginatedFeed)
+        }
+      />
       <ThemePicker />
 
-      <Text style={styles.title}>Profile Settings</Text>
+      <Text style={styles.title}>Account Settings</Text>
       <Toggler
         useLogin
-        label={"Hide read posts?"}
+        label={"Hide read posts"}
         value={!profile?.local_user.show_read_posts}
         onValueChange={toggleReadPosts}
       />
       <Toggler
         useLogin
-        label={"Hide NSFW posts?"}
+        label={"Hide NSFW posts"}
         value={!profile?.local_user.show_nsfw}
         onValueChange={toggleNSFW}
       />

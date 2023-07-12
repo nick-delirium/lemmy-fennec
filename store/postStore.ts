@@ -133,14 +133,20 @@ class PostStore extends DataClass {
     this.filters = defaultFilters;
   }
 
-  async getPosts(loginDetails?: LoginResponse, communityId?: number) {
-    const filters = communityId
-      ? {
-          ...this.filters,
-          community_id: communityId,
-          type_: ListingTypeMap.All,
-        }
-      : this.filters;
+  async getPosts(
+    loginDetails?: LoginResponse,
+    communityId?: number,
+    communityName?: string
+  ) {
+    const filters =
+      communityId || communityName
+        ? {
+            ...this.filters,
+            community_id: communityId,
+            community_name: communityName,
+            type_: ListingTypeMap.All,
+          }
+        : this.filters;
     await this.fetchData<GetPostsResponse>(
       () => {
         return this.api.getPosts({
@@ -150,7 +156,7 @@ class PostStore extends DataClass {
         });
       },
       (result) => {
-        if (communityId) {
+        if (communityId || communityName) {
           this.setCommunityPosts(result.posts);
         } else {
           this.setPosts(result.posts);
@@ -175,6 +181,33 @@ class PostStore extends DataClass {
       (e) => console.error(e),
       false,
       "single post"
+    );
+  }
+
+  async changePage(page, loginDetails?: LoginResponse, communityId?: number) {
+    if (communityId) {
+      this.setCommPage(page);
+    } else {
+      this.setPage(page);
+    }
+    await this.fetchData<GetPostsResponse>(
+      () =>
+        this.api.getPosts({
+          ...this.filters,
+          page: communityId ? this.commPage : this.page,
+          community_id: communityId,
+          auth: loginDetails ? loginDetails.jwt : undefined,
+        }),
+      ({ posts }) => {
+        if (communityId) {
+          this.setCommunityPosts(posts);
+        } else {
+          this.setPosts(posts);
+        }
+      },
+      (e) => console.error(e),
+      false,
+      "change page posts, page: " + page
     );
   }
 
@@ -206,11 +239,18 @@ class PostStore extends DataClass {
   }
 
   concatPosts(posts: PostView[]) {
-    this.posts = this.posts.concat(posts);
+    const uniquePosts = posts.filter(
+      (p) => this.posts.findIndex((p2) => p2.post.id === p.post.id) === -1
+    );
+    this.posts = this.posts.concat(uniquePosts);
   }
 
   concatCommunityPosts(posts: PostView[]) {
-    this.communityPosts = this.communityPosts.concat(posts);
+    const uniquePosts = posts.filter(
+      (p) =>
+        this.communityPosts.findIndex((p2) => p2.post.id === p.post.id) === -1
+    );
+    this.communityPosts = this.communityPosts.concat(uniquePosts);
   }
 
   async ratePost(

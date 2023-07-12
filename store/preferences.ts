@@ -23,6 +23,7 @@ export class Preferences {
   public collapseParentComment = false;
   public compactPostLayout = false;
   public hapticsOff = false;
+  public paginatedFeed = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -40,6 +41,9 @@ export class Preferences {
     });
     asyncStorageHandler.readData(dataKeys.compactPostLayout).then((value) => {
       this.setPostLayout(value === "1");
+    });
+    asyncStorageHandler.readData(dataKeys.paginatedFeed).then((value) => {
+      this.setPaginatedFeed(value === "1");
     });
     asyncStorageHandler.readData(dataKeys.theme).then((value) => {
       switch (value) {
@@ -61,6 +65,14 @@ export class Preferences {
     asyncStorageHandler.readData(dataKeys.hapticsOff).then((value) => {
       this.setHapticsOff(value === "1");
     });
+  }
+
+  setPaginatedFeed(paginatedFeed: boolean) {
+    this.paginatedFeed = paginatedFeed;
+    void asyncStorageHandler.setData(
+      dataKeys.paginatedFeed,
+      paginatedFeed ? "1" : "0"
+    );
   }
 
   setHapticsOff(hapticsOff: boolean) {

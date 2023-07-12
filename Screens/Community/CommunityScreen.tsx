@@ -15,6 +15,7 @@ function CommunityScreen({
   route,
 }: NativeStackScreenProps<any, "Community">) {
   const commId = route.params.id;
+  const name = route.params.name;
   const { community } = apiClient.communityStore;
 
   React.useEffect(() => {
@@ -23,11 +24,12 @@ function CommunityScreen({
       if (communityStore.community?.community.id === commId) return;
       if (commId) {
         apiClient.postStore.setPage(1);
-        void apiClient.postStore.getPosts(apiClient.loginDetails, commId);
+        void apiClient.postStore.getPosts(apiClient.loginDetails, commId, name);
       }
       void apiClient.communityStore.getCommunity(
+        apiClient.loginDetails,
         commId,
-        apiClient.loginDetails
+        name
       );
     };
 
@@ -43,7 +45,7 @@ function CommunityScreen({
     }
 
     return unsubscribe;
-  }, [commId, navigation, apiClient.postStore, communityStore.community]);
+  }, [commId, name, navigation, apiClient.postStore, communityStore.community]);
 
   if (apiClient.communityStore.isLoading || community === null)
     return <ActivityIndicator />;

@@ -91,7 +91,11 @@ class ApiClient {
       this.setLoginState(true);
       return auth;
     } catch (e) {
-      debugStore.addError(`LOGIN: ${e.name}: ${e.message}; ${e.stack}`);
+      debugStore.addError(
+        typeof e === "string"
+          ? `login ${e}`
+          : `login --- ${e.name}: ${e.message}; ${e.stack}`
+      );
       throw e;
     } finally {
       this.setIsLoading(false);
@@ -111,10 +115,18 @@ class ApiClient {
     // extract this two to filter out posts;
     // community_blocks: Array<CommunityBlockView>;
     // person_blocks: Array<PersonBlockView>;
-    const { my_user: user } = await this.api.getGeneralData({
-      auth: this.loginDetails.jwt,
-    });
-    return this.profileStore.setLocalUser(user.local_user_view);
+    try {
+      const { my_user: user } = await this.api.getGeneralData({
+        auth: this.loginDetails.jwt,
+      });
+      return this.profileStore.setLocalUser(user.local_user_view);
+    } catch (e) {
+      debugStore.addError(
+        typeof e === "string"
+          ? `get site data ${e}`
+          : `get site data --- ${e.name}: ${e.message}; ${e.stack}`
+      );
+    }
   }
 }
 

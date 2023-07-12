@@ -23,6 +23,7 @@ function MessageWrite({ navigation, route }) {
     borderColor,
     recipient,
     messageId,
+    newMessage,
   } = route.params;
 
   React.useEffect(() => {
@@ -30,7 +31,7 @@ function MessageWrite({ navigation, route }) {
       navigation.setOptions({
         headerTitle: "Edit Message",
       });
-      setText(item.private_message.content);
+      setText(item.private_message?.content);
     }
   }, [navigation, route.params?.isFromLocalUser]);
 
@@ -67,6 +68,7 @@ function MessageWrite({ navigation, route }) {
               isFromLocalUser={isFromLocalUser}
               toLocalUser={toLocalUser}
               item={item}
+              newMessage={newMessage}
               messageDate={messageDate}
               borderColor={borderColor}
             />

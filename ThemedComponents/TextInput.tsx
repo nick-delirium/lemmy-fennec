@@ -13,6 +13,7 @@ export default function ThemedTextInput(props: Props) {
   return (
     <TextInput
       {...props}
+      placeholderTextColor={colors.border}
       style={{
         ...ownStyle.input,
         ...props.style,

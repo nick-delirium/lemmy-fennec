@@ -9,7 +9,8 @@ import TinyPost from "../../components/Post/TinyPost";
 import FloatingMenu from "./FloatingMenu";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { preferences } from "../../store/preferences";
-import { TouchableOpacity, Icon, Text } from "../../ThemedComponents";
+import { TouchableOpacity, Icon } from "../../ThemedComponents";
+import Pagination from "../../components/Pagination";
 
 function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   const isFocused = navigation.isFocused();
@@ -80,6 +81,23 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     }
   }).current;
 
+  const nextPage = React.useCallback(() => {
+    if (apiClient.postStore.posts.length === 0) return;
+    listRef.current.scrollToOffset({ animated: true, offset: 0 });
+    void apiClient.postStore.changePage(
+      apiClient.postStore.page + 1,
+      apiClient.loginDetails
+    );
+  }, []);
+  const prevPage = React.useCallback(() => {
+    if (apiClient.postStore.posts.length === 0) return;
+    listRef.current.scrollToOffset({ animated: true, offset: 0 });
+    void apiClient.postStore.changePage(
+      apiClient.postStore.page - 1,
+      apiClient.loginDetails
+    );
+  }, []);
+
   // feedKey is a hack for autoscroll
   return (
     <View style={commonStyles.container} key={apiClient.postStore.feedKey}>
@@ -92,12 +110,22 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
         windowSize={10}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
-        onEndReached={onEndReached}
+        onEndReached={preferences.paginatedFeed ? undefined : onEndReached}
         refreshing={apiClient.postStore.isLoading}
-        onEndReachedThreshold={1}
+        onEndReachedThreshold={preferences.paginatedFeed ? undefined : 1}
         keyExtractor={extractor}
-        fadingEdgeLength={1}
         onViewableItemsChanged={onPostScroll}
+        ListFooterComponent={
+          preferences.paginatedFeed ? (
+            <Pagination
+              prevPage={prevPage}
+              nextPage={nextPage}
+              isLoading={apiClient.postStore.isLoading}
+              page={apiClient.postStore.page}
+              itemsLength={apiClient.postStore.posts.length}
+            />
+          ) : undefined
+        }
       />
       <FloatingMenu />
     </View>

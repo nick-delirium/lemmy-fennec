@@ -2,7 +2,7 @@ import React from "react";
 import { PostView } from "lemmy-js-client";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, Dimensions } from "react-native";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -106,7 +106,7 @@ function Post({
             progressiveRenderingEnabled
             resizeMode={"contain"}
             alt={"Post image"}
-            blurRadius={isNsfw && !preferences.unblurNsfw ? 15 : 0}
+            blurRadius={isNsfw && !preferences.unblurNsfw ? 55 : 0}
           />
         ) : (
           <View style={{ maxHeight: 200, overflow: "hidden" }}>
@@ -136,6 +136,7 @@ function Post({
 const styles = StyleSheet.create({
   container: {
     padding: 8,
+    width: Dimensions.get("window").width,
     borderBottomWidth: 1,
   },
   postName: {

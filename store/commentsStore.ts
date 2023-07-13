@@ -11,7 +11,7 @@ import {
   CreateComment,
   CommentResponse,
 } from "lemmy-js-client";
-import { apiClient, Score } from "./apiClient";
+import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 import { ListingTypeMap } from "./postStore";
 
@@ -231,16 +231,14 @@ class CommentsStore extends DataClass {
   updateTreeCommentRating(
     commentTree: CommentNode[],
     commentId: number,
-    children?: CommentNode | CommentNode[],
+    children?: CommentNode[],
     vote?: (typeof Score)[keyof typeof Score],
     counts?: CommentNode["counts"]
   ): boolean {
     for (const commentNode of commentTree) {
       if (commentNode.comment.id === commentId) {
         if (children) {
-          if (Array.isArray(children))
-            commentNode.children.unshift(...children);
-          else commentNode.children.unshift(children);
+          commentNode.children = children.concat(commentNode.children);
         }
         if (vote) commentNode.my_vote = vote;
         if (counts) commentNode.counts = counts;
@@ -269,10 +267,12 @@ class CommentsStore extends DataClass {
       () => this.api.createComment({ ...form }),
       ({ comment_view }) => {
         if (!isRoot) {
-          this.updateTreeCommentRating(this.commentTree, form.parent_id, {
-            ...comment_view,
-            children: [],
-          });
+          this.updateTreeCommentRating(this.commentTree, form.parent_id, [
+            {
+              ...comment_view,
+              children: [],
+            },
+          ]);
         } else {
           this.addComment({ ...comment_view, children: [] });
         }

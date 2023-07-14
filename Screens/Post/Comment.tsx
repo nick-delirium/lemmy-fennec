@@ -99,11 +99,13 @@ function Comment({
       </View>
       <View>
         {!isExpanded && preferences.collapseParentComment ? (
-          <Text style={{ fontSize: 16 }} lines={1}>
+          <Text style={{ fontSize: 16, opacity: 0.6 }} lines={1}>
             {comment.comment.content}
           </Text>
         ) : (
-          <MdRenderer value={comment.comment.content} />
+          <TouchableOpacity onPressCb={hide} simple feedback>
+            <MdRenderer value={comment.comment.content} />
+          </TouchableOpacity>
         )}
       </View>
       <View
@@ -129,27 +131,20 @@ function Comment({
             %)
           </Text>
         </View>
-        {comment.children.length > 0 ? (
-          hide ? (
-            <TouchableOpacity style={styles.infoPiece} simple onPressCb={hide}>
-              <Icon
-                accessibilityLabel={"hide sub comment tree"}
-                name={"eye-off"}
-                size={24}
-              />
-              <Text>{comment.counts.child_count}</Text>
-            </TouchableOpacity>
-          ) : null
-        ) : null}
 
         <View style={{ flex: 1 }} />
         {openCommenting ? (
-          <TouchableOpacity simple onPressCb={replyToComment}>
+          <TouchableOpacity
+            simple
+            style={styles.infoPiece}
+            onPressCb={replyToComment}
+          >
             <Icon
               accessibilityLabel={"Write a comment on this comment"}
               name={"message-square"}
               size={24}
             />
+            <Text>{comment.counts.child_count}</Text>
           </TouchableOpacity>
         ) : null}
         <TouchableOpacity simple onPressCb={shareComment}>

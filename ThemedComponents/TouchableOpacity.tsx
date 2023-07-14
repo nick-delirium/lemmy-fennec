@@ -7,17 +7,23 @@ import { preferences } from "../store/preferences";
 
 interface Props {
   isOutlined?: boolean;
-  onPressCb: () => void;
   style?: ViewStyle;
   children: React.ReactNode;
   isSecondary?: boolean;
   simple?: boolean;
   feedback?: boolean;
-
   [key: string]: any;
 }
 
-function ThemedTouchableOpacity(props: Props) {
+interface PressProps extends Props {
+  onPressCb: () => void;
+}
+
+interface LongPressProps extends Props {
+  onLongPress: () => void;
+}
+
+function ThemedTouchableOpacity(props: PressProps | LongPressProps) {
   const { colors } = useTheme();
 
   const onPress = () => {
@@ -27,9 +33,18 @@ function ThemedTouchableOpacity(props: Props) {
     props.onPressCb();
   };
 
+  const onLongPress = () => {
+    if (!preferences.hapticsOff && props.feedback) {
+      void impactAsync(ImpactFeedbackStyle.Light);
+    }
+    props.onLongPress();
+  };
+
   return (
     <Pressable
       role={"button"}
+      onLongPress={props.onLongPress ? onLongPress : undefined}
+      onPress={props.onPressCb ? onPress : undefined}
       style={({ pressed }) =>
         props.simple
           ? {
@@ -49,7 +64,6 @@ function ThemedTouchableOpacity(props: Props) {
               ...props.style,
             }
       }
-      onPress={onPress}
     >
       {props.children}
     </Pressable>

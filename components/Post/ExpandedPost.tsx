@@ -11,16 +11,15 @@ import {
   Alert,
   Share,
 } from "react-native";
-import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { makeDateString } from "../../utils/utils";
 import Embed from "../../components/Post/Embed";
 import PostTitle from "./PostTitle";
 import PostIconRow from "./PostIconRow";
-import ImageView from "react-native-image-viewing";
 import MdRenderer from "../MdRenderer";
-import { preferences } from "../../store/preferences";
+import ImageViewer from "./ImageViewer";
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -138,25 +137,12 @@ function Post({
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
       {isPic ? (
-        <ImageView
-          images={[{ uri: post.post.url }]}
-          imageIndex={0}
+        <ImageViewer
+          url={post.post.url}
+          name={post.post.name}
           visible={visible}
-          onRequestClose={() => setIsVisible(false)}
-          FooterComponent={() => (
-            <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
-              <Text lines={1} style={{ fontSize: 16 }}>
-                {post.post.name}
-              </Text>
-              <TouchableOpacity onPressCb={shareImage} simple>
-                <Icon
-                  name={"share-2"}
-                  accessibilityLabel={"share post button"}
-                  size={24}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
+          setIsVisible={setIsVisible}
+          shareImage={shareImage}
         />
       ) : null}
       <PostTitle
@@ -226,13 +212,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   postImg: { width: "100%", height: 340 },
-  imgHeader: {
-    padding: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 16,
-  },
 });
 
 export default observer(Post);

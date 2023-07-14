@@ -168,7 +168,7 @@ const CommentRenderer = observer(
                 color: colors.primary,
               }}
             >
-              + {comment.children.length} hidden
+              + {comment.counts.child_count} hidden
             </Text>
           </TouchableOpacity>
         </View>

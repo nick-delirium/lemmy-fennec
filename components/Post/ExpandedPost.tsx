@@ -137,24 +137,28 @@ function Post({
   };
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
-      <ImageView
-        images={[{ uri: post.post.url }]}
-        imageIndex={0}
-        visible={visible}
-        onRequestClose={() => setIsVisible(false)}
-        FooterComponent={() => (
-          <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
-            <Text style={{ fontSize: 16 }}>{post.post.name}</Text>
-            <TouchableOpacity onPressCb={shareImage} simple>
-              <Icon
-                name={"share-2"}
-                accessibilityLabel={"share post button"}
-                size={24}
-              />
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+      {isPic ? (
+        <ImageView
+          images={[{ uri: post.post.url }]}
+          imageIndex={0}
+          visible={visible}
+          onRequestClose={() => setIsVisible(false)}
+          FooterComponent={() => (
+            <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
+              <Text lines={1} style={{ fontSize: 16 }}>
+                {post.post.name}
+              </Text>
+              <TouchableOpacity onPressCb={shareImage} simple>
+                <Icon
+                  name={"share-2"}
+                  accessibilityLabel={"share post button"}
+                  size={24}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      ) : null}
       <PostTitle
         post={post}
         getCommunity={getCommunity}
@@ -172,18 +176,16 @@ function Post({
       </Text>
       <View>
         {isPic ? (
-          <View>
-            <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
-              <Image
-                source={{ uri: post.post.url }}
-                style={styles.postImg}
-                progressiveRenderingEnabled
-                resizeMode={"contain"}
-                alt={"Image for post" + post.post.name}
-                accessibilityLabel={"Image for post" + post.post.name}
-              />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
+            <Image
+              source={{ uri: post.post.url }}
+              style={styles.postImg}
+              progressiveRenderingEnabled
+              resizeMode={"contain"}
+              alt={"Image for post" + post.post.name}
+              accessibilityLabel={"Image for post" + post.post.name}
+            />
+          </TouchableOpacity>
         ) : null}
         {post.post.embed_title ? (
           <Embed

@@ -2,8 +2,8 @@ import React from "react";
 import { PostView } from "lemmy-js-client";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { View, StyleSheet, Image, Dimensions } from "react-native";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
+import { View, StyleSheet, Image, Dimensions, Share } from "react-native";
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { makeDateString } from "../../utils/utils";
@@ -12,6 +12,7 @@ import PostTitle from "./PostTitle";
 import PostIconRow from "./PostIconRow";
 import MdRenderer from "../MdRenderer";
 import { preferences } from "../../store/preferences";
+import ImageView from "react-native-image-viewing";
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -26,6 +27,7 @@ function Post({
   useCommunity?: boolean;
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
 }) {
+  const [visible, setIsVisible] = React.useState(false);
   const { colors } = useTheme();
 
   // flags to mark the post
@@ -67,9 +69,37 @@ function Post({
     navigation.navigate("Post", { post: post.post.id, openComment: 0 });
   };
 
+  const shareImage = () => {
+    void Share.share({
+      url: post.post.url,
+      message: post.post.url,
+      title: "Share post image",
+    });
+  };
+
   const customReadColor = post.read ? "#ababab" : colors.text;
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
+      {isPic ? (
+        <ImageView
+          images={[{ uri: post.post.url }]}
+          imageIndex={0}
+          visible={visible}
+          onRequestClose={() => setIsVisible(false)}
+          FooterComponent={() => (
+            <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
+              <Text style={{ fontSize: 16 }}>{post.post.name}</Text>
+              <TouchableOpacity onPressCb={shareImage} simple>
+                <Icon
+                  name={"share-2"}
+                  accessibilityLabel={"share post button"}
+                  size={24}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      ) : null}
       <PostTitle
         post={post}
         dateStr={dateStr}
@@ -100,15 +130,17 @@ function Post({
         }}
       >
         {isPic ? (
-          <Image
-            source={{ uri: post.post.url }}
-            style={styles.postImg}
-            progressiveRenderingEnabled
-            resizeMode={"contain"}
-            alt={"Image for post" + post.post.name}
-            accessibilityLabel={"Image for post" + post.post.name}
-            blurRadius={isNsfw && !preferences.unblurNsfw ? 55 : 0}
-          />
+          <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
+            <Image
+              source={{ uri: post.post.url }}
+              style={styles.postImg}
+              progressiveRenderingEnabled
+              resizeMode={"contain"}
+              alt={"Image for post" + post.post.name}
+              accessibilityLabel={"Image for post" + post.post.name}
+              blurRadius={isNsfw && !preferences.unblurNsfw ? 55 : 0}
+            />
+          </TouchableOpacity>
         ) : (
           <View style={{ maxHeight: 200, overflow: "hidden" }}>
             {post.post.url || post.post.embed_title ? (
@@ -147,6 +179,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   postImg: { width: "100%", height: 340 },
+  imgHeader: {
+    padding: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 16,
+  },
 });
 
 export default observer(Post);

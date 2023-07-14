@@ -2,10 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { StatusBar, useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import {
-  getFocusedRouteNameFromRoute,
-  NavigationContainer,
-} from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { apiClient, ReportMode } from "./store/apiClient";
 import LoginScreen from "./Screens/LoginScreen";
 import HomeScreen from "./Screens/HomeScreen";
@@ -22,6 +19,7 @@ import { preferences, Theme } from "./store/preferences";
 import { Icon } from "./ThemedComponents";
 import MessageWrite from "./Screens/Unreads/MessageWrite";
 import Prompt from "./components/Prompt";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 const Stack = createNativeStackNavigator();
 
@@ -76,54 +74,56 @@ const App = observer(() => {
         barStyle={isLightStatusBar ? "dark-content" : "light-content"}
         backgroundColor={schemeMap[preferences.theme].colors.card}
       />
-      <NavigationContainer theme={schemeMap[preferences.theme]}>
-        <Stack.Navigator initialRouteName={"Home"}>
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="Post" component={PostScreen} />
-          <Stack.Screen
-            options={{ headerTitle: "New Comment" }}
-            name={"CommentWrite"}
-            component={CommentWrite}
-          />
-          <Stack.Screen
-            options={{ headerTitle: "New Post" }}
-            name={"PostWrite"}
-            component={PostWrite}
-          />
-          <Stack.Screen
-            options={{ headerTitle: "Message" }}
-            name={"MessageWrite"}
-            component={MessageWrite}
-          />
-          <Stack.Screen
-            options={{
-              headerRight: () => <Icon name={"arrow-up"} size={24} />,
-            }}
-            name="Community"
-            component={CommunityScreen}
-          />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="User" component={UserScreen} />
-          <Stack.Screen name="Settings" component={SettingsScreen} />
-          <Stack.Screen name="Debug" component={DebugScreen} />
-        </Stack.Navigator>
-        {apiClient.reportMode !== ReportMode.Off ? (
-          <Prompt
-            text={`Describe whats wrong with this ${
-              apiClient.reportMode === ReportMode.Post ? "post" : "comment"
-            }`}
-            title={`Report ${
-              apiClient.reportMode === ReportMode.Post ? "post" : "comment"
-            }`}
-            onSubmit={sendReport}
-            onCancel={closeReport}
-          />
-        ) : null}
-      </NavigationContainer>
+      <ActionSheetProvider>
+        <NavigationContainer theme={schemeMap[preferences.theme]}>
+          <Stack.Navigator initialRouteName={"Home"}>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="Post" component={PostScreen} />
+            <Stack.Screen
+              options={{ headerTitle: "New Comment" }}
+              name={"CommentWrite"}
+              component={CommentWrite}
+            />
+            <Stack.Screen
+              options={{ headerTitle: "New Post" }}
+              name={"PostWrite"}
+              component={PostWrite}
+            />
+            <Stack.Screen
+              options={{ headerTitle: "Message" }}
+              name={"MessageWrite"}
+              component={MessageWrite}
+            />
+            <Stack.Screen
+              options={{
+                headerRight: () => <Icon name={"arrow-up"} size={24} />,
+              }}
+              name="Community"
+              component={CommunityScreen}
+            />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="User" component={UserScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Debug" component={DebugScreen} />
+          </Stack.Navigator>
+          {apiClient.reportMode !== ReportMode.Off ? (
+            <Prompt
+              text={`Describe whats wrong with this ${
+                apiClient.reportMode === ReportMode.Post ? "post" : "comment"
+              }`}
+              title={`Report ${
+                apiClient.reportMode === ReportMode.Post ? "post" : "comment"
+              }`}
+              onSubmit={sendReport}
+              onCancel={closeReport}
+            />
+          ) : null}
+        </NavigationContainer>
+      </ActionSheetProvider>
     </SafeAreaProvider>
   );
 });

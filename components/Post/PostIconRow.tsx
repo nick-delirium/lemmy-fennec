@@ -1,10 +1,12 @@
 import React from "react";
+import { Platform, Share, StyleSheet, View } from "react-native";
+import { PostView } from "lemmy-js-client";
+import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 import { apiClient, ReportMode, Score } from "../../store/apiClient";
-import { Platform, Share, StyleSheet, Vibration, View } from "react-native";
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { commonColors, commonStyles } from "../../commonStyles";
-import { PostView } from "lemmy-js-client";
 import { preferences } from "../../store/preferences";
 
 interface Props {
@@ -22,6 +24,8 @@ function PostIconRow({
   getComments,
   onDelete,
 }: Props) {
+  const { colors } = useTheme();
+  const { showActionSheetWithOptions } = useActionSheet();
   const isSelf =
     post.creator.id === apiClient.profileStore.localUser?.local_user.person_id;
 
@@ -33,6 +37,68 @@ function PostIconRow({
 
   const openReporting = () => {
     apiClient.setReportMode(ReportMode.Post, post.post.id);
+  };
+
+  const openMenu = () => {
+    const jwtOptions = ["Report", "Save"];
+    const selfOption = ["Delete"];
+    const options = ["Cancel"];
+    const icons = [<Icon name={"x"} size={24} />];
+    if (isSelf) {
+      options.unshift(...selfOption);
+      icons.unshift(<Icon name={"trash"} size={24} />);
+    }
+    if (apiClient.loginDetails?.jwt) {
+      options.unshift(...jwtOptions);
+      icons.unshift(
+        <Icon name={"alert-circle"} size={24} />,
+        <Icon name={"bookmark"} size={24} />
+      );
+    }
+    const cancelButtonIndex = options.findIndex((v) => v === "Cancel");
+    const destructiveButtonIndex = options.findIndex((v) => v === "Report");
+    const saveIndex = options.findIndex((v) => v === "Save");
+    const deleteIndex = options.findIndex((v) => v === "Delete");
+
+    const textStyle = {
+      color: colors.text,
+    };
+    const containerStyle = {
+      backgroundColor: colors.card,
+    };
+
+    showActionSheetWithOptions(
+      {
+        options,
+        icons,
+        cancelButtonIndex,
+        destructiveButtonIndex,
+        textStyle,
+        containerStyle,
+      },
+      (selectedIndex: number) => {
+        switch (selectedIndex) {
+          case saveIndex:
+            void apiClient.postStore.savePost({
+              post_id: post.post.id,
+              save: !post.saved,
+              auth: apiClient.loginDetails?.jwt,
+            });
+            break;
+          case deleteIndex:
+            onDelete();
+            break;
+
+          case destructiveButtonIndex:
+            // Report
+            openReporting();
+            break;
+
+          case cancelButtonIndex:
+          // Canceled
+        }
+      }
+    );
   };
   return (
     <View
@@ -60,13 +126,8 @@ function PostIconRow({
       </View>
       <View style={{ flex: 1 }} />
       {apiClient.loginDetails?.jwt ? (
-        <TouchableOpacity simple onPressCb={openReporting}>
-          <Icon name={"alert-circle"} size={24} />
-        </TouchableOpacity>
-      ) : null}
-      {isSelf ? (
-        <TouchableOpacity onPressCb={onDelete} simple>
-          <Icon name={"trash"} size={24} />
+        <TouchableOpacity simple onPressCb={openMenu}>
+          <Icon name={"more-vertical"} size={24} />
         </TouchableOpacity>
       ) : null}
       <TouchableOpacity onPressCb={getComments} simple>
@@ -82,24 +143,6 @@ function PostIconRow({
             }`}
           </Text>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        simple
-        feedback
-        onPressCb={() => {
-          void apiClient.postStore.savePost({
-            post_id: post.post.id,
-            save: !post.saved,
-            auth: apiClient.loginDetails?.jwt,
-          });
-        }}
-      >
-        <Icon
-          accessibilityLabel={"bookmark post button"}
-          name={"bookmark"}
-          size={24}
-          color={post.saved ? "red" : undefined}
-        />
       </TouchableOpacity>
       <TouchableOpacity
         simple

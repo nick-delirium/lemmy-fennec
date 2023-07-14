@@ -22,6 +22,7 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
   const [instanceHref, setHref] = React.useState("");
   const [login, setLogin] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [mfa, setMfa] = React.useState("");
 
   React.useEffect(() => {
     if (apiClient.isLoggedIn && apiClient.api) {
@@ -41,6 +42,7 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
     const loginDetails = {
       username_or_email: login,
       password,
+      totp_2fa_token: mfa !== "" ? mfa : undefined,
     };
 
     const client: LemmyHttp = new LemmyHttp(instanceHref);
@@ -138,6 +140,17 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
             autoComplete={"current-password"}
             textContentType={"password"}
             accessibilityLabel={"password"}
+            secureTextEntry
+            keyboardType="default"
+          />
+          <Text>2FA token (if applicable)</Text>
+          <TextInput
+            placeholder="123456"
+            value={mfa}
+            onChangeText={(text) => setMfa(text)}
+            autoCapitalize="none"
+            // autoCorrect={false}
+            accessibilityLabel={"2FA token"}
             secureTextEntry
             keyboardType="default"
           />

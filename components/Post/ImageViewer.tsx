@@ -14,6 +14,7 @@ interface Props {
 
 function ImageViewer({ url, name, visible, setIsVisible, shareImage }) {
   const { colors } = useTheme();
+  const safeName = name.length > 50 ? name.slice(0, 40) + "..." : name;
   return (
     <ImageView
       images={[{ uri: url }]}
@@ -23,7 +24,7 @@ function ImageViewer({ url, name, visible, setIsVisible, shareImage }) {
       FooterComponent={() => (
         <View style={{ ...styles.imgHeader, backgroundColor: colors.card }}>
           <Text lines={1} style={{ fontSize: 14 }}>
-            {name}
+            {safeName}
           </Text>
           <TouchableOpacity onPressCb={shareImage} simple>
             <Icon

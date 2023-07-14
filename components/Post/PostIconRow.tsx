@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { apiClient, Score } from "../../store/apiClient";
+import { apiClient, ReportMode, Score } from "../../store/apiClient";
 import { Platform, Share, StyleSheet, Vibration, View } from "react-native";
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { commonColors, commonStyles } from "../../commonStyles";
@@ -31,6 +31,9 @@ function PostIconRow({
     ? commonColors.upvote
     : commonColors.downvote;
 
+  const openReporting = () => {
+    apiClient.setReportMode(ReportMode.Post, post.post.id);
+  };
   return (
     <View
       style={{
@@ -56,6 +59,11 @@ function PostIconRow({
         </Text>
       </View>
       <View style={{ flex: 1 }} />
+      {apiClient.loginDetails?.jwt ? (
+        <TouchableOpacity simple onPressCb={openReporting}>
+          <Icon name={"alert-circle"} size={24} />
+        </TouchableOpacity>
+      ) : null}
       {isSelf ? (
         <TouchableOpacity onPressCb={onDelete} simple>
           <Icon name={"trash"} size={24} />

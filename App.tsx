@@ -6,7 +6,7 @@ import {
   getFocusedRouteNameFromRoute,
   NavigationContainer,
 } from "@react-navigation/native";
-import { apiClient } from "./store/apiClient";
+import { apiClient, ReportMode } from "./store/apiClient";
 import LoginScreen from "./Screens/LoginScreen";
 import HomeScreen from "./Screens/HomeScreen";
 import { AppAmoledTheme, AppDarkTheme, AppTheme } from "./commonStyles";
@@ -21,6 +21,7 @@ import PostWrite from "./Screens/PostWrite";
 import { preferences, Theme } from "./store/preferences";
 import { Icon } from "./ThemedComponents";
 import MessageWrite from "./Screens/Unreads/MessageWrite";
+import Prompt from "./components/Prompt";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,34 @@ const App = observer(() => {
     [Theme.Light]: AppTheme,
     [Theme.Dark]: AppDarkTheme,
     [Theme.Amoled]: AppAmoledTheme,
+  };
+
+  const sendReport = (text: string) => {
+    if (apiClient.reportMode === ReportMode.Post) {
+      apiClient.api
+        .createPostReport({
+          post_id: apiClient.reportedItemId,
+          reason: text,
+          auth: apiClient.loginDetails.jwt,
+        })
+        .then(() => {
+          closeReport();
+        });
+    } else {
+      apiClient.api
+        .createCommentReport({
+          comment_id: apiClient.reportedItemId,
+          reason: text,
+          auth: apiClient.loginDetails.jwt,
+        })
+        .then(() => {
+          closeReport();
+        });
+    }
+  };
+
+  const closeReport = () => {
+    apiClient.setReportMode(ReportMode.Off, null);
   };
 
   return (
@@ -82,6 +111,18 @@ const App = observer(() => {
           <Stack.Screen name="Settings" component={SettingsScreen} />
           <Stack.Screen name="Debug" component={DebugScreen} />
         </Stack.Navigator>
+        {apiClient.reportMode !== ReportMode.Off ? (
+          <Prompt
+            text={`Describe whats wrong with this ${
+              apiClient.reportMode === ReportMode.Post ? "post" : "comment"
+            }`}
+            title={`Report ${
+              apiClient.reportMode === ReportMode.Post ? "post" : "comment"
+            }`}
+            onSubmit={sendReport}
+            onCancel={closeReport}
+          />
+        ) : null}
       </NavigationContainer>
     </SafeAreaProvider>
   );

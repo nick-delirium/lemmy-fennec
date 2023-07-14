@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { View, StyleSheet, Share, Platform, Vibration } from "react-native";
-import { apiClient, Score } from "../../store/apiClient";
+import { View, StyleSheet, Share, Platform } from "react-native";
+import { apiClient, ReportMode, Score } from "../../store/apiClient";
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { CommentNode } from "../../store/commentsStore";
 import { makeDateString } from "../../utils/utils";
@@ -76,6 +76,10 @@ function Comment({
         : commonColors.downvote
       : undefined;
   }, [comment.my_vote]);
+
+  const openReporting = () => {
+    apiClient.setReportMode(ReportMode.Comment, comment.comment.id);
+  };
   return (
     <View style={{ ...styles.container, borderBottomColor: colors.card }}>
       <View style={styles.topRow}>
@@ -133,6 +137,11 @@ function Comment({
         </View>
 
         <View style={{ flex: 1 }} />
+        {apiClient.loginDetails?.jwt ? (
+          <TouchableOpacity simple onPressCb={openReporting}>
+            <Icon name={"alert-circle"} size={24} />
+          </TouchableOpacity>
+        ) : null}
         {openCommenting ? (
           <TouchableOpacity
             simple

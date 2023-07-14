@@ -52,6 +52,14 @@ function CommunityInfos({ navigation, route }) {
     });
   };
 
+  const toggleBlockCommunity = () => {
+    void apiClient.communityStore.blockCommunity(
+      community.community.id,
+      !community.blocked,
+      apiClient.loginDetails
+    );
+  };
+
   return (
     <ScrollView style={styles.wrapper}>
       <View style={styles.header}>
@@ -91,14 +99,22 @@ function CommunityInfos({ navigation, route }) {
       </View>
       <View style={styles.buttons}>
         {showFollow ? (
-          <TouchableOpacity onPressCb={follow}>
-            <Text>{followingStr}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {showFollow && !community?.community.posting_restricted_to_mods ? (
-          <TouchableOpacity onPressCb={createPost}>
-            <Text>New Post</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity onPressCb={follow}>
+              <Text>{followingStr}</Text>
+            </TouchableOpacity>
+            {!community?.community.posting_restricted_to_mods ? (
+              <TouchableOpacity onPressCb={createPost}>
+                <Text>New Post</Text>
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity
+              onPressCb={toggleBlockCommunity}
+              style={{ backgroundColor: "red" }}
+            >
+              <Text>{community.blocked ? "Unblock" : "Block"}</Text>
+            </TouchableOpacity>
+          </>
         ) : null}
       </View>
       {community.community.description ? (

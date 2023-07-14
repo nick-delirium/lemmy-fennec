@@ -29,6 +29,9 @@ import {
   CreatePrivateMessage,
   DeletePrivateMessage,
   EditPrivateMessage,
+  BlockCommunity,
+  CreateCommentReport,
+  CreatePostReport,
 } from "lemmy-js-client";
 
 // !!!TODO!!!
@@ -161,5 +164,17 @@ export default class ApiService {
 
   editPrivateMessage(form: EditPrivateMessage) {
     return this.client.editPrivateMessage(form);
+  }
+
+  blockCommunity(form: BlockCommunity) {
+    return this.client.blockCommunity(form);
+  }
+
+  createCommentReport(form: CreateCommentReport) {
+    return this.client.createCommentReport(form);
+  }
+
+  createPostReport(form: CreatePostReport) {
+    return this.client.createPostReport(form);
   }
 }

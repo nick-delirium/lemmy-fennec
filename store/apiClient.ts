@@ -21,6 +21,12 @@ export const Score = {
   Neutral: 0,
 } as const;
 
+export const ReportMode = {
+  Off: 0,
+  Post: 1,
+  Comment: 2,
+};
+
 class ApiClient {
   public api: ApiService;
 
@@ -34,6 +40,8 @@ class ApiClient {
   public communityStore = communityStore;
   public mentionsStore = mentionsStore;
   public currentInstance = "";
+  public reportMode = ReportMode.Off;
+  public reportedItemId: number | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -66,6 +74,14 @@ class ApiClient {
         const client: LemmyHttp = new LemmyHttp("https://lemmy.ml");
         this.setClient(client);
       });
+  }
+
+  setReportMode(
+    mode: (typeof ReportMode)[keyof typeof ReportMode],
+    itemId: number | null
+  ) {
+    this.reportMode = mode;
+    this.reportedItemId = mode === ReportMode.Off ? null : itemId;
   }
 
   setIsLoading(state: boolean) {

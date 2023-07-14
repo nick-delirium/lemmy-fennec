@@ -1,12 +1,13 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { ActivityIndicator, View } from "react-native";
-import { apiClient } from "../../store/apiClient";
+import { apiClient, ReportMode } from "../../store/apiClient";
 import ExpandedPost from "../../components/Post/ExpandedPost";
 import { useTheme } from "@react-navigation/native";
 import CommentsFloatingMenu from "./CommentsFloatingMenu";
 import CommentFlatList from "./CommentsFlatlist";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import Prompt from "../../components/Prompt";
 
 function PostScreen({
   navigation,

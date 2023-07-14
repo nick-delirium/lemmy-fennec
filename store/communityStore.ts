@@ -6,6 +6,7 @@ import {
   LoginResponse,
   ListCommunitiesResponse,
   CommunityResponse,
+  BlockCommunityResponse,
 } from "lemmy-js-client";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 
@@ -139,6 +140,17 @@ class CommunityStore extends DataClass {
       (error) => console.log(error),
       true,
       "follow community"
+    );
+  }
+
+  async blockCommunity(id: number, block: boolean, auth: LoginResponse) {
+    await this.fetchData<BlockCommunityResponse>(
+      () =>
+        this.api.blockCommunity({ auth: auth?.jwt, community_id: id, block }),
+      (data) => this.setCommunity(data.community_view),
+      (error) => console.log(error),
+      true,
+      "block community"
     );
   }
 }

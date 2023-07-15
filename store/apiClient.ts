@@ -40,6 +40,11 @@ class ApiClient {
   public communityStore = communityStore;
   public mentionsStore = mentionsStore;
   public currentInstance = "";
+  public showPrompt = false;
+  public promptActions = {
+    onConfirm: (text?: string) => null,
+    onCancel: () => null,
+  };
   public reportMode = ReportMode.Off;
   public reportedItemId: number | null = null;
 
@@ -74,6 +79,25 @@ class ApiClient {
         const client: LemmyHttp = new LemmyHttp("https://lemmy.ml");
         this.setClient(client);
       });
+  }
+
+  setPromptActions(actions: {
+    onConfirm: (text: string) => void;
+    onCancel: () => void;
+  }) {
+    this.promptActions = actions;
+  }
+
+  setShowPrompt(state: boolean) {
+    this.showPrompt = state;
+    if (state === false) {
+      this.reportMode = ReportMode.Off;
+      this.reportedItemId = null;
+      this.promptActions = {
+        onConfirm: () => null,
+        onCancel: () => null,
+      };
+    }
   }
 
   setReportMode(
@@ -135,6 +159,9 @@ class ApiClient {
       const { my_user: user } = await this.api.getGeneralData({
         auth: this.loginDetails.jwt,
       });
+      if (user.moderates.length > 0) {
+        this.profileStore.setModeratedCommunities(user.moderates);
+      }
       return this.profileStore.setLocalUser(user.local_user_view);
     } catch (e) {
       debugStore.addError(

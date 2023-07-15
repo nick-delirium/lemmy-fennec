@@ -3,7 +3,7 @@ import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { Text, TouchableOpacity, TextInput } from "../ThemedComponents";
 import { useTheme } from "@react-navigation/native";
 
-function Prompt({ title, text, onSubmit, onCancel }) {
+function Prompt({ title, text, placeholder, onSubmit, onCancel }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [value, setValue] = React.useState("");
   const { colors } = useTheme();
@@ -23,7 +23,7 @@ function Prompt({ title, text, onSubmit, onCancel }) {
       <Text style={styles.text}>{text}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Your text"
+        placeholder={placeholder || "Your text goes here"}
         value={value}
         onChangeText={(text) => setValue(text)}
         autoCapitalize="none"

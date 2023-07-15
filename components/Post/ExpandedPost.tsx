@@ -11,7 +11,7 @@ import {
   Alert,
   Share,
 } from "react-native";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { makeDateString } from "../../utils/utils";
@@ -20,6 +20,7 @@ import PostTitle from "./PostTitle";
 import PostIconRow from "./PostIconRow";
 import MdRenderer from "../MdRenderer";
 import ImageViewer from "./ImageViewer";
+import PostBadges from "./PostBadges";
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -80,6 +81,7 @@ function Post({
   const customReadColor = post.read ? "#ababab" : colors.text;
 
   const openCommenting = () => {
+    if (post.post.locked) return;
     apiClient.commentsStore.setReplyTo({
       postId: post.post.id,
       parent_id: undefined,
@@ -151,7 +153,6 @@ function Post({
         getAuthor={getAuthor}
         dateStr={dateStr}
       />
-      {isNsfw ? <Text style={{ color: "red", marginTop: 8 }}>NSFW</Text> : null}
 
       <Text
         customColor={customReadColor}
@@ -160,6 +161,8 @@ function Post({
       >
         {post.post.name}
       </Text>
+
+      <PostBadges isNsfw={isNsfw} post={post} />
       <View>
         {isPic ? (
           <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
@@ -208,6 +211,7 @@ const styles = StyleSheet.create({
   postName: {
     fontSize: 17,
     fontWeight: "500",
+    flex: 1,
     marginTop: 4,
     marginBottom: 8,
   },

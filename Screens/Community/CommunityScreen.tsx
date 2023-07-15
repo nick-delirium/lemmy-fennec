@@ -21,8 +21,12 @@ function CommunityScreen({
   React.useEffect(() => {
     const getData = () => {
       console.log("requesting community data");
-      if (communityStore.community?.community.id === commId) return;
-      if (commId) {
+      if (
+        communityStore.community?.community.id === commId &&
+        apiClient.postStore.communityPosts.length > 0
+      )
+        return;
+      if (commId || name) {
         apiClient.postStore.setPage(1);
         void apiClient.postStore.getPosts(apiClient.loginDetails, commId, name);
       }
@@ -47,7 +51,7 @@ function CommunityScreen({
     return unsubscribe;
   }, [commId, name, navigation, apiClient.postStore, communityStore.community]);
 
-  if (apiClient.communityStore.isLoading || community === null)
+  if (apiClient.communityStore.isLoading || !community)
     return <ActivityIndicator />;
 
   return (

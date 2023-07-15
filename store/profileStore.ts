@@ -1,6 +1,7 @@
 import { makeObservable, observable, action } from "mobx";
 import DataClass from "./dataClass";
 import {
+  CommunityModeratorView,
   GetPersonDetails,
   GetPersonDetailsResponse,
   LocalUserView,
@@ -12,6 +13,7 @@ import {
 class ProfileStore extends DataClass {
   public userProfile: GetPersonDetailsResponse | null = null;
   public localUser: LocalUserView | null = null;
+  public moderatedCommunities: CommunityModeratorView[] = [];
   public username: string | null = null;
   public profilePage = 1;
   public profileSort: SortType = "New";
@@ -25,7 +27,9 @@ class ProfileStore extends DataClass {
       localUser: observable,
       profileSort: observable,
       profilePage: observable,
+      moderatedCommunities: observable,
       setProfile: action,
+      setModeratedCommunities: action,
       setUsername: action,
       setClient: action,
       setIsLoading: action,
@@ -33,6 +37,10 @@ class ProfileStore extends DataClass {
       setProfilePage: action,
       setProfileSort: action,
     });
+  }
+
+  setModeratedCommunities(communities: CommunityModeratorView[]) {
+    this.moderatedCommunities = communities;
   }
 
   setProfilePage(page: number) {

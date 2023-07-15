@@ -10,13 +10,7 @@ import TinyPost from "../../components/Post/TinyPost";
 import { preferences } from "../../store/preferences";
 import { PostView } from "lemmy-js-client";
 
-function CommunityFeed({
-  commId,
-  navigation,
-}: {
-  commId: number;
-  navigation: any;
-}) {
+function CommunityFeed({ navigation }: { navigation: any }) {
   const { community } = apiClient.communityStore;
   const listRef = React.useRef<FlatList<PostView>>(null);
 
@@ -54,12 +48,18 @@ function CommunityFeed({
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {
     if (apiClient.postStore.posts.length === 0) return;
-    void apiClient.postStore.nextPage(apiClient.loginDetails, commId);
-  }, [commId]);
+    void apiClient.postStore.nextPage(
+      apiClient.loginDetails,
+      community.community.id
+    );
+  }, [community]);
   const onRefresh = React.useCallback(() => {
     apiClient.postStore.setCommPage(1);
-    void apiClient.postStore.getPosts(apiClient.loginDetails, commId);
-  }, [commId]);
+    void apiClient.postStore.getPosts(
+      apiClient.loginDetails,
+      community.community.id
+    );
+  }, [community]);
 
   const onPostScroll = React.useRef(({ changed }) => {
     if (changed.length > 0 && apiClient.loginDetails?.jwt) {

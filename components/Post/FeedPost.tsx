@@ -13,6 +13,7 @@ import PostIconRow from "./PostIconRow";
 import MdRenderer from "../MdRenderer";
 import { preferences } from "../../store/preferences";
 import ImageViewer from "./ImageViewer";
+import PostBadges from "./PostBadges";
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -95,7 +96,6 @@ function Post({
         getAuthor={getAuthor}
         getCommunity={getCommunity}
       />
-      {isNsfw ? <Text style={{ color: "red", marginTop: 8 }}>NSFW</Text> : null}
       <TouchableOpacity
         simple
         onPressCb={() => {
@@ -111,6 +111,7 @@ function Post({
           {post.post.name}
         </Text>
       </TouchableOpacity>
+      <PostBadges isNsfw={isNsfw} post={post} />
       <TouchableOpacity
         simple
         onPressCb={() => {

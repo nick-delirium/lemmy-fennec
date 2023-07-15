@@ -32,6 +32,11 @@ import {
   BlockCommunity,
   CreateCommentReport,
   CreatePostReport,
+  PurgePost,
+  LockPost,
+  BanFromCommunity,
+  RemovePost,
+  FeaturePost,
 } from "lemmy-js-client";
 
 // !!!TODO!!!
@@ -176,5 +181,23 @@ export default class ApiService {
 
   createPostReport(form: CreatePostReport) {
     return this.client.createPostReport(form);
+  }
+
+  /* MOD ACTIONS */
+
+  removePost(form: RemovePost) {
+    return this.client.removePost(form);
+  }
+
+  lockPost(form: LockPost) {
+    return this.client.lockPost(form);
+  }
+
+  banCommunityUser(form: BanFromCommunity) {
+    return this.client.banFromCommunity(form);
+  }
+
+  featurePost(form: FeaturePost) {
+    return this.client.featurePost(form);
   }
 }

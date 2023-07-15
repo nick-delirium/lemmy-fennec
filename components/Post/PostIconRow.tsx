@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, Share, StyleSheet, View } from "react-native";
+import { Platform, Share, StyleSheet, ToastAndroid, View } from "react-native";
 import { PostView } from "lemmy-js-client";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
@@ -11,6 +11,7 @@ import { preferences } from "../../store/preferences";
 
 interface Props {
   post: PostView;
+  isExpanded?: boolean;
   useCommunity?: boolean;
   markRead: () => void;
   getComments?: () => void;
@@ -23,6 +24,7 @@ function PostIconRow({
   markRead,
   getComments,
   onDelete,
+  isExpanded,
 }: Props) {
   const { colors } = useTheme();
   const { showActionSheetWithOptions } = useActionSheet();
@@ -40,7 +42,7 @@ function PostIconRow({
   };
 
   const openMenu = () => {
-    const jwtOptions = ["Report", "Save"];
+    const jwtOptions = ["Report", "Post Save Toggle"];
     const selfOption = ["Delete"];
     const options = ["Cancel"];
     const icons = [<Icon name={"x"} size={24} />];
@@ -49,6 +51,24 @@ function PostIconRow({
       icons.unshift(<Icon name={"trash"} size={24} />);
     }
     if (apiClient.loginDetails?.jwt) {
+      if (
+        apiClient.profileStore.moderatedCommunities.findIndex(
+          (c) => c.community.id === post.community.id
+        ) !== -1
+      ) {
+        options.unshift(
+          "Feature Post Toggle",
+          "Remove Post",
+          "Post Lock Toggle"
+          // "Ban user"
+        );
+        icons.unshift(
+          <Icon name={"star"} size={24} />,
+          <Icon name={"slash"} size={24} />,
+          <Icon name={"lock"} size={24} />
+          // <Icon name={"user-x"} size={24} />
+        );
+      }
       options.unshift(...jwtOptions);
       icons.unshift(
         <Icon name={"alert-circle"} size={24} />,
@@ -57,8 +77,16 @@ function PostIconRow({
     }
     const cancelButtonIndex = options.findIndex((v) => v === "Cancel");
     const destructiveButtonIndex = options.findIndex((v) => v === "Report");
-    const saveIndex = options.findIndex((v) => v === "Save");
+    const saveIndex = options.findIndex((v) => v === "Post Save Toggle");
     const deleteIndex = options.findIndex((v) => v === "Delete");
+    const removePostIndex = options.findIndex((v) => v === "Remove Post");
+    const togglePostLockIndex = options.findIndex(
+      (v) => v === "Post Lock Toggle"
+    );
+    const featurePostIndex = options.findIndex(
+      (v) => v === "Feature Post Toggle"
+    );
+    // const banUserIndex = options.findIndex((v) => v === "Ban user");
 
     const textStyle = {
       color: colors.text,
@@ -77,13 +105,109 @@ function PostIconRow({
         containerStyle,
       },
       (selectedIndex: number) => {
+        console.log(selectedIndex, featurePostIndex);
         switch (selectedIndex) {
-          case saveIndex:
-            void apiClient.postStore.savePost({
-              post_id: post.post.id,
-              save: !post.saved,
-              auth: apiClient.loginDetails?.jwt,
+          // too lazy to do this rn
+          // case banUserIndex:
+          //   apiClient.postStore
+          //     .modBanCommunityUser({
+          //       community_id: post.community.id,
+          //       person_id: post.creator.id,
+          //       ban: true,
+          //       auth: apiClient.loginDetails?.jwt,
+          //       reason: "",
+          //       expires: 0,
+          //     })
+          //     .then(() => {
+          //       ToastAndroid.showWithGravity(
+          //         "User banned",
+          //         ToastAndroid.SHORT,
+          //         ToastAndroid.CENTER
+          //       );
+          //     });
+          //   break;
+          case featurePostIndex:
+            console.log("toggled feature", post.post.featured_community);
+            apiClient.postStore
+              .modFeaturePost(
+                {
+                  post_id: post.post.id,
+                  featured: !post.post.featured_community,
+                  auth: apiClient.loginDetails?.jwt,
+                  feature_type: "Community",
+                },
+                isExpanded,
+                useCommunity
+              )
+              .then(() => {
+                ToastAndroid.showWithGravity(
+                  "Post Feature status changed",
+                  ToastAndroid.SHORT,
+                  ToastAndroid.CENTER
+                );
+              });
+            break;
+          case togglePostLockIndex:
+            apiClient.setPromptActions({
+              onConfirm: () => {
+                apiClient.postStore
+                  .modLockPost(
+                    {
+                      post_id: post.post.id,
+                      locked: !post.post.locked,
+                      auth: apiClient.loginDetails?.jwt,
+                    },
+                    isExpanded,
+                    useCommunity
+                  )
+                  .then(() => {
+                    ToastAndroid.showWithGravity(
+                      "Post lock toggled",
+                      ToastAndroid.SHORT,
+                      ToastAndroid.CENTER
+                    );
+                  });
+              },
+              onCancel: () => apiClient.setShowPrompt(false),
             });
+            apiClient.setShowPrompt(true);
+            break;
+          case removePostIndex:
+            apiClient.setPromptActions({
+              onConfirm: (text) => {
+                apiClient.postStore
+                  .modRemovePost(
+                    {
+                      post_id: post.post.id,
+                      removed: !post.post.removed,
+                      auth: apiClient.loginDetails?.jwt,
+                      reason: text,
+                    },
+                    isExpanded,
+                    useCommunity
+                  )
+                  .then(() => {
+                    ToastAndroid.showWithGravity(
+                      "Post removed",
+                      ToastAndroid.SHORT,
+                      ToastAndroid.CENTER
+                    );
+                  });
+              },
+              onCancel: () => apiClient.setShowPrompt(false),
+            });
+            apiClient.setShowPrompt(true);
+            break;
+          case saveIndex:
+            void apiClient.postStore.savePost(
+              {
+                post_id: post.post.id,
+                save: !post.saved,
+                auth: apiClient.loginDetails?.jwt,
+              },
+              isExpanded,
+              useCommunity
+            );
             break;
           case deleteIndex:
             onDelete();

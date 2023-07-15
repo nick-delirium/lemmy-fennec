@@ -12,6 +12,11 @@ import {
   SavePost,
   MarkPostAsRead,
   DeletePost,
+  RemovePost,
+  LockPost,
+  BanFromCommunity,
+  BanFromCommunityResponse,
+  FeaturePost,
 } from "lemmy-js-client";
 import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
@@ -279,13 +284,22 @@ class PostStore extends DataClass {
     );
   }
 
-  async savePost(form: SavePost) {
+  async savePost(
+    form: SavePost,
+    isSinglePost?: boolean,
+    useCommunity?: boolean
+  ) {
     await this.fetchData<PostResponse>(
       () => this.api.savePost(form),
-      ({ post_view }) =>
-        this.updatePostById(form.post_id, { saved: post_view.saved }),
+      ({ post_view }) => {
+        if (isSinglePost) {
+          this.setSinglePost(post_view);
+        } else {
+          this.updatePostById(form.post_id, post_view, useCommunity);
+        }
+      },
       (e) => console.error(e),
-      true,
+      false,
       "save post"
     );
   }
@@ -338,6 +352,74 @@ class PostStore extends DataClass {
       (e) => console.error(e),
       false,
       "delete post"
+    );
+  }
+
+  async modRemovePost(
+    form: RemovePost,
+    isSinglePost?: boolean,
+    useCommunity?: boolean
+  ) {
+    await this.fetchData<PostResponse>(
+      () => this.api.removePost(form),
+      ({ post_view }) => {
+        if (isSinglePost) this.setSinglePost(post_view);
+        else {
+          this.updatePostById(post_view.post.id, post_view, useCommunity);
+        }
+      },
+      (e) => console.error(e),
+      false,
+      "mod remove post"
+    );
+  }
+
+  async modLockPost(
+    form: LockPost,
+    isSinglePost?: boolean,
+    useCommunity?: boolean
+  ) {
+    await this.fetchData<PostResponse>(
+      () => this.api.lockPost(form),
+      ({ post_view }) => {
+        if (isSinglePost) this.setSinglePost(post_view);
+        else this.updatePostById(post_view.post.id, post_view, useCommunity);
+      },
+      (e) => console.error(e),
+      false,
+      "mod lock post"
+    );
+  }
+
+  async modBanCommunityUser(form: BanFromCommunity) {
+    await this.fetchData<BanFromCommunityResponse>(
+      () => this.api.banCommunityUser(form),
+      () => true,
+      (e) => console.error(e),
+      false,
+      "mod ban community user"
+    );
+  }
+
+  async modFeaturePost(
+    form: FeaturePost,
+    isSinglePost?: boolean,
+    useCommunity?: boolean
+  ) {
+    await this.fetchData<PostResponse>(
+      () => this.api.featurePost(form),
+      ({ post_view }) => {
+        console.log(
+          "result",
+          post_view.post.featured_community,
+          post_view.post.featured_local
+        );
+        if (isSinglePost) this.setSinglePost(post_view);
+        else this.updatePostById(post_view.post.id, post_view, useCommunity);
+      },
+      (e) => console.error(e),
+      false,
+      "mod feature post"
     );
   }
 }

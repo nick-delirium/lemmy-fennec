@@ -64,9 +64,16 @@ const App = observer(() => {
   };
 
   const closeReport = () => {
-    apiClient.setReportMode(ReportMode.Off, null);
+    apiClient.setShowPrompt(false);
   };
 
+  const promptActions =
+    apiClient.reportMode !== ReportMode.Off
+      ? {
+          onCancel: closeReport,
+          onConfirm: sendReport,
+        }
+      : apiClient.promptActions;
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
       {/* I don't really remember how it works */}
@@ -118,8 +125,9 @@ const App = observer(() => {
               title={`Report ${
                 apiClient.reportMode === ReportMode.Post ? "post" : "comment"
               }`}
-              onSubmit={sendReport}
-              onCancel={closeReport}
+              placeholder={"Type a reason here"}
+              onSubmit={promptActions.onConfirm}
+              onCancel={promptActions.onCancel}
             />
           ) : null}
         </NavigationContainer>

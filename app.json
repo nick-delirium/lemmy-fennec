@@ -2,7 +2,7 @@
   "expo": {
     "name": "fennec",
     "slug": "fennec",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -32,7 +32,7 @@
         "monochromeImage": "./assets/monochrome.png"
       },
       "package": "com.nick.delirium.fennec",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"

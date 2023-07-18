@@ -2,13 +2,15 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { View, StyleSheet, Share, Platform } from "react-native";
 import { apiClient, ReportMode, Score } from "../../store/apiClient";
-import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { CommentNode } from "../../store/commentsStore";
-import { makeDateString } from "../../utils/utils";
 import { useTheme } from "@react-navigation/native";
 import { commonColors } from "../../commonStyles";
 import MdRenderer from "../../components/MdRenderer";
 import { preferences } from "../../store/preferences";
+import CommentTitle from "./Comment/CommentTitle";
+import CommentIconRow from "./Comment/CommentIconRow";
+import { setStringAsync } from "expo-clipboard";
 
 function Comment({
   comment,
@@ -25,10 +27,6 @@ function Comment({
 }) {
   const { colors } = useTheme();
 
-  const commentDate = React.useMemo(
-    () => makeDateString(comment.comment.published),
-    []
-  );
   const shareComment = React.useCallback(() => {
     void Share.share(
       {
@@ -55,7 +53,7 @@ function Comment({
   }, []);
 
   const replyToComment = React.useCallback(() => {
-    if (!openCommenting) return;
+    if (!openCommenting || !apiClient.loginDetails?.jwt) return;
     apiClient.commentsStore.setReplyTo({
       postId: comment.post.id,
       parent_id: comment.comment.id,
@@ -80,27 +78,13 @@ function Comment({
   const openReporting = () => {
     apiClient.setReportMode(ReportMode.Comment, comment.comment.id);
   };
+
+  const onCopy = () => {
+    void setStringAsync(comment.comment.content);
+  };
   return (
     <View style={{ ...styles.container, borderBottomColor: colors.card }}>
-      <View style={styles.topRow}>
-        <TouchableOpacity
-          simple
-          onPressCb={() => getAuthor(comment.creator.id)}
-        >
-          <View style={styles.row}>
-            <Text style={styles.author}>
-              u/{comment.creator.display_name || comment.creator.name}
-            </Text>
-            {comment.post.creator_id === comment.creator.id ? (
-              <View style={styles.op}>
-                <Text style={styles.opText}>OP</Text>
-              </View>
-            ) : null}
-            {comment.creator.admin ? <Icon name={"shield"} size={16} /> : null}
-          </View>
-        </TouchableOpacity>
-        <Text style={styles.date}>{commentDate}</Text>
-      </View>
+      <CommentTitle comment={comment} getAuthor={getAuthor} />
       <View>
         {!isExpanded && preferences.collapseParentComment ? (
           <Text style={{ fontSize: 16, opacity: 0.6 }} lines={1}>
@@ -112,80 +96,20 @@ function Comment({
           </TouchableOpacity>
         )}
       </View>
-      <View
-        style={{
-          ...styles.bottomRow,
-          flexDirection: preferences.leftHanded ? "row-reverse" : "row",
-        }}
-      >
-        <View style={styles.infoPiece}>
-          <Icon
-            accessibilityLabel={"total rating (upvote percent)"}
-            name={"chevrons-up"}
-            size={24}
-            color={scoreColor}
-          />
-          <Text customColor={scoreColor}>
-            {comment.counts.score} (
-            {Math.ceil(
-              (comment.counts.upvotes /
-                (comment.counts.upvotes + comment.counts.downvotes)) *
-                100
-            )}
-            %)
-          </Text>
-        </View>
-
-        <View style={{ flex: 1 }} />
-        {apiClient.loginDetails?.jwt ? (
-          <TouchableOpacity simple onPressCb={openReporting}>
-            <Icon name={"alert-circle"} size={24} />
-          </TouchableOpacity>
-        ) : null}
-        {openCommenting ? (
-          <TouchableOpacity
-            simple
-            style={styles.infoPiece}
-            onPressCb={replyToComment}
-          >
-            <Icon
-              accessibilityLabel={"Write a comment on this comment"}
-              name={"message-square"}
-              size={24}
-            />
-            <Text>{comment.counts.child_count}</Text>
-          </TouchableOpacity>
-        ) : null}
-        <TouchableOpacity simple onPressCb={shareComment}>
-          <Icon
-            accessibilityLabel={"share comment button"}
-            name={"share-2"}
-            size={24}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity feedback simple onPressCb={downvoteComment}>
-          <Icon
-            accessibilityLabel={"downvote comment"}
-            name={"arrow-down"}
-            size={24}
-            color={
-              comment.my_vote === Score.Downvote
-                ? commonColors.downvote
-                : undefined
-            }
-          />
-        </TouchableOpacity>
-        <TouchableOpacity feedback onPressCb={upvoteComment} simple>
-          <Icon
-            accessibilityLabel={"upvote comment"}
-            name={"arrow-up"}
-            size={24}
-            color={
-              comment.my_vote === Score.Upvote ? commonColors.upvote : undefined
-            }
-          />
-        </TouchableOpacity>
-      </View>
+      <CommentIconRow
+        scoreColor={scoreColor}
+        upvoteComment={upvoteComment}
+        downvoteComment={downvoteComment}
+        replyToComment={replyToComment}
+        shareComment={shareComment}
+        openReporting={openReporting}
+        score={comment.counts.score}
+        my_vote={comment.my_vote}
+        child_count={comment.counts.child_count}
+        upvotes={comment.counts.upvotes}
+        downvotes={comment.counts.downvotes}
+        onCopy={onCopy}
+      />
     </View>
   );
 }

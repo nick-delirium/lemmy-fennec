@@ -8,7 +8,7 @@ import Search from "./Search/SearchScreen";
 import FollowsScreen from "./Follows/FollowsScreen";
 import Unreads from "./Unreads/Unreads";
 import { apiClient } from "../store/apiClient";
-import { Icon, Text } from "../ThemedComponents";
+import { Icon } from "../ThemedComponents";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 const getTitle = (route, title) => {
@@ -73,7 +73,7 @@ function HomeScreen() {
         })}
       />
       {apiClient.loginDetails?.jwt ? (
-        <Tab.Screen name={"Followed Communities"} component={FollowsScreen} />
+        <Tab.Screen name={"Saved"} component={FollowsScreen} />
       ) : null}
       <Tab.Screen name={"Search"} component={Search} />
       {apiClient.loginDetails?.jwt ? (

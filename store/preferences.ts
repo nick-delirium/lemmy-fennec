@@ -77,6 +77,10 @@ export class Preferences {
 
   setHapticsOff(hapticsOff: boolean) {
     this.hapticsOff = hapticsOff;
+    void asyncStorageHandler.setData(
+      dataKeys.hapticsOff,
+      hapticsOff ? "1" : "0"
+    );
   }
 
   setTheme(theme: Theme) {

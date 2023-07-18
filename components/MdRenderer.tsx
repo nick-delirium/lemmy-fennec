@@ -6,14 +6,6 @@ import { useTheme } from "@react-navigation/native";
 import { Text, TouchableOpacity } from "../ThemedComponents";
 import { useNavigation } from "@react-navigation/native";
 
-const onLinkPress = (url: string) => () => {
-  Linking.openURL(url)
-    .then(() => null)
-    .catch((e) => {
-      console.warn("URL can't be opened", e);
-    });
-};
-
 const hasChildren = (element: React.ReactNode) =>
   isValidElement(element) && Boolean(element.props.children);
 
@@ -37,13 +29,13 @@ class CustomRenderer extends Renderer {
     const isForeign = /^@?.+@.+\..+$/.test(text);
     console.log(isForeign, text, href);
     // https://lemmyinst.any/post/123
-    if (href.includes("post/")) {
+    if (href.includes("/post/")) {
       const parts = href.split("/");
       const postId = parts[parts.length - 1];
       return this.navigation.navigate("Post", { post: postId });
     }
     // https://lemmyinst.any/c/commname
-    if (href.includes("c/")) {
+    if (href.includes("/c/")) {
       const parts = href.split("/");
       const communityName = parts[parts.length - 1];
       const name = isForeign
@@ -52,14 +44,19 @@ class CustomRenderer extends Renderer {
       return this.navigation.navigate("Community", { name });
     }
     // https://lemmyinst.any/u/username
-    if (href.includes("u/")) {
+    if (href.includes("/u/")) {
       const parts = href.split("/");
       const username = parts[parts.length - 1];
       const name = isForeign ? `${username}${extractInstance(text)}` : username;
       return this.navigation.navigate("User", { username: name });
     }
+    console.log("unhandled link", href, text);
     // any other link that hasn't been handled
-    return onLinkPress(href);
+    return Linking.openURL(href)
+      .then(() => console.log("URL opened"))
+      .catch((e) => {
+        console.warn("URL can't be opened", e);
+      });
   }
 
   link(

@@ -122,7 +122,7 @@ const CommentRenderer = observer(
             comment={comment}
             isExpanded={isExpanded}
             openCommenting={openCommenting}
-            hide={comment.children.length > 0 ? hide : undefined}
+            hide={hide}
           />
           {comment.children.length > 0 ? (
             <View style={{ ...styles.subComment, borderLeftColor: ownColor }}>

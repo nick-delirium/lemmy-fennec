@@ -21,6 +21,13 @@ import {
 import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 
+/**
+ * !!!TODO!!!
+ * split this mess somehow, maybe move some parts of the state into
+ * components where possible,
+ * or split into multiple stores that will extend basic feed class
+ * */
+
 interface Filters {
   type_: ListingType;
   sort: SortType;
@@ -59,9 +66,11 @@ const defaultFilters: Filters = {
 class PostStore extends DataClass {
   public posts: PostView[] = [];
   public communityPosts: PostView[] = [];
+  public savedPosts: PostView[] = [];
   public filters: Filters = defaultFilters;
   public page = 1;
   public commPage = 1;
+  public savedPostsPage = 1;
   // hack for autoscroll
   public feedKey = 0;
   public singlePost: PostView | null = null;
@@ -86,6 +95,8 @@ class PostStore extends DataClass {
       posts: observable.deep,
       page: observable,
       commPage: observable,
+      savedPostsPage: observable,
+      savedPosts: observable.deep,
       singlePost: observable,
       filters: observable.deep,
       isLoading: observable,
@@ -101,9 +112,19 @@ class PostStore extends DataClass {
       concatCommunityPosts: action,
       setFilters: action,
       bumpFeedKey: action,
+      setSavedPosts: action,
+      setSavedPostsPage: action,
       setSinglePost: action,
       setCommunityPosts: action,
     });
+  }
+
+  setSavedPosts(posts: PostView[]) {
+    this.savedPosts = posts;
+  }
+
+  setSavedPostsPage(page: number) {
+    this.savedPostsPage = page;
   }
 
   setPage(page: number) {
@@ -420,6 +441,48 @@ class PostStore extends DataClass {
       (e) => console.error(e),
       false,
       "mod feature post"
+    );
+  }
+
+  async getSavedPosts(jwt: string) {
+    await this.fetchData<GetPostsResponse>(
+      () =>
+        this.api.getPosts({
+          auth: jwt,
+          saved_only: true,
+          page: 1,
+          limit: 20,
+          type_: "All",
+          sort: "New",
+        }),
+      ({ posts }) => {
+        console.log("result", this.savedPostsPage, posts.length);
+        this.setSavedPosts(posts);
+      },
+      (e) => console.error(e),
+      false,
+      "get saved posts"
+    );
+  }
+
+  async changeSavedPage(page: number, jwt: string, communityId?: number) {
+    this.setSavedPostsPage(page);
+    await this.fetchData<GetPostsResponse>(
+      () =>
+        this.api.getPosts({
+          auth: jwt,
+          saved_only: true,
+          page: this.savedPostsPage,
+          limit: 20,
+          type_: "All",
+          sort: "New",
+        }),
+      ({ posts }) => {
+        this.setSavedPosts(posts);
+      },
+      (e) => console.error(e),
+      false,
+      "change saved posts page: " + page
     );
   }
 }

@@ -1,5 +1,13 @@
 import React from "react";
-import { Platform, Share, StyleSheet, ToastAndroid, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  Share,
+  StyleSheet,
+  ToastAndroid,
+  useColorScheme,
+  View,
+} from "react-native";
 import { PostView } from "lemmy-js-client";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
@@ -11,11 +19,10 @@ import { preferences } from "../../store/preferences";
 
 interface Props {
   post: PostView;
+  markRead: () => void;
   isExpanded?: boolean;
   useCommunity?: boolean;
-  markRead: () => void;
   getComments?: () => void;
-  onDelete?: () => void;
 }
 
 function PostIconRow({
@@ -23,12 +30,88 @@ function PostIconRow({
   useCommunity,
   markRead,
   getComments,
-  onDelete,
   isExpanded,
 }: Props) {
+  const scheme = useColorScheme();
   const navigation = useNavigation();
   const { colors } = useTheme();
   const { showActionSheetWithOptions } = useActionSheet();
+
+  const onModLock = () => {
+    if (!apiClient.loginDetails?.jwt) return;
+    const onConfirm = () => {
+      apiClient.postStore
+        .modLockPost(
+          {
+            post_id: post.post.id,
+            locked: !post.post.locked,
+            auth: apiClient.loginDetails?.jwt,
+          },
+          isExpanded,
+          useCommunity
+        )
+        .then(() => {
+          ToastAndroid.showWithGravity(
+            "Post lock toggled",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
+        });
+    };
+
+    Alert.alert(
+      "Lock Post?",
+      "Are you sure you want to lock this post?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => onConfirm(),
+        },
+      ],
+      {
+        userInterfaceStyle: scheme,
+      }
+    );
+  };
+  const onPostDelete = () => {
+    if (!apiClient.loginDetails?.jwt) return;
+    const onConfirm = () => {
+      apiClient.postStore
+        .deletePost({
+          auth: apiClient.loginDetails.jwt,
+          post_id: post.post.id,
+          deleted: true,
+        })
+        .then(() => {
+          ToastAndroid.show("Post deleted", ToastAndroid.SHORT);
+          if (isExpanded) {
+            navigation.goBack();
+          }
+        });
+    };
+
+    Alert.alert(
+      "Delete post?",
+      "Are you sure you want to delete this post?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => onConfirm(),
+        },
+      ],
+      {
+        userInterfaceStyle: scheme,
+      }
+    );
+  };
   const isSelf =
     post.creator.id === apiClient.profileStore.localUser?.local_user.person_id;
 
@@ -40,11 +123,12 @@ function PostIconRow({
 
   const openReporting = () => {
     apiClient.setReportMode(ReportMode.Post, post.post.id);
+    apiClient.setShowPrompt(true);
   };
 
   const openMenu = () => {
     const jwtOptions = ["Report", "Post Save Toggle"];
-    const selfOption = ["Delete"];
+    const selfOption = ["Delete Own Post"];
     const options = ["Cancel"];
     const icons = [<Icon name={"x"} size={24} />];
     if (isSelf) {
@@ -58,9 +142,9 @@ function PostIconRow({
         ) !== -1
       ) {
         options.unshift(
-          "Feature Post Toggle",
-          "Remove Post",
-          "Post Lock Toggle"
+          "Mod: Feature Post Toggle",
+          "Mod: Remove Post",
+          "Mod: Post Lock Toggle"
           // "Ban user"
         );
         icons.unshift(
@@ -83,13 +167,13 @@ function PostIconRow({
     const cancelButtonIndex = options.findIndex((v) => v === "Cancel");
     const destructiveButtonIndex = options.findIndex((v) => v === "Report");
     const saveIndex = options.findIndex((v) => v === "Post Save Toggle");
-    const deleteIndex = options.findIndex((v) => v === "Delete");
-    const removePostIndex = options.findIndex((v) => v === "Remove Post");
+    const deleteIndex = options.findIndex((v) => v === "Delete Own Post");
+    const removePostIndex = options.findIndex((v) => v === "Mod: Remove Post");
     const togglePostLockIndex = options.findIndex(
-      (v) => v === "Post Lock Toggle"
+      (v) => v === "Mod: Post Lock Toggle"
     );
     const featurePostIndex = options.findIndex(
-      (v) => v === "Feature Post Toggle"
+      (v) => v === "Mod: Feature Post Toggle"
     );
     const editIndex = options.findIndex((v) => v === "Edit");
     // const banUserIndex = options.findIndex((v) => v === "Ban user");
@@ -111,7 +195,6 @@ function PostIconRow({
         containerStyle,
       },
       (selectedIndex: number) => {
-        console.log(selectedIndex, featurePostIndex);
         switch (selectedIndex) {
           // too lazy to do this rn
           // case banUserIndex:
@@ -148,7 +231,6 @@ function PostIconRow({
             });
             break;
           case featurePostIndex:
-            console.log("toggled feature", post.post.featured_community);
             apiClient.postStore
               .modFeaturePost(
                 {
@@ -169,29 +251,7 @@ function PostIconRow({
               });
             break;
           case togglePostLockIndex:
-            apiClient.setPromptActions({
-              onConfirm: () => {
-                apiClient.postStore
-                  .modLockPost(
-                    {
-                      post_id: post.post.id,
-                      locked: !post.post.locked,
-                      auth: apiClient.loginDetails?.jwt,
-                    },
-                    isExpanded,
-                    useCommunity
-                  )
-                  .then(() => {
-                    ToastAndroid.showWithGravity(
-                      "Post lock toggled",
-                      ToastAndroid.SHORT,
-                      ToastAndroid.CENTER
-                    );
-                  });
-              },
-              onCancel: () => apiClient.setShowPrompt(false),
-            });
-            apiClient.setShowPrompt(true);
+            onModLock();
             break;
           case removePostIndex:
             apiClient.setPromptActions({
@@ -231,7 +291,7 @@ function PostIconRow({
             );
             break;
           case deleteIndex:
-            onDelete();
+            onPostDelete();
             break;
 
           case destructiveButtonIndex:

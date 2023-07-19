@@ -2,8 +2,9 @@ import React from "react";
 import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { Text, TouchableOpacity, TextInput } from "../ThemedComponents";
 import { useTheme } from "@react-navigation/native";
+import { ReportMode } from "../store/apiClient";
 
-function Prompt({ title, text, placeholder, onSubmit, onCancel }) {
+function Prompt({ title, text, placeholder, onSubmit, onCancel, reportMode }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [value, setValue] = React.useState("");
   const { colors } = useTheme();
@@ -17,19 +18,29 @@ function Prompt({ title, text, placeholder, onSubmit, onCancel }) {
     setIsLoading(true);
     onSubmit(value);
   };
+
+  console.log(reportMode);
   return (
     <View style={{ ...styles.container, backgroundColor: colors.card }}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.text}>{text}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder || "Your text goes here"}
-        value={value}
-        onChangeText={(text) => setValue(text)}
-        autoCapitalize="none"
-        autoCorrect
-        accessibilityLabel={"Prompt text"}
-      />
+      {[ReportMode.Post, ReportMode.Comment].includes(reportMode) ? (
+        <>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.text}>{text}</Text>
+        </>
+      ) : (
+        <>
+          <Text style={styles.title}>Mod action</Text>
+          <TextInput
+            style={styles.input}
+            placeholder={placeholder || "Reason"}
+            value={value}
+            onChangeText={(text) => setValue(text)}
+            autoCapitalize="none"
+            autoCorrect
+            accessibilityLabel={"Prompt text"}
+          />
+        </>
+      )}
       <View style={styles.buttons}>
         <TouchableOpacity onPressCb={onCancel} style={styles.button}>
           <Text style={styles.buttonText}>Cancel</Text>

@@ -67,7 +67,6 @@ function Comment({
     openCommenting();
   }, [openCommenting]);
   const editComment = React.useCallback(() => {
-    console.log(openCommenting, !apiClient.loginDetails?.jwt);
     if (!openCommenting || !apiClient.loginDetails?.jwt) return;
     apiClient.commentsStore.setReplyTo({
       postId: comment.post.id,
@@ -93,6 +92,7 @@ function Comment({
 
   const openReporting = () => {
     apiClient.setReportMode(ReportMode.Comment, comment.comment.id);
+    apiClient.setShowPrompt(true);
   };
 
   const onCopy = () => {

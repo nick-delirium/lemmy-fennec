@@ -47,27 +47,28 @@ function PostWrite({
           apiClient.postStore.getSinglePost(content.id, apiClient.loginDetails);
           navigation.goBack();
         });
+    } else {
+      apiClient.api
+        .createPost({
+          community_id: communityId,
+          name: title,
+          url: url === "" ? undefined : url,
+          auth: apiClient.loginDetails.jwt,
+          nsfw: isNsfw,
+          body: text,
+        })
+        .then(({ post_view }) => {
+          return navigation.replace("Post", { post: post_view.post.id });
+        })
+        .catch(() => {
+          ToastAndroid.showWithGravity(
+            "Network error",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
+        })
+        .finally(() => setIsLoading(false));
     }
-    apiClient.api
-      .createPost({
-        community_id: communityId,
-        name: title,
-        url: url === "" ? undefined : url,
-        auth: apiClient.loginDetails.jwt,
-        nsfw: isNsfw,
-        body: text,
-      })
-      .then(({ post_view }) => {
-        return navigation.replace("Post", { post: post_view.post.id });
-      })
-      .catch(() => {
-        ToastAndroid.showWithGravity(
-          "Network error",
-          ToastAndroid.SHORT,
-          ToastAndroid.CENTER
-        );
-      })
-      .finally(() => setIsLoading(false));
   };
 
   return (

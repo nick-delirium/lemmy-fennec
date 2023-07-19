@@ -2,16 +2,8 @@ import React from "react";
 import { PostView } from "lemmy-js-client";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import {
-  View,
-  StyleSheet,
-  useColorScheme,
-  Image,
-  ToastAndroid,
-  Alert,
-  Share,
-} from "react-native";
-import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { View, StyleSheet, useColorScheme, Image, Share } from "react-native";
+import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { makeDateString } from "../../utils/utils";
@@ -95,40 +87,6 @@ function Post({
     navigation.navigate("CommentWrite");
   };
 
-  const onDelete = () => {
-    if (!apiClient.loginDetails?.jwt) return;
-    const onConfirm = () => {
-      apiClient.postStore
-        .deletePost({
-          auth: apiClient.loginDetails.jwt,
-          post_id: post.post.id,
-          deleted: true,
-        })
-        .then(() => {
-          ToastAndroid.show("Post deleted", ToastAndroid.SHORT);
-          navigation.goBack();
-        });
-    };
-
-    Alert.alert(
-      "Delete post?",
-      "Are you sure you want to delete this post?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          onPress: () => onConfirm(),
-        },
-      ],
-      {
-        userInterfaceStyle: scheme,
-      }
-    );
-  };
-
   const shareImage = () => {
     void Share.share({
       url: post.post.url,
@@ -188,7 +146,6 @@ function Post({
       <PostIconRow
         post={post}
         markRead={markRead}
-        onDelete={onDelete}
         getComments={openCommenting}
         useCommunity={useCommunity}
       />

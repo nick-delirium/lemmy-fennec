@@ -43,7 +43,10 @@ class ApiClient {
   public showPrompt = false;
   public promptActions = {
     onConfirm: (text?: string) => null,
-    onCancel: () => null,
+    onCancel: () => {
+      this.setShowPrompt(false);
+      this.setReportMode(ReportMode.Off, null);
+    },
   };
   public reportMode = ReportMode.Off;
   public reportedItemId: number | null = null;
@@ -95,7 +98,10 @@ class ApiClient {
       this.reportedItemId = null;
       this.promptActions = {
         onConfirm: () => null,
-        onCancel: () => null,
+        onCancel: () => {
+          this.setShowPrompt(false);
+          this.setReportMode(ReportMode.Off, null);
+        },
       };
     }
   }

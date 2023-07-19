@@ -67,8 +67,9 @@ const App = observer(() => {
     apiClient.setShowPrompt(false);
   };
 
+  const reportMode = apiClient.reportMode;
   const promptActions =
-    apiClient.reportMode !== ReportMode.Off
+    reportMode !== ReportMode.Off
       ? {
           onCancel: closeReport,
           onConfirm: sendReport,
@@ -117,14 +118,15 @@ const App = observer(() => {
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Debug" component={DebugScreen} />
           </Stack.Navigator>
-          {apiClient.reportMode !== ReportMode.Off ? (
+          {apiClient.showPrompt ? (
             <Prompt
               text={`Describe whats wrong with this ${
-                apiClient.reportMode === ReportMode.Post ? "post" : "comment"
+                reportMode === ReportMode.Post ? "post" : "comment"
               }`}
               title={`Report ${
-                apiClient.reportMode === ReportMode.Post ? "post" : "comment"
+                reportMode === ReportMode.Post ? "post" : "comment"
               }`}
+              reportMode={reportMode}
               placeholder={"Type a reason here"}
               onSubmit={promptActions.onConfirm}
               onCancel={promptActions.onCancel}

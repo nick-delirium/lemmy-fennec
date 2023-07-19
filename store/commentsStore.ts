@@ -47,6 +47,7 @@ interface ReplyView {
   postId: number;
   parent_id?: number;
   language_id?: number;
+  isEdit?: boolean;
 }
 
 class CommentsStore extends DataClass {

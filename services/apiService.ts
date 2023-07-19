@@ -37,6 +37,8 @@ import {
   BanFromCommunity,
   RemovePost,
   FeaturePost,
+  EditPost,
+  EditComment,
 } from "lemmy-js-client";
 
 // !!!TODO!!!
@@ -181,6 +183,14 @@ export default class ApiService {
 
   createPostReport(form: CreatePostReport) {
     return this.client.createPostReport(form);
+  }
+
+  editPost(form: EditPost) {
+    return this.client.editPost(form);
+  }
+
+  editComment(form: EditComment) {
+    return this.client.editComment(form);
   }
 
   /* MOD ACTIONS */

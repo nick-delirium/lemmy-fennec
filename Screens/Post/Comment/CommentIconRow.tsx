@@ -20,12 +20,15 @@ function CommentIconRow({
   my_vote,
   child_count,
   onCopy,
+  editComment,
+  selfComment,
 }: {
   scoreColor: string;
   score: number;
   upvotes: number;
   downvotes: number;
   my_vote: number;
+  selfComment?: boolean;
   child_count: number;
   openReporting: () => void;
   shareComment: () => void;
@@ -34,39 +37,53 @@ function CommentIconRow({
   openCommenting?: () => void;
   replyToComment?: () => void;
   onCopy: () => void;
+  editComment?: () => void;
 }) {
   const { showActionSheetWithOptions } = useActionSheet();
   const { colors } = useTheme();
 
   const openMenu = React.useCallback(() => {
     const options = ["Report", "Copy", "Cancel"];
+
     const icons = [
       <Icon name={"alert-circle"} size={24} />,
       <Icon name={"copy"} size={24} />,
       <Icon name={"x"} size={24} />,
     ];
+    if (apiClient.loginDetails?.jwt && selfComment) {
+      options.splice(1, 0, "Edit");
+      icons.splice(1, 0, <Icon name={"edit-2"} size={24} />);
+    }
     const textStyle = {
       color: colors.text,
     };
     const containerStyle = {
       backgroundColor: colors.card,
     };
+    const cancelIndex = options.findIndex((o) => o === "Cancel");
+    const destructiveIndex = options.findIndex((o) => o === "Report");
+    const copyIndex = options.findIndex((o) => o === "Copy");
+    const editIndex = options.findIndex((o) => o === "Edit");
     showActionSheetWithOptions(
       {
         options,
         icons,
-        cancelButtonIndex: 2,
-        destructiveButtonIndex: 0,
+        cancelButtonIndex: cancelIndex,
+        destructiveButtonIndex: destructiveIndex,
         textStyle,
         containerStyle,
       },
       (selectedIndex: number) => {
+        console.log(selectedIndex, editIndex);
         switch (selectedIndex) {
           case 0:
             openReporting();
             break;
-          case 1:
+          case copyIndex:
             onCopy();
+            break;
+          case editIndex:
+            editComment();
             break;
           default:
             break;

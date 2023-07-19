@@ -11,29 +11,48 @@ import {
 import { apiClient } from "../../store/apiClient";
 import MiniComment from "../../components/TinyComment";
 
-function CommentWrite({ navigation }) {
+function CommentWrite({ navigation, route }) {
   const [text, setText] = React.useState("");
   const { colors } = useTheme();
 
   const item = apiClient.commentsStore.replyTo;
+  const isEdit = item?.isEdit;
 
+  React.useEffect(() => {
+    if (isEdit && item) setText(item.content);
+  }, [isEdit, item]);
   if (!item) return <ActivityIndicator />;
 
   const submit = () => {
     if (text.length === 0 || !apiClient.loginDetails?.jwt) return;
-    apiClient.commentsStore
-      .createComment(
-        {
-          auth: apiClient.loginDetails.jwt,
+    if (isEdit) {
+      apiClient.api
+        .editComment({
+          comment_id: item.parent_id,
           content: text,
-          parent_id: apiClient.commentsStore.replyTo.parent_id,
-          post_id: apiClient.commentsStore.replyTo.postId,
-        },
-        item.parent_id === undefined
-      )
-      .then(() => {
-        navigation.goBack();
-      });
+          auth: apiClient.loginDetails.jwt,
+        })
+        .then(() => {
+          void apiClient.commentsStore.getComments(
+            item.postId,
+            apiClient.loginDetails
+          );
+          navigation.goBack();
+        });
+    } else
+      apiClient.commentsStore
+        .createComment(
+          {
+            auth: apiClient.loginDetails.jwt,
+            content: text,
+            parent_id: apiClient.commentsStore.replyTo.parent_id,
+            post_id: apiClient.commentsStore.replyTo.postId,
+          },
+          item.parent_id === undefined
+        )
+        .then(() => {
+          navigation.goBack();
+        });
   };
   return (
     <View style={{ flex: 1 }}>

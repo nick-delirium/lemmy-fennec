@@ -66,6 +66,22 @@ function Comment({
     });
     openCommenting();
   }, [openCommenting]);
+  const editComment = React.useCallback(() => {
+    console.log(openCommenting, !apiClient.loginDetails?.jwt);
+    if (!openCommenting || !apiClient.loginDetails?.jwt) return;
+    apiClient.commentsStore.setReplyTo({
+      postId: comment.post.id,
+      parent_id: comment.comment.id,
+      title: comment.post.name,
+      community: comment.community.name,
+      published: comment.comment.published,
+      author: comment.creator.name,
+      content: comment.comment.content,
+      language_id: comment.comment.language_id,
+      isEdit: true,
+    });
+    openCommenting();
+  }, [openCommenting]);
 
   const scoreColor = React.useMemo(() => {
     return comment.my_vote
@@ -82,6 +98,9 @@ function Comment({
   const onCopy = () => {
     void setStringAsync(comment.comment.content);
   };
+
+  const selfComment =
+    apiClient.profileStore.localUser.person.id === comment.creator.id;
   return (
     <View style={{ ...styles.container, borderBottomColor: colors.card }}>
       <CommentTitle comment={comment} getAuthor={getAuthor} />
@@ -108,7 +127,9 @@ function Comment({
         child_count={comment.counts.child_count}
         upvotes={comment.counts.upvotes}
         downvotes={comment.counts.downvotes}
+        editComment={editComment}
         onCopy={onCopy}
+        selfComment={selfComment}
       />
     </View>
   );

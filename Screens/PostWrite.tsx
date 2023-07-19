@@ -13,7 +13,7 @@ function PostWrite({
   navigation,
   route,
 }: NativeStackScreenProps<any, "WritePost">) {
-  const { communityName, communityId } = route.params;
+  const { communityName, communityId, isEdit, content } = route.params;
   const { colors } = useTheme();
   const [text, setText] = React.useState("");
   const [title, setTitle] = React.useState("");
@@ -21,9 +21,33 @@ function PostWrite({
   const [isNsfw, setIsNsfw] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  React.useEffect(() => {
+    if (isEdit) {
+      setText(content.text);
+      setTitle(content.title);
+      setUrl(content.url);
+      setIsNsfw(content.nsfw);
+    }
+  }, [isEdit]);
+
   const submit = async () => {
     setIsLoading(true);
-    if (!apiClient.loginDetails.jwt || title === "") return;
+    if (!apiClient.loginDetails.jwt || title === "") return setIsLoading(false);
+    if (isEdit) {
+      apiClient.api
+        .editPost({
+          auth: apiClient.loginDetails.jwt,
+          post_id: content.id,
+          body: text,
+          name: title,
+          nsfw: isNsfw,
+          url: url === "" ? undefined : url,
+        })
+        .then(() => {
+          apiClient.postStore.getSinglePost(content.id, apiClient.loginDetails);
+          navigation.goBack();
+        });
+    }
     apiClient.api
       .createPost({
         community_id: communityId,

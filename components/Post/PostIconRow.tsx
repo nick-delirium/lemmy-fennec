@@ -1,7 +1,7 @@
 import React from "react";
 import { Platform, Share, StyleSheet, ToastAndroid, View } from "react-native";
 import { PostView } from "lemmy-js-client";
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { apiClient, ReportMode, Score } from "../../store/apiClient";
@@ -26,6 +26,7 @@ function PostIconRow({
   onDelete,
   isExpanded,
 }: Props) {
+  const navigation = useNavigation();
   const { colors } = useTheme();
   const { showActionSheetWithOptions } = useActionSheet();
   const isSelf =
@@ -69,6 +70,10 @@ function PostIconRow({
           // <Icon name={"user-x"} size={24} />
         );
       }
+      if (post.creator.id === apiClient.profileStore.localUser?.person.id) {
+        options.unshift("Edit");
+        icons.unshift(<Icon name={"edit-2"} size={24} />);
+      }
       options.unshift(...jwtOptions);
       icons.unshift(
         <Icon name={"alert-circle"} size={24} />,
@@ -86,6 +91,7 @@ function PostIconRow({
     const featurePostIndex = options.findIndex(
       (v) => v === "Feature Post Toggle"
     );
+    const editIndex = options.findIndex((v) => v === "Edit");
     // const banUserIndex = options.findIndex((v) => v === "Ban user");
 
     const textStyle = {
@@ -126,6 +132,21 @@ function PostIconRow({
           //       );
           //     });
           //   break;
+          case editIndex:
+            // @ts-ignore
+            navigation.navigate("PostWrite", {
+              communityName: post.community.name,
+              communityId: post.community.id,
+              isEdit: true,
+              content: {
+                id: post.post.id,
+                text: post.post.body,
+                title: post.post.name,
+                nsfw: post.post.nsfw,
+                url: post.post.url,
+              },
+            });
+            break;
           case featurePostIndex:
             console.log("toggled feature", post.post.featured_community);
             apiClient.postStore

@@ -74,7 +74,6 @@ function CommentIconRow({
         containerStyle,
       },
       (selectedIndex: number) => {
-        console.log(selectedIndex, editIndex);
         switch (selectedIndex) {
           case 0:
             openReporting();

@@ -238,13 +238,11 @@ class CommentsStore extends DataClass {
   ): boolean {
     for (const commentNode of commentTree) {
       if (commentNode.comment.id === commentId) {
-        console.log("update,", vote);
         if (children !== undefined) {
           commentNode.children = children.concat(commentNode.children);
         }
         if (vote !== undefined) commentNode.my_vote = vote;
         if (counts !== undefined) commentNode.counts = counts;
-        console.log("updated", commentNode.my_vote, vote);
         this.commentTree = commentTree;
         return true;
       }

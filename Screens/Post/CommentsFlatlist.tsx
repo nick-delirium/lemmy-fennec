@@ -19,6 +19,7 @@ const CommentFlatList = observer(
     openCommenting,
     onRefresh,
     onEndReached,
+    level,
   }: {
     colors: Theme["colors"];
     refreshing?: boolean;
@@ -29,6 +30,7 @@ const CommentFlatList = observer(
     getAuthor?: (id: number) => void;
     openCommenting?: () => void;
     onRefresh?: () => void;
+    level?: number;
     onEndReached?: () => void;
   }) => {
     const listRef = React.useRef<FlatList<CommentNode>>(null);
@@ -40,6 +42,7 @@ const CommentFlatList = observer(
           getAuthor={getAuthor}
           comment={item}
           colors={colors}
+          level={level}
         />
       ),
       []
@@ -89,9 +92,11 @@ const CommentRenderer = observer(
     colors,
     getAuthor,
     openCommenting,
+    level,
   }: {
     colors: Theme["colors"];
     comment: CommentNode;
+    level?: number;
     getAuthor?: (id: number) => void;
     openCommenting?: () => void;
   }) => {
@@ -125,12 +130,20 @@ const CommentRenderer = observer(
             hide={hide}
           />
           {comment.children.length > 0 ? (
-            <View style={{ ...styles.subComment, borderLeftColor: ownColor }}>
+            <View
+              style={{
+                ...styles.subComment,
+                borderLeftColor: ownColor,
+                marginLeft: level < 5 ? 12 : 0,
+                paddingLeft: level < 5 ? 8 : 0,
+              }}
+            >
               <CommentFlatList
                 getAuthor={getAuthor}
                 colors={colors}
                 openCommenting={openCommenting}
                 comments={comment.children}
+                level={level + 1}
               />
             </View>
           ) : comment.counts.child_count > 0 ? (
@@ -199,8 +212,6 @@ function rainbow() {
 
 const styles = StyleSheet.create({
   subComment: {
-    marginLeft: 12,
-    paddingLeft: 8,
     paddingTop: 2,
     borderLeftWidth: 1,
   },

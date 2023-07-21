@@ -39,11 +39,6 @@ function Comment({
   }, [comment.my_vote]);
   const upvoteComment = React.useCallback(() => {
     if (!apiClient.loginDetails?.jwt) return;
-    console.log(
-      "upvote",
-      comment.my_vote,
-      comment.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote
-    );
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
       apiClient.loginDetails,

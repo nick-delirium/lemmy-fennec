@@ -105,7 +105,8 @@ function CommentIconRow({
           color={scoreColor}
         />
         <Text customColor={scoreColor}>
-          {score} ({Math.ceil((upvotes / (upvotes + downvotes)) * 100)}
+          {score} (
+          {score !== 0 ? Math.ceil((upvotes / (upvotes + downvotes)) * 100) : 0}
           %)
         </Text>
       </View>

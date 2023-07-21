@@ -238,11 +238,13 @@ class CommentsStore extends DataClass {
   ): boolean {
     for (const commentNode of commentTree) {
       if (commentNode.comment.id === commentId) {
-        if (children) {
+        console.log("update,", vote);
+        if (children !== undefined) {
           commentNode.children = children.concat(commentNode.children);
         }
-        if (vote) commentNode.my_vote = vote;
-        if (counts) commentNode.counts = counts;
+        if (vote !== undefined) commentNode.my_vote = vote;
+        if (counts !== undefined) commentNode.counts = counts;
+        console.log("updated", commentNode.my_vote, vote);
         this.commentTree = commentTree;
         return true;
       }
@@ -324,3 +326,52 @@ function getParentPath(path: string): string {
 }
 
 export const commentsStore = new CommentsStore();
+
+// maybe use this for future? Looks better
+// updateCommentByPath(
+//   level: number,
+//   commentTree: CommentNode[],
+//   // 0.123.123.123
+//   commentPath: string,
+//   newChildren?: CommentNode[],
+//   vote?: (typeof Score)[keyof typeof Score],
+// counts?: CommentNode["counts"]
+// ) {
+//   const pathParts = commentPath.split(".");
+//   const itemPath = pathParts.slice(0, level + 1).join(".");
+//   const itemIndex = commentTree.findIndex(
+//     (cn) => cn.comment.path === itemPath
+//   );
+//   if (itemIndex !== -1) {
+//     if (itemPath !== commentPath) {
+//       commentTree[itemIndex].children = this.updateCommentByPath(
+//         level + 1,
+//         commentTree[itemIndex].children,
+//         commentPath,
+//         newChildren,
+//         vote,
+//         counts
+//       );
+//       return commentTree;
+//     } else {
+//       const item = { ...commentTree[itemIndex] };
+//       console.log("found", item.my_vote, "->", vote);
+//       const newItem = Object.assign(item, {
+//         children: newChildren
+//           ? item.children.concat(newChildren)
+//           : item.children,
+//         my_vote: vote ? vote : item.my_vote,
+//         counts: counts ? counts : item.counts,
+//       });
+//       commentTree[itemIndex] = newItem;
+//       console.log(
+//         "changed",
+//         commentTree[itemIndex].my_vote,
+//         vote,
+//         newItem.my_vote,
+//         item.my_vote
+//       );
+//       return commentTree;
+//     }
+//   }
+// }

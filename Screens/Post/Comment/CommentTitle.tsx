@@ -27,6 +27,11 @@ function CommentTitle({
               <Text style={styles.opText}>OP</Text>
             </View>
           ) : null}
+          {comment.creator.bot_account ? (
+            <View style={styles.op}>
+              <Text style={styles.opText}>BOT</Text>
+            </View>
+          ) : null}
           {comment.creator.admin ? <Icon name={"shield"} size={16} /> : null}
         </View>
       </TouchableOpacity>

@@ -105,6 +105,7 @@ function PostScreen({
         onEndReached={onEndReached}
         openComment={openComment}
         openCommenting={openCommenting}
+        level={1}
         footer={<View style={{ height: 72, width: "100%" }} />}
       />
       <CommentsFloatingMenu isLoading={apiClient.commentsStore.isLoading} />

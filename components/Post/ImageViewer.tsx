@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import ImageView from "react-native-image-viewing";
+import { setImageAsync } from "expo-clipboard";
 import { useTheme } from "@react-navigation/native";
 import {
   createAssetAsync,
@@ -35,6 +36,21 @@ function ImageViewer({ url, name, visible, setIsVisible, shareImage }: Props) {
     } catch (err) {
       console.log("FS Err: ", err);
     }
+  };
+
+  const copyImage = () => {
+    fetch(url)
+      .then((r) => r.blob())
+      .then((blob) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          const base64data = reader.result.toString().split(",")[1];
+          setImageAsync(base64data.toString()).catch((err) =>
+            console.log("Copy err: ", err)
+          );
+        };
+      });
   };
 
   const saveFile = async (fileUri) => {
@@ -77,20 +93,29 @@ function ImageViewer({ url, name, visible, setIsVisible, shareImage }: Props) {
           <Text lines={1} style={{ fontSize: 14 }}>
             {safeName}
           </Text>
-          <TouchableOpacity onPressCb={shareImage} simple>
-            <Icon
-              name={"share-2"}
-              accessibilityLabel={"share post button"}
-              size={24}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPressCb={handleDownload} simple>
-            <Icon
-              name={"download"}
-              accessibilityLabel={"download post button"}
-              size={24}
-            />
-          </TouchableOpacity>
+          <View style={{ flexDirection: "row", gap: 16 }}>
+            <TouchableOpacity onPressCb={shareImage} simple>
+              <Icon
+                name={"share-2"}
+                accessibilityLabel={"share post button"}
+                size={24}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity simple onPressCb={copyImage}>
+              <Icon
+                name={"copy"}
+                accessibilityLabel={"copy post button"}
+                size={24}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPressCb={handleDownload} simple>
+              <Icon
+                name={"download"}
+                accessibilityLabel={"download post button"}
+                size={24}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     />
@@ -100,9 +125,9 @@ function ImageViewer({ url, name, visible, setIsVisible, shareImage }: Props) {
 const styles = StyleSheet.create({
   imgHeader: {
     padding: 12,
-    justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
+    justifyContent: "space-between",
     gap: 16,
   },
 });

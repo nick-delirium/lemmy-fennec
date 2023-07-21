@@ -134,8 +134,8 @@ const CommentRenderer = observer(
               style={{
                 ...styles.subComment,
                 borderLeftColor: ownColor,
-                marginLeft: level < 5 ? 12 : 0,
-                paddingLeft: level < 5 ? 8 : 0,
+                marginLeft: level < 5 ? 4 : 0,
+                paddingLeft: level < 5 ? 6 : 0,
               }}
             >
               <CommentFlatList

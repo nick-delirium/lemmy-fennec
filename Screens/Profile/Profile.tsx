@@ -82,7 +82,9 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
         <TouchableOpacity
           style={styles.row}
           simple
-          onPressCb={() => navigation.navigate("Community", { id: 61020 })}
+          onPressCb={() =>
+            navigation.navigate("Community", { name: "fennec@lemmy.world" })
+          }
         >
           <Icon size={24} name={"message-circle"} />
           <Text

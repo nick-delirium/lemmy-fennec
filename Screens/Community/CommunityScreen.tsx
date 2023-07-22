@@ -18,23 +18,33 @@ function CommunityScreen({
   const name = route.params.name;
   const { community } = apiClient.communityStore;
 
+  const fetchedName = community?.community.name;
+  const fetchedId = community?.community.id;
+
   React.useEffect(() => {
+    const nameWithoutInst =
+      name && name.includes("@") ? name.split("@")[0] : name;
     const getData = () => {
-      console.log("requesting community data");
       if (
-        communityStore.community?.community.id === commId &&
+        (fetchedId === commId || fetchedName === nameWithoutInst) &&
         apiClient.postStore.communityPosts.length > 0
-      )
+      ) {
         return;
-      if (commId || name) {
-        apiClient.postStore.setPage(1);
-        void apiClient.postStore.getPosts(apiClient.loginDetails, commId, name);
+      } else {
+        if (commId || name) {
+          apiClient.postStore.setCommPage(1);
+          void apiClient.postStore.getPosts(
+            apiClient.loginDetails,
+            commId,
+            name
+          );
+          void apiClient.communityStore.getCommunity(
+            apiClient.loginDetails,
+            commId,
+            name
+          );
+        }
       }
-      void apiClient.communityStore.getCommunity(
-        apiClient.loginDetails,
-        commId,
-        name
-      );
     };
 
     const unsubscribe = navigation.addListener("focus", () => {
@@ -42,14 +52,22 @@ function CommunityScreen({
     });
     getData();
 
+    return unsubscribe;
+  }, [
+    commId,
+    name,
+    apiClient.postStore.communityPosts.length,
+    fetchedName,
+    fetchedId,
+  ]);
+
+  React.useEffect(() => {
     if (communityStore.community !== null && apiClient.postStore) {
       navigation.setOptions({
         title: `${communityStore.community.community.title} | ${apiClient.postStore.filters.sort}`,
       });
     }
-
-    return unsubscribe;
-  }, [commId, name, navigation, apiClient.postStore, communityStore.community]);
+  }, [navigation, apiClient.postStore, communityStore.community]);
 
   if (apiClient.communityStore.isLoading || !community)
     return <ActivityIndicator />;

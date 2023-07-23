@@ -83,7 +83,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
           style={styles.row}
           simple
           onPressCb={() =>
-            navigation.navigate("Community", { name: "fennec@lemmy.world" })
+            navigation.navigate("Community", { name: "arctius@lemmy.world" })
           }
         >
           <Icon size={24} name={"message-circle"} />
@@ -94,7 +94,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
               textDecorationColor: colors.border,
             }}
           >
-            https://lemmy.world/c/fennec
+            https://lemmy.world/c/arctius
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

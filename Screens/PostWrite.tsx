@@ -1,9 +1,9 @@
 import React from "react";
 import { View, StyleSheet, ToastAndroid } from "react-native";
-import { Text, TouchableOpacity, TextInput } from "../ThemedComponents";
+import { Text, TextInput } from "../ThemedComponents";
 import { useTheme } from "@react-navigation/native";
 import { commonColors } from "../commonStyles";
-import { Toggler } from "./SettingsScreen";
+import { Toggler } from "./Settings/AppSettings";
 import { observer } from "mobx-react-lite";
 import { ButtonsRow } from "./CommentWrite/CommentWrite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";

@@ -115,6 +115,7 @@ class PostStore extends DataClass {
       setSavedPosts: action,
       setSavedPostsPage: action,
       setSinglePost: action,
+      concatSavedPosts: action,
       setCommunityPosts: action,
     });
   }
@@ -465,7 +466,7 @@ class PostStore extends DataClass {
     );
   }
 
-  async changeSavedPage(page: number, jwt: string, communityId?: number) {
+  async changeSavedPage(page: number, jwt: string, concat?: boolean) {
     this.setSavedPostsPage(page);
     await this.fetchData<GetPostsResponse>(
       () =>
@@ -478,12 +479,20 @@ class PostStore extends DataClass {
           sort: "New",
         }),
       ({ posts }) => {
-        this.setSavedPosts(posts);
+        if (concat) this.concatSavedPosts(posts);
+        else this.setSavedPosts(posts);
       },
       (e) => console.error(e),
       false,
       "change saved posts page: " + page
     );
+  }
+
+  concatSavedPosts(posts: PostView[]) {
+    const uniquePosts = posts.filter(
+      (p) => this.savedPosts.findIndex((p2) => p2.post.id === p.post.id) === -1
+    );
+    this.savedPosts = this.savedPosts.concat(uniquePosts);
   }
 }
 

@@ -81,7 +81,7 @@ function Post({
       community: post.community.name,
       published: post.post.published,
       author: post.creator.name,
-      content: post.post.body,
+      content: post.post.body || post.post.url,
       language_id: post.post.language_id,
     });
     navigation.navigate("CommentWrite");
@@ -134,7 +134,7 @@ function Post({
             />
           </TouchableOpacity>
         ) : null}
-        {post.post.embed_title ? (
+        {post.post.url || post.post.embed_title ? (
           <Embed
             embed_title={post.post.embed_title}
             embed_description={post.post.embed_description}

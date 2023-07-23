@@ -1,5 +1,6 @@
 
-# <img width="36" src="https://github.com/nick-delirium/lemmy-fennec/assets/23126999/c7131fab-e6a3-4dfc-a298-f5175db5c365"> Fennec for Lemmy
+# <img width="36" src="https://github.com/nick-delirium/lemmy-fennec/assets/23126999/c7131fab-e6a3-4dfc-a298-f5175db5c365"> Arctius for Lemmy
+#### (Previously: Fennec for Lemmy)
 
 Minimalistic and easy to use Lemmy client written for general public enjoyment, my personal experience and RN skills improvement.
 I hope that it will be easy and fun to use for everyone, including people with impaired vision abilities.

@@ -44,7 +44,8 @@ function SavedFeed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     if (apiClient.postStore.savedPosts.length === 0) return;
     void apiClient.postStore.changeSavedPage(
       apiClient.postStore.savedPostsPage + 1,
-      apiClient.loginDetails.jwt
+      apiClient.loginDetails.jwt,
+      !preferences.paginatedFeed
     );
   }, [apiClient.postStore.savedPosts.length]);
   const onRefresh = React.useCallback(() => {

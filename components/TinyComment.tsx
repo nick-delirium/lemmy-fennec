@@ -1,10 +1,8 @@
 import { makeDateString } from "../utils/utils";
-import { StyleSheet, useColorScheme, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Text } from "../ThemedComponents";
-import { commonColors, commonStyles, mdTheme } from "../commonStyles";
+import { commonColors, commonStyles } from "../commonStyles";
 import React from "react";
-import Markdown from "react-native-marked";
-import { useTheme } from "@react-navigation/native";
 import MdRenderer from "./MdRenderer";
 
 function MiniComment({
@@ -39,13 +37,15 @@ function MiniComment({
         <Text lines={2} style={commonStyles.title}>
           {title}
         </Text>
-        {useMd ? (
-          <MdRenderer value={content} />
-        ) : (
-          <Text lines={4} style={commonStyles.text}>
-            {content}
-          </Text>
-        )}
+        {content ? (
+          useMd ? (
+            <MdRenderer value={content} />
+          ) : (
+            <Text lines={4} style={commonStyles.text}>
+              {content}
+            </Text>
+          )
+        ) : null}
       </View>
     </View>
   );

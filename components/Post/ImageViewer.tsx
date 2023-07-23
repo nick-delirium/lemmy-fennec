@@ -60,9 +60,9 @@ function ImageViewer({ url, name, visible, setIsVisible, shareImage }: Props) {
     const saveToAlbum = async () => {
       try {
         const asset = await createAssetAsync(fileUri);
-        const album = await getAlbumAsync("Fennec");
+        const album = await getAlbumAsync("Arctius");
         if (album === null) {
-          await createAlbumAsync("Fennec", asset, false);
+          await createAlbumAsync("Arctius", asset, false);
         } else {
           await addAssetsToAlbumAsync([asset], album, false);
         }

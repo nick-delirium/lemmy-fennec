@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "fennec",
-    "slug": "fennec",
-    "version": "0.0.9",
+    "name": "Arctius",
+    "slug": "arctius",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -43,8 +43,8 @@
         "backgroundColor": "#2b4777",
         "monochromeImage": "./assets/monochrome.png"
       },
-      "package": "com.nick.delirium.fennec",
-      "versionCode": 6,
+      "package": "com.nick.delirium.arctius",
+      "versionCode": 7,
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE"

@@ -96,7 +96,19 @@ function CommentWrite({ navigation, route }) {
   );
 }
 
-export function ButtonsRow({ setText, text, submit, isLoading }) {
+interface ButtonsRowProps {
+  setText: (text: string) => void;
+  text: string;
+  submit?: () => void;
+  isLoading?: boolean;
+}
+
+export function ButtonsRow({
+  setText,
+  text,
+  submit,
+  isLoading,
+}: ButtonsRowProps) {
   const { colors } = useTheme();
   return (
     <View
@@ -142,18 +154,22 @@ export function ButtonsRow({ setText, text, submit, isLoading }) {
         />
       </TouchableOpacity>
 
-      <View style={{ flex: 1 }} />
-      <TouchableOpacity
-        style={styles.additionalButtonStyle}
-        isSecondary
-        onPressCb={submit}
-      >
-        {isLoading ? (
-          <ActivityIndicator color={colors.primary} />
-        ) : (
-          <Icon name={"send"} accessibilityLabel={"Send text"} size={24} />
-        )}
-      </TouchableOpacity>
+      {submit ? (
+        <>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            style={styles.additionalButtonStyle}
+            isSecondary
+            onPressCb={submit}
+          >
+            {isLoading ? (
+              <ActivityIndicator color={colors.primary} />
+            ) : (
+              <Icon name={"send"} accessibilityLabel={"Send text"} size={24} />
+            )}
+          </TouchableOpacity>
+        </>
+      ) : null}
     </View>
   );
 }

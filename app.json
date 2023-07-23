@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "Arctius",
-    "slug": "arctius",
-    "version": "0.1.0",
+    "slug": "fennec",
+    "version": "0.1.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -34,6 +34,10 @@
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos.",
+        "NSPhotoLibraryAddUsageDescription": "Allow $(PRODUCT_NAME) to save photos."
       }
     },
     "android": {
@@ -50,10 +54,11 @@
         "monochromeImage": "./assets/monochrome.png"
       },
       "package": "com.nick.delirium.arctius",
-      "versionCode": 7,
+      "versionCode": 8,
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -63,6 +68,7 @@
       "eas": {
         "projectId": "0be79b75-f653-4f4b-a90e-cedb0b58b414"
       }
-    }
+    },
+    "owner": "nick.delirium"
   }
 }

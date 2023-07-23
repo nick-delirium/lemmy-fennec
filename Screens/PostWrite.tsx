@@ -49,12 +49,15 @@ function PostWrite({
 
   const pickImage = async () => {
     const permission = await ImagePicker.getMediaLibraryPermissionsAsync();
-    if (permission.granted === false)
-      return ToastAndroid.showWithGravity(
-        "You need to grant permission to access the library",
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER
-      );
+    if (permission.granted === false) {
+      const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (result.granted === false)
+        return ToastAndroid.showWithGravity(
+          "You need to grant permission to access the library",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+    }
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,

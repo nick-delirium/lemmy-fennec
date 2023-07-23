@@ -55,7 +55,7 @@ const CommentFlatList = observer(
         openComment !== undefined
       ) {
         setTimeout(() => {
-          listRef.current.scrollToIndex({
+          listRef.current?.scrollToIndex({
             index: openComment,
             animated: false,
           });

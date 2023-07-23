@@ -68,7 +68,7 @@ function PostIconRow({
           style: "cancel",
         },
         {
-          text: "Delete",
+          text: "Lock",
           onPress: () => onConfirm(),
         },
       ],

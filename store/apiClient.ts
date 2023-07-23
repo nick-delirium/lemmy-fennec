@@ -63,7 +63,12 @@ class ApiClient {
         this.currentInstance = possibleInstance ?? "https://lemmy.ml";
         if (possibleInstance && possibleUser && possibleUsername) {
           const auth: LoginResponse = JSON.parse(possibleUser);
-          const client: LemmyHttp = new LemmyHttp(possibleInstance);
+          const client: LemmyHttp = new LemmyHttp(possibleInstance, {
+            fetchFunction: undefined,
+            headers: {
+              "User-Agent": `Arctius Android 0.1.1`,
+            },
+          });
           this.setClient(client);
           this.setLoginDetails(auth);
           this.setLoginState(true);
@@ -71,7 +76,13 @@ class ApiClient {
           void this.getGeneralData();
         } else {
           const client: LemmyHttp = new LemmyHttp(
-            possibleInstance || "https://lemmy.ml"
+            possibleInstance || "https://lemmy.ml",
+            {
+              fetchFunction: undefined,
+              headers: {
+                "User-Agent": `Arctius Android 0.1.1`,
+              },
+            }
           );
           this.setClient(client);
         }
@@ -79,7 +90,13 @@ class ApiClient {
       .catch((e) => {
         // save it somewhere for future
         console.error(e);
-        const client: LemmyHttp = new LemmyHttp("https://lemmy.ml");
+        this.currentInstance = "https://lemmy.ml";
+        const client: LemmyHttp = new LemmyHttp("https://lemmy.ml", {
+          fetchFunction: undefined,
+          headers: {
+            "User-Agent": `Arctius Android 0.1.1`,
+          },
+        });
         this.setClient(client);
       });
   }

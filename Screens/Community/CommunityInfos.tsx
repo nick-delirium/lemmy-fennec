@@ -60,6 +60,13 @@ function CommunityInfos({ navigation, route }) {
     );
   };
 
+  const canPost =
+    !community?.community.posting_restricted_to_mods ||
+    apiClient.profileStore.moderatedCommunities.findIndex(
+      (c) => c.community.id === community.community.id
+    ) !== -1;
+
+  console.log(canPost);
   return (
     <ScrollView style={styles.wrapper}>
       <View style={styles.header}>
@@ -103,7 +110,7 @@ function CommunityInfos({ navigation, route }) {
             <TouchableOpacity onPressCb={follow}>
               <Text>{followingStr}</Text>
             </TouchableOpacity>
-            {!community?.community.posting_restricted_to_mods ? (
+            {canPost ? (
               <TouchableOpacity onPressCb={createPost}>
                 <Text>New Post</Text>
               </TouchableOpacity>

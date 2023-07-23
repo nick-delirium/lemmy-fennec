@@ -39,6 +39,7 @@ import {
   FeaturePost,
   EditPost,
   EditComment,
+  UploadImage,
 } from "lemmy-js-client";
 
 // !!!TODO!!!
@@ -191,6 +192,10 @@ export default class ApiService {
 
   editComment(form: EditComment) {
     return this.client.editComment(form);
+  }
+
+  uploadImage(form: UploadImage) {
+    return this.client.uploadImage(form);
   }
 
   /* MOD ACTIONS */

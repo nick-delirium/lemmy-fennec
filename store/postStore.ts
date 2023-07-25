@@ -20,6 +20,7 @@ import {
 } from "lemmy-js-client";
 import { Score } from "./apiClient";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
+import { preferences } from "./preferences";
 
 /**
  * !!!TODO!!!
@@ -183,6 +184,22 @@ class PostStore extends DataClass {
         });
       },
       (result) => {
+        const ignoredInsts = preferences.getIgnoredInstances();
+        const len = ignoredInsts.length;
+        if (len > 0) {
+          result.posts = result.posts.filter((post) => {
+            // https://lemmy.zone/c/communityname
+            const inst = post.community.actor_id;
+            let includePost = true;
+            for (let i = 0; i < len; i++) {
+              const ignoredInst = ignoredInsts[i];
+              if (inst.includes(ignoredInst)) {
+                includePost = false;
+              }
+            }
+            return includePost;
+          });
+        }
         if (communityId || communityName) {
           this.setCommunityPosts(result.posts);
         } else {
@@ -253,6 +270,22 @@ class PostStore extends DataClass {
           auth: loginDetails ? loginDetails.jwt : undefined,
         }),
       ({ posts }) => {
+        const ignoredInsts = preferences.getIgnoredInstances();
+        const len = ignoredInsts.length;
+        if (len > 0) {
+          posts = posts.filter((post) => {
+            // https://lemmy.zone/c/communityname
+            const inst = post.community.actor_id;
+            let includePost = true;
+            for (let i = 0; i < len; i++) {
+              const ignoredInst = ignoredInsts[i];
+              if (inst.includes(ignoredInst)) {
+                includePost = false;
+              }
+            }
+            return includePost;
+          });
+        }
         if (communityId) {
           this.concatCommunityPosts(posts);
         } else {

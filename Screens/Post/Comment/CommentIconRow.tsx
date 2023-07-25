@@ -3,9 +3,10 @@ import { preferences } from "../../../store/preferences";
 import { StyleSheet, View } from "react-native";
 import { Icon, Text, TouchableOpacity } from "../../../ThemedComponents";
 import { apiClient, Score } from "../../../store/apiClient";
-import { commonColors } from "../../../commonStyles";
+import { commonColors, commonStyles } from "../../../commonStyles";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useTheme } from "@react-navigation/native";
+import { shortenNumbers } from "../../../utils/utils";
 
 function CommentIconRow({
   scoreColor,
@@ -105,7 +106,7 @@ function CommentIconRow({
           color={scoreColor}
         />
         <Text customColor={scoreColor}>
-          {score} (
+          {shortenNumbers(score)} (
           {score !== 0 ? Math.ceil((upvotes / (upvotes + downvotes)) * 100) : 0}
           %)
         </Text>
@@ -113,13 +114,17 @@ function CommentIconRow({
 
       <View style={{ flex: 1 }} />
       {apiClient.loginDetails?.jwt ? (
-        <TouchableOpacity simple onPressCb={openMenu}>
+        <TouchableOpacity
+          style={commonStyles.touchableIcon}
+          simple
+          onPressCb={openMenu}
+        >
           <Icon name={"more-vertical"} size={24} />
         </TouchableOpacity>
       ) : null}
       <TouchableOpacity
         simple
-        style={styles.infoPiece}
+        style={{ ...styles.infoPiece, ...commonStyles.touchableIcon }}
         onPressCb={replyToComment}
       >
         <Icon
@@ -129,14 +134,23 @@ function CommentIconRow({
         />
         <Text>{child_count}</Text>
       </TouchableOpacity>
-      <TouchableOpacity simple onPressCb={shareComment}>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        simple
+        onPressCb={shareComment}
+      >
         <Icon
           accessibilityLabel={"share comment button"}
           name={"share-2"}
           size={24}
         />
       </TouchableOpacity>
-      <TouchableOpacity feedback simple onPressCb={downvoteComment}>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        feedback
+        simple
+        onPressCb={downvoteComment}
+      >
         <Icon
           accessibilityLabel={"downvote comment"}
           name={"arrow-down"}
@@ -144,7 +158,12 @@ function CommentIconRow({
           color={my_vote === Score.Downvote ? commonColors.downvote : undefined}
         />
       </TouchableOpacity>
-      <TouchableOpacity feedback onPressCb={upvoteComment} simple>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        feedback
+        onPressCb={upvoteComment}
+        simple
+      >
         <Icon
           accessibilityLabel={"upvote comment"}
           name={"arrow-up"}

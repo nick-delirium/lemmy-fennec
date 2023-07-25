@@ -10,6 +10,7 @@ import {
 } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import MiniComment from "../../components/TinyComment";
+import { commonStyles } from "../../commonStyles";
 
 function CommentWrite({ navigation, route }) {
   const [text, setText] = React.useState("");
@@ -59,7 +60,7 @@ function CommentWrite({ navigation, route }) {
       <ScrollView style={{ flex: 1 }}>
         <ScrollView
           horizontal={true}
-          contentContainerStyle={{ width: "100%", height: "100%" }}
+          contentContainerStyle={{ width: "100%", height: "100%", padding: 8 }}
         >
           <MiniComment
             title={item.title}
@@ -118,30 +119,51 @@ export function ButtonsRow({
         borderTopColor: colors.border,
       }}
     >
-      <TouchableOpacity onPressCb={() => setText(text + "**___**")} simple>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        onPressCb={() => setText(text + "**___**")}
+        simple
+      >
         <Text style={styles.bold} customColor={colors.primary}>
           B
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity onPressCb={() => setText(text + "*___*")} simple>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        onPressCb={() => setText(text + "*___*")}
+        simple
+      >
         <Icon name={"italic"} accessibilityLabel={"Italic text"} size={16} />
       </TouchableOpacity>
-      <TouchableOpacity onPressCb={() => setText(text + "[text](url)")} simple>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        onPressCb={() => setText(text + "[text](url)")}
+        simple
+      >
         <Icon name={"link"} accessibilityLabel={"Web link"} size={16} />
       </TouchableOpacity>
-      <TouchableOpacity onPressCb={() => setText(text + "> ")} simple>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        onPressCb={() => setText(text + "> ")}
+        simple
+      >
         <Icon
           name={"chevron-right"}
           accessibilityLabel={"Quote text"}
           size={16}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPressCb={() => setText(text + "~~___~~")} simple>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        onPressCb={() => setText(text + "~~___~~")}
+        simple
+      >
         <Text customColor={colors.primary} style={styles.strike}>
           S
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
+        style={commonStyles.touchableIcon}
         onPressCb={() =>
           setText(text + ":::spoiler SpoilerName\n" + "___\n" + ":::")
         }

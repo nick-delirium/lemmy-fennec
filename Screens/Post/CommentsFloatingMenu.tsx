@@ -37,7 +37,7 @@ function CommentsFloatingMenu({ isLoading }: { isLoading: boolean }) {
   };
 
   return (
-    <FAB>
+    <FAB elevated>
       {isSortOpen ? <SortMenu colors={colors} closeSelf={closeAll} /> : null}
       {isOpen ? (
         <View style={{ ...commonStyles.fabMenu, backgroundColor: colors.card }}>

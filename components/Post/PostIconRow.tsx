@@ -16,6 +16,7 @@ import { apiClient, ReportMode, Score } from "../../store/apiClient";
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { commonColors, commonStyles } from "../../commonStyles";
 import { preferences } from "../../store/preferences";
+import { shortenNumbers } from "../../utils/utils";
 
 interface Props {
   post: PostView;
@@ -320,22 +321,32 @@ function PostIconRow({
           color={scoreColor}
         />
         <Text customColor={scoreColor}>
-          {post.counts.score} (
-          {Math.ceil(
-            (post.counts.upvotes /
-              (post.counts.upvotes + post.counts.downvotes)) *
-              100
-          )}
+          {shortenNumbers(post.counts.score)} (
+          {post.counts.score !== 0
+            ? Math.ceil(
+                (post.counts.upvotes /
+                  (post.counts.upvotes + post.counts.downvotes)) *
+                  100
+              )
+            : 0}
           %)
         </Text>
       </View>
       <View style={{ flex: 1 }} />
       {apiClient.loginDetails?.jwt ? (
-        <TouchableOpacity simple onPressCb={openMenu}>
+        <TouchableOpacity
+          style={commonStyles.touchableIcon}
+          simple
+          onPressCb={openMenu}
+        >
           <Icon name={"more-vertical"} size={24} />
         </TouchableOpacity>
       ) : null}
-      <TouchableOpacity onPressCb={getComments} simple>
+      <TouchableOpacity
+        style={commonStyles.touchableIcon}
+        onPressCb={getComments}
+        simple
+      >
         <View style={styles.infoPiece}>
           <Icon
             accessibilityLabel={"total comments (+ unread)"}
@@ -343,13 +354,16 @@ function PostIconRow({
             size={24}
           />
           <Text>
-            {`${post.counts.comments}${
-              post.unread_comments > 0 ? "(+" + post.unread_comments + ")" : ""
+            {`${shortenNumbers(post.counts.comments)}${
+              post.unread_comments > 0
+                ? `(+${shortenNumbers(post.unread_comments)})`
+                : ""
             }`}
           </Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity
+        style={commonStyles.touchableIcon}
         simple
         onPressCb={() =>
           Share.share(
@@ -369,6 +383,7 @@ function PostIconRow({
         />
       </TouchableOpacity>
       <TouchableOpacity
+        style={commonStyles.touchableIcon}
         simple
         feedback
         onPressCb={() => {
@@ -390,6 +405,7 @@ function PostIconRow({
       </TouchableOpacity>
       <TouchableOpacity
         simple
+        style={commonStyles.touchableIcon}
         feedback
         onPressCb={() => {
           markRead();

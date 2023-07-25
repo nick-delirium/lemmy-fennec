@@ -13,7 +13,12 @@ function FAB({
   const position = preferences.leftHanded
     ? styles.leftButton
     : styles.rightButton;
-  return <View style={{ ...styles.container, ...position }}>{children}</View>;
+  const verticalPosition = elevated ? styles.elevated : {};
+  return (
+    <View style={{ ...styles.container, ...position, ...verticalPosition }}>
+      {children}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -22,7 +27,7 @@ const styles = StyleSheet.create({
     bottom: 21,
     gap: 12,
   },
-  elevated: { bottom: 84 }, // when input added
+  elevated: { bottom: 64 }, // when input added
   leftButton: { left: 16, alignItems: "flex-start" },
   rightButton: { right: 16, alignItems: "flex-end" },
 });

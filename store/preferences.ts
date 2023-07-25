@@ -24,6 +24,7 @@ export class Preferences {
   public compactPostLayout = false;
   public hapticsOff = false;
   public paginatedFeed = false;
+  public ignoredInstances: string[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -65,6 +66,23 @@ export class Preferences {
     asyncStorageHandler.readData(dataKeys.hapticsOff).then((value) => {
       this.setHapticsOff(value === "1");
     });
+    asyncStorageHandler.readData(dataKeys.ignoredInstances).then((value) => {
+      if (value) {
+        this.setIgnoredInstances(value.split(", "));
+      }
+    });
+  }
+
+  setIgnoredInstances(instances: string[]) {
+    this.ignoredInstances = instances;
+    void asyncStorageHandler.setData(
+      dataKeys.ignoredInstances,
+      instances.join(", ")
+    );
+  }
+
+  getIgnoredInstances() {
+    return this.ignoredInstances;
   }
 
   setPaginatedFeed(paginatedFeed: boolean) {

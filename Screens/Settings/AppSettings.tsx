@@ -9,12 +9,16 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
-import { Text } from "../../ThemedComponents";
+import { Text, TextInput } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { preferences, Theme, ThemeMap } from "../../store/preferences";
 
 function AppSettings() {
+  const [text, setText] = React.useState(
+    preferences.ignoredInstances.join(", ")
+  );
   const { localUser: profile } = apiClient.profileStore;
+  const { colors } = useTheme();
 
   const toggleReadPosts = () => {
     if (!apiClient.loginDetails?.jwt) return;
@@ -87,6 +91,30 @@ function AppSettings() {
         }
       />
       <ThemePicker />
+      <View style={styles.longRow}>
+        <Text>Ignored instances</Text>
+        <TextInput
+          style={{ flex: 1 }}
+          placeholder={`I.e "nsfw.com, ilovespez.xyz, testinst"`}
+          value={text}
+          onChangeText={(text) => setText(text)}
+          autoCapitalize={"none"}
+          autoCorrect={false}
+          placeholderTextColor={colors.border}
+          keyboardType="default"
+          multiline
+          accessibilityLabel={"Ignored instances input"}
+        />
+        <Text
+          style={{
+            fontSize: 12,
+            opacity: 0.5,
+          }}
+        >
+          Can be just a string without .xyz domain area, will be partially
+          matched
+        </Text>
+      </View>
 
       <Text style={styles.title}>Account Settings</Text>
       <Toggler

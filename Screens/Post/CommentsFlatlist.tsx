@@ -5,7 +5,7 @@ import { CommentNode } from "../../store/commentsStore";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import Comment from "./Comment";
 import { apiClient } from "../../store/apiClient";
-import { TouchableOpacity } from "../../ThemedComponents";
+import { Icon, TouchableOpacity } from "../../ThemedComponents";
 
 const CommentFlatList = observer(
   ({
@@ -16,6 +16,7 @@ const CommentFlatList = observer(
     colors,
     getAuthor,
     openComment,
+    navigation,
     openCommenting,
     onRefresh,
     onEndReached,
@@ -29,10 +30,13 @@ const CommentFlatList = observer(
     footer?: React.ReactElement;
     getAuthor?: (id: number) => void;
     openCommenting?: () => void;
+    navigation?: any;
     onRefresh?: () => void;
     level?: number;
     onEndReached?: () => void;
   }) => {
+    // this keeps state reactive, but does not trigger re-renders
+    const scrolledToItem = React.useRef<number>(0);
     const listRef = React.useRef<FlatList<CommentNode>>(null);
     const extractor = React.useCallback((c) => c.comment.id.toString(), []);
     const renderer = React.useCallback(
@@ -64,24 +68,101 @@ const CommentFlatList = observer(
       }
     }, [comments, openComment, listRef.current]);
 
+    const rootCommenting = () => {
+      const post = apiClient.postStore.singlePost;
+      if (post.post.locked) return;
+      apiClient.commentsStore.setReplyTo({
+        postId: post.post.id,
+        parent_id: undefined,
+        title: post.post.name,
+        community: post.community.name,
+        published: post.post.published,
+        author: post.creator.name,
+        content: post.post.body || post.post.url,
+        language_id: post.post.language_id,
+      });
+      navigation.navigate("CommentWrite");
+    };
+
+    const scrollNext = () => {
+      if (listRef.current) {
+        listRef.current.scrollToIndex({
+          index: scrolledToItem.current + 1,
+          animated: true,
+        });
+        scrolledToItem.current = scrolledToItem.current + 1;
+      }
+    };
+    const resetScroll = () =>
+      scrolledToItem.current !== 0 ? (scrolledToItem.current = 0) : null;
+
+    const log = React.useCallback(({ viewableItems }) => {
+      if (viewableItems.length === 0) return;
+      const firstItem = viewableItems[0];
+      scrolledToItem.current = firstItem.index;
+    }, []);
     return (
-      <FlatList
-        onRefresh={onRefresh}
-        ref={listRef}
-        windowSize={15}
-        maxToRenderPerBatch={15}
-        removeClippedSubviews
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.5}
-        initialNumToRender={10}
-        ListHeaderComponent={header}
-        ListFooterComponent={footer}
-        data={comments}
-        style={{ flex: 1 }}
-        keyExtractor={extractor}
-        renderItem={renderer}
-        refreshing={refreshing}
-      />
+      <>
+        <FlatList
+          scrollEventThrottle={100}
+          onScrollToTop={resetScroll}
+          onRefresh={onRefresh}
+          ref={listRef}
+          onViewableItemsChanged={log}
+          windowSize={15}
+          maxToRenderPerBatch={15}
+          removeClippedSubviews
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.5}
+          initialNumToRender={10}
+          ListHeaderComponent={header}
+          ListFooterComponent={footer}
+          data={comments}
+          style={{ flex: 1 }}
+          keyExtractor={extractor}
+          renderItem={renderer}
+          refreshing={refreshing}
+        />
+        {level === 1 ? (
+          <View
+            style={{
+              flex: 1,
+              width: "100%",
+              backgroundColor: colors.card,
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              padding: 8,
+              flexDirection: "row",
+              gap: 8,
+            }}
+          >
+            <TouchableOpacity
+              style={{ flex: 1 }}
+              simple
+              feedback
+              onPressCb={rootCommenting}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  borderRadius: 6,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ padding: 4 }}
+              simple
+              feedback
+              onPressCb={scrollNext}
+            >
+              <Icon name={"chevron-down"} size={24} />
+            </TouchableOpacity>
+          </View>
+        ) : null}
+      </>
     );
   }
 );

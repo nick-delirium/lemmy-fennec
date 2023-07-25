@@ -94,6 +94,9 @@ export const commonStyles = StyleSheet.create({
     borderRadius: 6,
     minWidth: 130,
   },
+  touchableIcon: {
+    padding: 3,
+  },
 });
 
 export const commonColors = {

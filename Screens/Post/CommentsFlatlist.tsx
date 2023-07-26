@@ -92,6 +92,11 @@ const CommentFlatList = observer(
             animated: true,
           });
           scrolledToItem.current = scrolledToItem.current + 1;
+        } else {
+          listRef.current.scrollToIndex({
+            index: scrolledToItem.current,
+            animated: true,
+          });
         }
       }
     };

@@ -132,8 +132,11 @@ function AppSettings() {
           opacity: 0.5,
         }}
       >
-        Separated by comma, can be just a string without .xyz domain area, which
-        will be partially matched
+        Instances or trigger words separated by comma.
+        {"\n"}
+        If substring will be matched in post's ap_id, it will be filtered out.
+        {"\n"}
+        Example ap_id: https://lemmy.world/c/communityname
       </Text>
       <TouchableOpacity
         feedback

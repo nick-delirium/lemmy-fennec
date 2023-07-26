@@ -86,11 +86,13 @@ const CommentFlatList = observer(
 
     const scrollNext = () => {
       if (listRef.current) {
-        listRef.current.scrollToIndex({
-          index: scrolledToItem.current + 1,
-          animated: true,
-        });
-        scrolledToItem.current = scrolledToItem.current + 1;
+        if (scrolledToItem.current + 1 < comments.length) {
+          listRef.current.scrollToIndex({
+            index: scrolledToItem.current + 1,
+            animated: true,
+          });
+          scrolledToItem.current = scrolledToItem.current + 1;
+        }
       }
     };
     const resetScroll = () =>

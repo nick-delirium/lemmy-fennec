@@ -129,7 +129,7 @@ function AppSettings() {
       <Text
         style={{
           fontSize: 12,
-          opacity: 0.5,
+          opacity: 0.6,
         }}
       >
         Instances or trigger words separated by comma.

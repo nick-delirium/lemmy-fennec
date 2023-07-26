@@ -96,7 +96,7 @@ const CommentFlatList = observer(
     const resetScroll = () =>
       scrolledToItem.current !== 0 ? (scrolledToItem.current = 0) : null;
 
-    const log = React.useCallback(({ viewableItems }) => {
+    const changeScrollIndex = React.useCallback(({ viewableItems }) => {
       if (viewableItems.length === 0) return;
       const firstItem = viewableItems[0];
       scrolledToItem.current = firstItem.index;
@@ -108,7 +108,7 @@ const CommentFlatList = observer(
           onScrollToTop={resetScroll}
           onRefresh={onRefresh}
           ref={listRef}
-          onViewableItemsChanged={log}
+          onViewableItemsChanged={changeScrollIndex}
           windowSize={15}
           maxToRenderPerBatch={15}
           removeClippedSubviews
@@ -148,9 +148,15 @@ const CommentFlatList = observer(
                   flex: 1,
                   borderRadius: 6,
                   borderWidth: 1,
+                  justifyContent: "center",
+                  paddingHorizontal: 6,
                   borderColor: colors.border,
                 }}
-              />
+              >
+                <Text style={{ opacity: 0.6, color: colors.text }}>
+                  Comment...
+                </Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={{ padding: 4 }}

@@ -83,6 +83,7 @@ function CommentWrite({ navigation, route }) {
           style={{ flex: 1 }}
           placeholder={"Beans."}
           value={text}
+          autoFocus={true}
           onChangeText={(text) => setText(text)}
           autoCapitalize={"sentences"}
           autoCorrect={true}

@@ -42,6 +42,8 @@ export const SortTypeMap = {
   Hot: "Hot",
   New: "New",
   Old: "Old",
+  TopSixHour: "TopSixHour",
+  TopTwelveHour: "TopTwelveHour",
   TopDay: "TopDay",
   TopWeek: "TopWeek",
   TopMonth: "TopMonth",

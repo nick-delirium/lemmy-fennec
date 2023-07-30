@@ -7,11 +7,12 @@ interface Props {
   [key: string]: any;
 }
 
-export default function ThemedTextInput(props: Props) {
+function ThemedTextInput(props: Props, ref: any) {
   const { colors } = useTheme();
 
   return (
     <TextInput
+      ref={ref}
       {...props}
       placeholderTextColor={colors.border}
       style={{
@@ -32,3 +33,5 @@ const ownStyle = StyleSheet.create({
     borderWidth: 1,
   },
 });
+
+export default React.forwardRef(ThemedTextInput);

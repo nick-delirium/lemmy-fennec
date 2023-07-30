@@ -14,6 +14,10 @@ function User() {
   const navigation = useNavigation();
   const loadedProfile = apiClient.profileStore.userProfile;
   const profile = loadedProfile?.person_view;
+  const isBlocked =
+    apiClient.profileStore.blockedPeople.findIndex(
+      (p) => p.target.id === profile.person.id
+    ) !== -1;
 
   const onMessagePress = () => {
     // @ts-ignore why do I need this...
@@ -34,6 +38,15 @@ function User() {
       newMessage: true,
     });
   };
+
+  console.log(isBlocked);
+  const onBlock = () => {
+    void apiClient.profileStore.blockPerson(
+      profile.person.id,
+      !isBlocked,
+      apiClient.loginDetails.jwt
+    );
+  };
   return (
     <View style={styles.container}>
       <UserRow person={profile.person} />
@@ -41,9 +54,18 @@ function User() {
       <Bio profile={profile} />
       <Counters profile={profile} />
       {apiClient.loginDetails.jwt ? (
-        <TouchableOpacity onPressCb={onMessagePress}>
-          <Text>Message User</Text>
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity onPressCb={onMessagePress}>
+            <Text>Message User</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            feedback
+            style={{ backgroundColor: "red" }}
+            onPressCb={onBlock}
+          >
+            <Text>{isBlocked ? "Unblock User" : "Block User"}</Text>
+          </TouchableOpacity>
+        </>
       ) : null}
     </View>
   );

@@ -40,6 +40,7 @@ import {
   EditPost,
   EditComment,
   UploadImage,
+  BlockPerson,
 } from "lemmy-js-client";
 
 // !!!TODO!!!
@@ -176,6 +177,10 @@ export default class ApiService {
 
   blockCommunity(form: BlockCommunity) {
     return this.client.blockCommunity(form);
+  }
+
+  blockPerson(form: BlockPerson) {
+    return this.client.blockPerson(form);
   }
 
   createCommentReport(form: CreateCommentReport) {

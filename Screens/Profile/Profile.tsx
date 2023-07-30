@@ -79,6 +79,16 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
           <Icon name={"settings"} size={24} />
           <Text>Settings</Text>
         </TouchableOpacity>
+        {apiClient.isLoggedIn ? (
+          <TouchableOpacity
+            simple
+            style={styles.row}
+            onPressCb={() => navigation.navigate("Blocks")}
+          >
+            <Icon name={"eye-off"} size={24} />
+            <Text>Blocks</Text>
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity
           style={styles.row}
           simple

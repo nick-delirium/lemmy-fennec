@@ -1,11 +1,14 @@
 import { makeObservable, observable, action } from "mobx";
 import DataClass from "./dataClass";
 import {
+  BlockPersonResponse,
+  CommunityBlockView,
   CommunityModeratorView,
   GetPersonDetails,
   GetPersonDetailsResponse,
   LocalUserView,
   LoginResponse,
+  PersonBlockView,
   SaveUserSettings,
   SortType,
 } from "lemmy-js-client";
@@ -15,6 +18,8 @@ class ProfileStore extends DataClass {
   public localUser: LocalUserView | null = null;
   public moderatedCommunities: CommunityModeratorView[] = [];
   public username: string | null = null;
+  public blockedPeople: PersonBlockView[] = [];
+  public blockedCommunities: CommunityBlockView[] = [];
   public profilePage = 1;
   public profileSort: SortType = "New";
 
@@ -24,6 +29,8 @@ class ProfileStore extends DataClass {
       userProfile: observable.deep,
       isLoading: observable,
       username: observable,
+      blockedPeople: observable,
+      blockedCommunities: observable,
       localUser: observable,
       profileSort: observable,
       profilePage: observable,
@@ -36,11 +43,17 @@ class ProfileStore extends DataClass {
       setLocalUser: action,
       setProfilePage: action,
       setProfileSort: action,
+      setBlocks: action,
     });
   }
 
   setModeratedCommunities(communities: CommunityModeratorView[]) {
     this.moderatedCommunities = communities;
+  }
+
+  setBlocks(people: PersonBlockView[], communities: CommunityBlockView[]) {
+    this.blockedPeople = people;
+    this.blockedCommunities = communities;
   }
 
   setProfilePage(page: number) {
@@ -114,6 +127,43 @@ class ProfileStore extends DataClass {
         this.setLocalUser({ ...currentUser, local_user: newSettings });
       },
       (e) => console.error(e)
+    );
+  }
+
+  async blockPerson(id: number, blocked: boolean, auth: string) {
+    await this.fetchData<BlockPersonResponse>(
+      () =>
+        this.api.blockPerson({
+          person_id: id,
+          block: blocked,
+          auth,
+        }),
+      ({ person_view }) => {
+        if (!blocked) {
+          this.setBlocks(
+            this.blockedPeople.filter((p) => p.target.id !== id),
+            this.blockedCommunities
+          );
+        }
+        console.log(blocked, this.userProfile.person_view.person.id === id);
+        if (this.userProfile.person_view.person.id === id) {
+          this.setProfile({
+            ...this.userProfile,
+            person_view: {
+              ...this.userProfile.person_view,
+              ...person_view,
+            },
+          });
+          this.setBlocks(
+            // @ts-ignore
+            [...this.blockedPeople, { person: {}, target: person_view.person }],
+            this.blockedCommunities
+          );
+        }
+      },
+      (e) => console.error(e),
+      true,
+      "block person _" + id
     );
   }
 }

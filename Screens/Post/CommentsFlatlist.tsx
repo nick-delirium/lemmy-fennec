@@ -261,6 +261,7 @@ const CommentRenderer = observer(
       return (
         <View>
           <Comment
+            getAuthor={getAuthor}
             openCommenting={openCommenting}
             isExpanded={isExpanded}
             comment={comment}

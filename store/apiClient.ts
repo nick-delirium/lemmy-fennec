@@ -182,9 +182,11 @@ class ApiClient {
       const { my_user: user } = await this.api.getGeneralData({
         auth: this.loginDetails.jwt,
       });
+      const { community_blocks, person_blocks } = user;
       if (user.moderates.length > 0) {
         this.profileStore.setModeratedCommunities(user.moderates);
       }
+      this.profileStore.setBlocks(person_blocks, community_blocks);
       return this.profileStore.setLocalUser(user.local_user_view);
     } catch (e) {
       debugStore.addError(

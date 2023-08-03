@@ -128,7 +128,7 @@ function PostIconRow({
   };
 
   const openMenu = () => {
-    const jwtOptions = ["Report", "Post Save Toggle"];
+    const jwtOptions = ["Report", "Post Save Toggle", "Block Community"];
     const selfOption = ["Delete Own Post"];
     const options = ["Cancel"];
     const icons = [<Icon name={"x"} size={24} />];
@@ -162,7 +162,8 @@ function PostIconRow({
       options.unshift(...jwtOptions);
       icons.unshift(
         <Icon name={"alert-circle"} size={24} />,
-        <Icon name={"bookmark"} size={24} />
+        <Icon name={"bookmark"} size={24} />,
+        <Icon name={"slash"} size={24} />
       );
     }
     const cancelButtonIndex = options.findIndex((v) => v === "Cancel");
@@ -178,7 +179,9 @@ function PostIconRow({
     );
     const editIndex = options.findIndex((v) => v === "Edit");
     // const banUserIndex = options.findIndex((v) => v === "Ban user");
-
+    const blockCommunityIndex = options.findIndex(
+      (v) => v === "Block Community"
+    );
     const textStyle = {
       color: colors.text,
     };
@@ -216,6 +219,17 @@ function PostIconRow({
           //       );
           //     });
           //   break;
+          case blockCommunityIndex:
+            apiClient.communityStore
+              .blockCommunity(post.community.id, true, apiClient.loginDetails)
+              .then(() => {
+                ToastAndroid.showWithGravity(
+                  "Community blocked",
+                  ToastAndroid.SHORT,
+                  ToastAndroid.CENTER
+                );
+              });
+            break;
           case editIndex:
             // @ts-ignore
             navigation.navigate("PostWrite", {

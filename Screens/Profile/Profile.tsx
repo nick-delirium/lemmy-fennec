@@ -152,10 +152,10 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
           onPressCb={() => navigation.navigate("Debug")}
         >
           <Icon name={"terminal"} size={24} />
-          <Text>Show debug log</Text>
+          <Text>Show network debug log</Text>
         </TouchableOpacity>
         <Text style={{ color: "#aaaaaa", fontSize: 12 }}>
-          This is an early build, expect bugs and missing features.
+          Make sure to report issues and suggest your ideas in our community.
         </Text>
         <Text style={{ color: "#aaaaaa", fontSize: 12 }}>
           This app is an Open Source software released under GNU AGPLv3 license,

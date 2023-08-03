@@ -26,6 +26,15 @@ function Prompt({ title, text, placeholder, onSubmit, onCancel, reportMode }) {
         <>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.text}>{text}</Text>
+          <TextInput
+            style={styles.input}
+            placeholder={placeholder || "Reason"}
+            value={value}
+            onChangeText={(text) => setValue(text)}
+            autoCapitalize="none"
+            autoCorrect
+            accessibilityLabel={"Prompt text"}
+          />
         </>
       ) : (
         <>

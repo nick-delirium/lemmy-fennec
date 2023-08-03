@@ -126,7 +126,7 @@ class CommentsStore extends DataClass {
       ({ comments }) => {
         if (parentId && !singleComment) {
           // removing parent
-          comments.shift();
+          comments = comments.filter((c) => c.comment.id !== parentId);
           const tree = buildCommentTree(comments);
           this.updateTreeCommentRating(this.commentTree, parentId, tree);
           this.concatComments(comments);

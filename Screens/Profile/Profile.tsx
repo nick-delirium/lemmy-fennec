@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Image,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
@@ -47,6 +48,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
     navigation.replace("Home");
   };
 
+  const hasBanner = Boolean(profile.person.banner);
   return (
     <ScrollView
       style={styles.container}
@@ -59,7 +61,17 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
     >
       {profile ? (
         <View style={{ gap: 8 }}>
-          <UserRow person={profile.person} />
+          {hasBanner ? (
+            <Image
+              resizeMode={"cover"}
+              source={{ uri: profile.person.banner }}
+              style={{
+                width: "100%",
+                height: 120,
+              }}
+            />
+          ) : null}
+          <UserRow hasBanner={hasBanner} person={profile.person} />
           <ScrollView
             horizontal={true}
             contentContainerStyle={{ width: "100%", height: "100%" }}

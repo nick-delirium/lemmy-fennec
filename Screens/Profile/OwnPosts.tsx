@@ -94,6 +94,7 @@ function OwnPost({
         author={""}
         isSelf
         community={item.community.name}
+        communityPic={item.community.icon}
         title={item.post.name}
         content={item.post.body}
       />

@@ -2,14 +2,7 @@ import React from "react";
 import { PostView } from "lemmy-js-client";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import {
-  View,
-  StyleSheet,
-  Image,
-  Dimensions,
-  Share,
-  useColorScheme,
-} from "react-native";
+import { View, StyleSheet, Image, Dimensions, Share } from "react-native";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -105,6 +98,7 @@ function Post({
       />
       <TouchableOpacity
         simple
+        still
         onPressCb={() => {
           apiClient.postStore.setSinglePost(post);
           navigation.navigate("Post", { post: post.post.id });
@@ -121,6 +115,7 @@ function Post({
       <PostBadges isNsfw={isNsfw} post={post} />
       <TouchableOpacity
         simple
+        still
         onPressCb={() => {
           apiClient.postStore.setSinglePost(post);
           navigation.navigate("Post", { post: post.post.id });

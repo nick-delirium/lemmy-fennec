@@ -97,6 +97,7 @@ function OwnComment({
         published={item.comment.published}
         author={""}
         isSelf
+        communityPic={item.community.icon}
         community={item.community.name}
         title={item.post.name}
         content={item.comment.content}

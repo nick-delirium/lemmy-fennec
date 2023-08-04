@@ -5,7 +5,13 @@ import { Person } from "lemmy-js-client";
 import { makeDateString } from "../../utils/utils";
 import { useTheme } from "@react-navigation/native";
 
-function UserRow({ person }: { person: Person }) {
+function UserRow({
+  person,
+  hasBanner,
+}: {
+  person: Person;
+  hasBanner?: boolean;
+}) {
   const { colors } = useTheme();
   const onProfileUrlPress = async () => {
     try {
@@ -45,6 +51,7 @@ function UserRow({ person }: { person: Person }) {
             width: 72,
             height: 72,
             borderRadius: 72,
+            marginTop: hasBanner ? -46 : 0,
           }}
         />
       ) : null}

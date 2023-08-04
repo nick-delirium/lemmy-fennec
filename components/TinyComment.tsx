@@ -1,15 +1,17 @@
 import { makeDateString } from "../utils/utils";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { Text } from "../ThemedComponents";
 import { commonColors, commonStyles } from "../commonStyles";
 import React from "react";
 import MdRenderer from "./MdRenderer";
+import CommunityIcon from "./CommunityIcon";
 
 function MiniComment({
   published,
   author,
   community,
   title,
+  communityPic,
   content,
   isSelf,
   useMd,
@@ -17,6 +19,7 @@ function MiniComment({
   published: string;
   author: string;
   community: string;
+  communityPic?: string;
   title: string;
   content: string;
   isSelf?: boolean;
@@ -26,11 +29,13 @@ function MiniComment({
   return (
     <View style={styles.comment}>
       <View style={styles.topRow}>
-        {isSelf ? null : (
-          <Text customColor={commonColors.author}>{author}</Text>
-        )}
-        <Text>in</Text>
-        <Text customColor={commonColors.community}>{community}</Text>
+        <CommunityIcon communityPic={communityPic} communityName={community} />
+        <View>
+          <Text customColor={commonColors.community}>{community}</Text>
+          {isSelf ? null : (
+            <Text customColor={commonColors.author}>{author}</Text>
+          )}
+        </View>
         <Text style={{ marginLeft: "auto" }}>{dateStr}</Text>
       </View>
       <View>

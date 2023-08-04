@@ -1,7 +1,14 @@
 import React from "react";
-import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Dimensions,
+  BackHandler,
+} from "react-native";
 import { observer } from "mobx-react-lite";
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useFocusEffect } from "@react-navigation/native";
 import {
   Text,
   TextInput,
@@ -111,7 +118,35 @@ export function ButtonsRow({
   submit,
   isLoading,
 }: ButtonsRowProps) {
+  const [showLinkPrompt, setShowLinkPrompt] = React.useState(false);
+  const [linkText, setLinkText] = React.useState("");
+  const [linkUrl, setLinkUrl] = React.useState("");
+  const urlRef = React.useRef(null);
   const { colors } = useTheme();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (showLinkPrompt) {
+          setShowLinkPrompt(false);
+          return true;
+        }
+        return false;
+      };
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+      return () => subscription.remove();
+    }, [showLinkPrompt])
+  );
+
+  const saveUrl = () => {
+    setText(text + `[${linkText}](${linkUrl})`);
+    setLinkText("");
+    setLinkUrl("");
+    setShowLinkPrompt(false);
+  };
   return (
     <View
       style={{
@@ -120,6 +155,68 @@ export function ButtonsRow({
         borderTopColor: colors.border,
       }}
     >
+      {showLinkPrompt ? (
+        <View
+          style={{
+            flexDirection: "column",
+            width: "70%",
+            position: "absolute",
+            bottom: 80,
+            left:
+              Dimensions.get("window").width / 2 -
+              (Dimensions.get("window").width * 0.7) / 2,
+            padding: 8,
+            borderRadius: 8,
+            borderWidth: 1,
+            backgroundColor: colors.card,
+            gap: 8,
+            borderColor: colors.border,
+          }}
+        >
+          <TextInput
+            style={{ flex: 1 }}
+            placeholder={"Text"}
+            value={linkText}
+            autoFocus={true}
+            onChangeText={(text) => setLinkText(text)}
+            autoCapitalize={"sentences"}
+            autoCorrect={true}
+            onSubmitEditing={() => urlRef.current.focus()}
+            placeholderTextColor={colors.border}
+            keyboardType="default"
+            returnKeyType="next"
+            accessibilityLabel={"Link text input"}
+          />
+          <TextInput
+            ref={urlRef}
+            style={{ flex: 1 }}
+            placeholder={"URL"}
+            value={linkUrl}
+            onChangeText={(text) => setLinkUrl(text)}
+            autoCapitalize={"none"}
+            autoCorrect={true}
+            onSubmitEditing={saveUrl}
+            placeholderTextColor={colors.border}
+            keyboardType="url"
+            accessibilityLabel={"Link URL input"}
+          />
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <TouchableOpacity
+              style={{ flex: 1, backgroundColor: "red" }}
+              onPressCb={() => setShowLinkPrompt(false)}
+            >
+              <Text>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ flex: 1, backgroundColor: colors.primary }}
+              onPressCb={saveUrl}
+            >
+              <Text>Add</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : null}
+
       <TouchableOpacity
         style={commonStyles.touchableIcon}
         onPressCb={() => setText(text + "**___**")}
@@ -138,7 +235,7 @@ export function ButtonsRow({
       </TouchableOpacity>
       <TouchableOpacity
         style={commonStyles.touchableIcon}
-        onPressCb={() => setText(text + "[text](url)")}
+        onPressCb={() => setShowLinkPrompt(true)}
         simple
       >
         <Icon name={"link"} accessibilityLabel={"Web link"} size={16} />

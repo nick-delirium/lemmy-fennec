@@ -11,6 +11,7 @@ interface Props {
   children: React.ReactNode;
   isSecondary?: boolean;
   simple?: boolean;
+  still?: boolean;
   feedback?: boolean;
   [key: string]: any;
 }
@@ -48,7 +49,7 @@ function ThemedTouchableOpacity(props: PressProps | LongPressProps) {
       style={({ pressed }) =>
         props.simple
           ? {
-              opacity: pressed ? 0.5 : 1,
+              opacity: pressed && !props.still ? 0.5 : 1,
               ...props.style,
             }
           : {
@@ -60,7 +61,7 @@ function ThemedTouchableOpacity(props: PressProps | LongPressProps) {
                 : props.isSecondary
                 ? colors.border
                 : colors.primary,
-              opacity: pressed ? 0.5 : 1,
+              opacity: pressed && !props.still ? 0.5 : 1,
               ...props.style,
             }
       }

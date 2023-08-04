@@ -129,6 +129,7 @@ function Reply({
       <MiniComment
         published={item.comment_reply.published}
         author={item.creator.name}
+        communityPic={item.community.icon}
         community={item.community.name}
         title={item.post.name}
         content={item.comment.content}

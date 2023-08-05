@@ -23,13 +23,13 @@ function Post({
   post,
   navigation,
   useCommunity,
+  showAllButton,
 }: {
   post: PostView;
   useCommunity?: boolean;
+  showAllButton?: boolean;
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
 }) {
-  const scheme = useColorScheme();
-
   const [visible, setIsVisible] = React.useState(false);
   const { colors } = useTheme();
 
@@ -95,61 +95,86 @@ function Post({
     });
   };
   return (
-    <View style={{ ...styles.container, borderColor: colors.border }}>
-      {isPic ? (
-        <ImageViewer
-          url={post.post.url}
-          name={post.post.name}
-          visible={visible}
-          setIsVisible={setIsVisible}
-          shareImage={shareImage}
-        />
-      ) : null}
-      <PostTitle
-        post={post}
-        getCommunity={getCommunity}
-        getAuthor={getAuthor}
-        dateStr={dateStr}
-      />
-
-      <Text
-        customColor={customReadColor}
-        lines={maxLines}
-        style={styles.postName}
-      >
-        {post.post.name}
-      </Text>
-
-      <PostBadges isNsfw={isNsfw} post={post} />
-      <View>
+    <>
+      <View style={{ ...styles.container, borderColor: colors.border }}>
         {isPic ? (
-          <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
-            <Image
-              source={{ uri: post.post.url }}
-              style={styles.postImg}
-              progressiveRenderingEnabled
-              resizeMode={"contain"}
-              alt={"Image for post" + post.post.name}
-              accessibilityLabel={"Image for post" + post.post.name}
-            />
-          </TouchableOpacity>
-        ) : null}
-        {post.post.url || post.post.embed_title ? (
-          <Embed
-            embed_title={post.post.embed_title}
-            embed_description={post.post.embed_description}
+          <ImageViewer
             url={post.post.url}
+            name={post.post.name}
+            visible={visible}
+            setIsVisible={setIsVisible}
+            shareImage={shareImage}
           />
         ) : null}
-        <MdRenderer value={safeDescription} />
+        <PostTitle
+          post={post}
+          getCommunity={getCommunity}
+          getAuthor={getAuthor}
+          dateStr={dateStr}
+        />
+
+        <Text
+          customColor={customReadColor}
+          lines={maxLines}
+          style={styles.postName}
+        >
+          {post.post.name}
+        </Text>
+
+        <PostBadges isNsfw={isNsfw} post={post} />
+        <View>
+          {isPic ? (
+            <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
+              <Image
+                source={{ uri: post.post.url }}
+                style={styles.postImg}
+                progressiveRenderingEnabled
+                resizeMode={"contain"}
+                alt={"Image for post" + post.post.name}
+                accessibilityLabel={"Image for post" + post.post.name}
+              />
+            </TouchableOpacity>
+          ) : null}
+          {post.post.url || post.post.embed_title ? (
+            <Embed
+              embed_title={post.post.embed_title}
+              embed_description={post.post.embed_description}
+              url={post.post.url}
+            />
+          ) : null}
+          <MdRenderer value={safeDescription} />
+        </View>
+        <PostIconRow
+          post={post}
+          markRead={markRead}
+          getComments={openCommenting}
+          useCommunity={useCommunity}
+        />
       </View>
-      <PostIconRow
-        post={post}
-        markRead={markRead}
-        getComments={openCommenting}
-        useCommunity={useCommunity}
-      />
-    </View>
+      {showAllButton ? (
+        <TouchableOpacity
+          onPressCb={() => {
+            navigation.setParams({ post: post.post.id, parentId: undefined });
+            void apiClient.commentsStore.getComments(
+              post.post.id,
+              apiClient.loginDetails
+            );
+          }}
+          simple
+        >
+          <Text
+            style={{
+              padding: 8,
+              color: colors.primary,
+              backgroundColor: colors.card,
+              fontSize: 16,
+            }}
+          >
+            Show all {post.counts.comments} comments
+          </Text>
+        </TouchableOpacity>
+      ) : null}
+    </>
   );
 }
 

@@ -93,11 +93,18 @@ function PostScreen({
     }
   };
 
+  const showAllButton = Boolean(parentId);
   return (
     <View style={{ flex: 1 }}>
       <CommentFlatList
         getAuthor={getAuthor}
-        header={<ExpandedPost post={post} navigation={navigation} />}
+        header={
+          <ExpandedPost
+            post={post}
+            navigation={navigation}
+            showAllButton={showAllButton}
+          />
+        }
         refreshing={apiClient.commentsStore.isLoading}
         comments={apiClient.commentsStore.commentTree}
         colors={colors}

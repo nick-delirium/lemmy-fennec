@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, ToastAndroid, View } from "react-native";
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import ImageView from "react-native-image-viewing";
 import { setImageAsync } from "expo-clipboard";
@@ -32,8 +32,18 @@ function ImageViewer({ url, name, visible, setIsVisible, shareImage }: Props) {
     let fileUri = documentDirectory + `${safeName.replace(" ", "-")}.jpg`;
     try {
       const res = await downloadAsync(url, fileUri);
-      void saveFile(res.uri);
+      await saveFile(res.uri);
+      ToastAndroid.showWithGravity(
+        "Image saved",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
     } catch (err) {
+      ToastAndroid.showWithGravity(
+        "Couldn't save image",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
       console.log("FS Err: ", err);
     }
   };

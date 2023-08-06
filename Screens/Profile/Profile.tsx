@@ -48,7 +48,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
     navigation.replace("Home");
   };
 
-  const hasBanner = Boolean(profile.person.banner);
+  const hasBanner = Boolean(profile?.person?.banner);
   return (
     <ScrollView
       style={styles.container}

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { observer } from "mobx-react-lite";
 import { apiClient } from "../../store/apiClient";
 import UserRow from "../Profile/UserRow";
@@ -47,9 +47,22 @@ function User() {
       apiClient.loginDetails.jwt
     );
   };
+
+  const hasBanner = Boolean(profile.person.banner);
+
   return (
     <View style={styles.container}>
-      <UserRow person={profile.person} />
+      {hasBanner ? (
+        <Image
+          resizeMode={"cover"}
+          source={{ uri: profile.person.banner }}
+          style={{
+            width: "100%",
+            height: 120,
+          }}
+        />
+      ) : null}
+      <UserRow hasBanner={hasBanner} person={profile.person} />
       <UserRating counts={profile.counts} />
       <Bio profile={profile} />
       <Counters profile={profile} />

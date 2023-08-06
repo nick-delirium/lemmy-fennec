@@ -19,7 +19,7 @@ Very easy to start with, easy to contribute and runs super well with new Hermes 
 
 Start a PR or issue, I'll be happy to see it. Same for feature requests.
 
-Lemmy community: [here](https://lemmy.world/c/fennec)
+Lemmy community: [here](https://lemmy.world/c/arctius)
 
 todo board: [See status here](https://github.com/users/nick-delirium/projects/2)
 

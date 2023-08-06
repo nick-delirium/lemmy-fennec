@@ -37,3 +37,6 @@ todo board: [See status here](https://github.com/users/nick-delirium/projects/2)
 - https://github.com/gmsgowtham/react-native-marked - for MD rendering library (MIT)
 
 - https://github.com/jobtoday/react-native-image-viewing - image viewer (MIT)
+
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/nickdelirium)

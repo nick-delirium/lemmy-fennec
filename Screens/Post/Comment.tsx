@@ -112,7 +112,7 @@ function Comment({
             {comment.comment.content}
           </Text>
         ) : (
-          <TouchableOpacity onPressCb={hide} simple feedback>
+          <TouchableOpacity still onPressCb={hide} simple feedback>
             <MdRenderer value={comment.comment.content} />
           </TouchableOpacity>
         )}

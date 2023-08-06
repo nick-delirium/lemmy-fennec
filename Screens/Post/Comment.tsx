@@ -102,7 +102,7 @@ function Comment({
   };
 
   const selfComment =
-    apiClient.profileStore.localUser.person.id === comment.creator.id;
+    apiClient.profileStore.localUser?.person.id === comment.creator.id;
   return (
     <View style={{ ...styles.container, borderBottomColor: colors.card }}>
       <CommentTitle comment={comment} getAuthor={getAuthor} />

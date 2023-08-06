@@ -5,6 +5,7 @@ import { Linking, TextStyle, useColorScheme } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Text, TouchableOpacity } from "../ThemedComponents";
 import { useNavigation } from "@react-navigation/native";
+import { apiClient } from "../store/apiClient";
 
 const hasChildren = (element: React.ReactNode) =>
   isValidElement(element) && Boolean(element.props.children);
@@ -25,33 +26,41 @@ class CustomRenderer extends Renderer {
   }
 
   handleLinkPress(href: string, text: string) {
+    // getting the domain
+    const hrefDomain = href.split("/")[2];
+
+    const isLocalLink = apiClient.getCurrentInstance().includes(hrefDomain);
     // regexp to match "(@?)text@instance.com"
     const isForeign = /^@?.+@.+\..+$/.test(text);
-    console.log(isForeign, text, href);
-    // https://lemmyinst.any/post/123
-    if (href.includes("/post/")) {
-      const parts = href.split("/");
-      const postId = parts[parts.length - 1];
-      return this.navigation.navigate("Post", { post: postId });
+
+    console.log(isForeign, text, href, hrefDomain);
+    if (isLocalLink) {
+      // https://lemmyinst.any/post/123
+      if (href.includes("/post/")) {
+        const parts = href.split("/");
+        const postId = parts[parts.length - 1];
+        return this.navigation.navigate("Post", { post: postId });
+      }
+      // https://lemmyinst.any/c/commname
+      if (href.includes("/c/")) {
+        const parts = href.split("/");
+        const communityName = parts[parts.length - 1];
+        const name = isForeign
+          ? `${communityName}${extractInstance(text)}`
+          : communityName;
+        return this.navigation.navigate("Community", { name });
+      }
+      // https://lemmyinst.any/u/username
+      if (href.includes("/u/")) {
+        const parts = href.split("/");
+        const username = parts[parts.length - 1];
+        const name = isForeign
+          ? `${username}${extractInstance(text)}`
+          : username;
+        return this.navigation.navigate("User", { username: name });
+      }
     }
-    // https://lemmyinst.any/c/commname
-    if (href.includes("/c/")) {
-      const parts = href.split("/");
-      const communityName = parts[parts.length - 1];
-      const name = isForeign
-        ? `${communityName}${extractInstance(text)}`
-        : communityName;
-      return this.navigation.navigate("Community", { name });
-    }
-    // https://lemmyinst.any/u/username
-    if (href.includes("/u/")) {
-      const parts = href.split("/");
-      const username = parts[parts.length - 1];
-      const name = isForeign ? `${username}${extractInstance(text)}` : username;
-      return this.navigation.navigate("User", { username: name });
-    }
-    console.log("unhandled link", href, text);
-    // any other link that hasn't been handled
+    // any other link that hasn't been handled or is not local to the instance
     return Linking.openURL(href)
       .then(() => console.log("URL opened"))
       .catch((e) => {

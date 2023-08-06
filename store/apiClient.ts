@@ -101,6 +101,10 @@ class ApiClient {
       });
   }
 
+  getCurrentInstance() {
+    return this.currentInstance;
+  }
+
   setPromptActions(actions: {
     onConfirm: (text: string) => void;
     onCancel: () => void;

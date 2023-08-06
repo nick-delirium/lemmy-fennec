@@ -10,12 +10,7 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
-import {
-  Icon,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from "../../ThemedComponents";
+import { Text, TextInput, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { preferences, Theme, ThemeMap } from "../../store/preferences";
 
@@ -47,6 +42,9 @@ function AppSettings() {
   const toggleLeftHanded = () => {
     preferences.setLeftHanded(!preferences.leftHanded);
   };
+  const toggleVotingButtons = () => {
+    preferences.setSwapVotingButtons(!preferences.swapVotingButtons);
+  };
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>App Behavior</Text>
@@ -67,6 +65,11 @@ function AppSettings() {
         label={"Left handed layout"}
         value={preferences.leftHanded}
         onValueChange={toggleLeftHanded}
+      />
+      <Toggler
+        label={"Swap voting buttons"}
+        value={preferences.swapVotingButtons}
+        onValueChange={toggleVotingButtons}
       />
       <Toggler
         label={"Collapse parent comments"}

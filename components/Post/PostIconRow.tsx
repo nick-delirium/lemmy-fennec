@@ -320,6 +320,56 @@ function PostIconRow({
       }
     );
   };
+
+  const votingButtons = React.useMemo(() => {
+    const buttons = [
+      <TouchableOpacity
+        key={"downvotebutton"}
+        style={commonStyles.touchableIcon}
+        simple
+        feedback
+        onPressCb={() => {
+          markRead();
+          void apiClient.postStore.ratePost(
+            post.post.id,
+            apiClient.loginDetails,
+            post.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote,
+            useCommunity
+          );
+        }}
+      >
+        <Icon
+          accessibilityLabel={"downvote post"}
+          name={"arrow-down"}
+          size={24}
+          color={post.my_vote === -1 ? commonColors.downvote : undefined}
+        />
+      </TouchableOpacity>,
+      <TouchableOpacity
+        simple
+        key={"upvotebutton"}
+        style={commonStyles.touchableIcon}
+        feedback
+        onPressCb={() => {
+          markRead();
+          void apiClient.postStore.ratePost(
+            post.post.id,
+            apiClient.loginDetails,
+            post.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote,
+            useCommunity
+          );
+        }}
+      >
+        <Icon
+          accessibilityLabel={"upvote post"}
+          name={"arrow-up"}
+          size={24}
+          color={post.my_vote === 1 ? commonColors.upvote : undefined}
+        />
+      </TouchableOpacity>,
+    ];
+    return preferences.swapVotingButtons ? buttons.reverse() : buttons;
+  }, [preferences.swapVotingButtons]);
   return (
     <View
       style={{
@@ -396,48 +446,7 @@ function PostIconRow({
           size={24}
         />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={commonStyles.touchableIcon}
-        simple
-        feedback
-        onPressCb={() => {
-          markRead();
-          void apiClient.postStore.ratePost(
-            post.post.id,
-            apiClient.loginDetails,
-            post.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote,
-            useCommunity
-          );
-        }}
-      >
-        <Icon
-          accessibilityLabel={"downvote post"}
-          name={"arrow-down"}
-          size={24}
-          color={post.my_vote === -1 ? commonColors.downvote : undefined}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        simple
-        style={commonStyles.touchableIcon}
-        feedback
-        onPressCb={() => {
-          markRead();
-          void apiClient.postStore.ratePost(
-            post.post.id,
-            apiClient.loginDetails,
-            post.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote,
-            useCommunity
-          );
-        }}
-      >
-        <Icon
-          accessibilityLabel={"upvote post"}
-          name={"arrow-up"}
-          size={24}
-          color={post.my_vote === 1 ? commonColors.upvote : undefined}
-        />
-      </TouchableOpacity>
+      {votingButtons}
     </View>
   );
 }

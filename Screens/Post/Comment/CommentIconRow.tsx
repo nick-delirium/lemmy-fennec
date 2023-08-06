@@ -91,6 +91,40 @@ function CommentIconRow({
       }
     );
   }, [apiClient.loginDetails?.jwt]);
+
+  const votingButtons = React.useMemo(() => {
+    const buttons = [
+      <TouchableOpacity
+        key={"downvotebuttoncomment"}
+        style={commonStyles.touchableIcon}
+        feedback
+        simple
+        onPressCb={downvoteComment}
+      >
+        <Icon
+          accessibilityLabel={"downvote comment"}
+          name={"arrow-down"}
+          size={24}
+          color={my_vote === Score.Downvote ? commonColors.downvote : undefined}
+        />
+      </TouchableOpacity>,
+      <TouchableOpacity
+        key={"upvotebuttoncomment"}
+        style={commonStyles.touchableIcon}
+        feedback
+        onPressCb={upvoteComment}
+        simple
+      >
+        <Icon
+          accessibilityLabel={"upvote comment"}
+          name={"arrow-up"}
+          size={24}
+          color={my_vote === Score.Upvote ? commonColors.upvote : undefined}
+        />
+      </TouchableOpacity>,
+    ];
+    return preferences.swapVotingButtons ? buttons.reverse() : buttons;
+  }, [preferences.swapVotingButtons]);
   return (
     <View
       style={{
@@ -145,32 +179,7 @@ function CommentIconRow({
           size={24}
         />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={commonStyles.touchableIcon}
-        feedback
-        simple
-        onPressCb={downvoteComment}
-      >
-        <Icon
-          accessibilityLabel={"downvote comment"}
-          name={"arrow-down"}
-          size={24}
-          color={my_vote === Score.Downvote ? commonColors.downvote : undefined}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={commonStyles.touchableIcon}
-        feedback
-        onPressCb={upvoteComment}
-        simple
-      >
-        <Icon
-          accessibilityLabel={"upvote comment"}
-          name={"arrow-up"}
-          size={24}
-          color={my_vote === Score.Upvote ? commonColors.upvote : undefined}
-        />
-      </TouchableOpacity>
+      {votingButtons}
     </View>
   );
 }

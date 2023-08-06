@@ -18,6 +18,7 @@ export const dataKeys = {
   favCommunities: "fennec-fav-communities",
   paginatedFeed: "fennec-paginated-feed",
   ignoredInstances: "fennec-ignored-instances",
+  votingButtons: "fennec-voting-buttons",
 } as const;
 
 type Keys = keyof typeof dataKeys;

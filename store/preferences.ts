@@ -20,6 +20,7 @@ export class Preferences {
   public readOnScroll = false;
   public unblurNsfw = false;
   public leftHanded = false;
+  public swapVotingButtons = false;
   public collapseParentComment = false;
   public compactPostLayout = false;
   public hapticsOff = false;
@@ -71,6 +72,17 @@ export class Preferences {
         this.setIgnoredInstances(value.split(", "));
       }
     });
+    asyncStorageHandler.readData(dataKeys.votingButtons).then((value) => {
+      this.setSwapVotingButtons(value === "1");
+    });
+  }
+
+  setSwapVotingButtons(swapVotingButtons: boolean) {
+    this.swapVotingButtons = swapVotingButtons;
+    void asyncStorageHandler.setData(
+      dataKeys.votingButtons,
+      swapVotingButtons ? "1" : "0"
+    );
   }
 
   setIgnoredInstances(instances: string[]) {

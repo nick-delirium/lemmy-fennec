@@ -48,7 +48,7 @@ function User() {
     );
   };
 
-  const hasBanner = Boolean(profile.person.banner);
+  const hasBanner = Boolean(profile?.person?.banner);
 
   return (
     <View style={styles.container}>

@@ -26,11 +26,7 @@ function UserRow({
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           <Icon size={24} name={"user"} />
           <View>
-            <Text>
-              {person.display_name
-                ? `${person.display_name} (@${person.name})`
-                : `@${person.name}`}
-            </Text>
+            <Text>{person.display_name || `@${person.name}`}</Text>
             <TouchableOpacity onPressCb={onProfileUrlPress} simple>
               <Text style={{ color: colors.border }}>{person.actor_id}</Text>
             </TouchableOpacity>

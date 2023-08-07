@@ -39,7 +39,6 @@ function User() {
     });
   };
 
-  console.log(isBlocked);
   const onBlock = () => {
     void apiClient.profileStore.blockPerson(
       profile.person.id,

@@ -19,7 +19,9 @@ function UserScreen({
 
   React.useEffect(() => {
     const title =
-      apiClient.profileStore.isLoading || !person ? "User" : person.name;
+      apiClient.profileStore.isLoading || !person
+        ? "Loading User..."
+        : `@${person.name}`;
     navigation.setOptions({
       title: title,
     });

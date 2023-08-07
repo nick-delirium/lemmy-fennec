@@ -88,7 +88,7 @@ function CommentWrite({ navigation, route }) {
       <View style={{ ...styles.inputRow, backgroundColor: colors.card }}>
         <TextInput
           style={{ flex: 1 }}
-          placeholder={"Beans."}
+          placeholder={"The Egyptians believed the most significant thing..."}
           value={text}
           autoFocus={true}
           onChangeText={(text) => setText(text)}

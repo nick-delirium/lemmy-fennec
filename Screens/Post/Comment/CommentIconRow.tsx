@@ -124,7 +124,7 @@ function CommentIconRow({
       </TouchableOpacity>,
     ];
     return preferences.swapVotingButtons ? buttons.reverse() : buttons;
-  }, [preferences.swapVotingButtons]);
+  }, [preferences.swapVotingButtons, my_vote]);
   return (
     <View
       style={{

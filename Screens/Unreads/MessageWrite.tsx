@@ -84,7 +84,7 @@ function MessageWrite({ navigation, route }) {
       <View style={{ ...styles.inputRow, backgroundColor: colors.card }}>
         <TextInput
           style={{ flex: 1 }}
-          placeholder={"Beans."}
+          placeholder={"Hello I'm under the water."}
           value={text}
           onChangeText={(text) => setText(text)}
           autoCapitalize={"sentences"}

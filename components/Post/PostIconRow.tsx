@@ -259,7 +259,9 @@ function PostIconRow({
               )
               .then(() => {
                 ToastAndroid.showWithGravity(
-                  "Post Feature status changed",
+                  !post.post.featured_community
+                    ? "Post pinned as Featured"
+                    : "Post unpinned",
                   ToastAndroid.SHORT,
                   ToastAndroid.CENTER
                 );
@@ -295,15 +297,23 @@ function PostIconRow({
             apiClient.setShowPrompt(true);
             break;
           case saveIndex:
-            void apiClient.postStore.savePost(
-              {
-                post_id: post.post.id,
-                save: !post.saved,
-                auth: apiClient.loginDetails?.jwt,
-              },
-              isExpanded,
-              useCommunity
-            );
+            apiClient.postStore
+              .savePost(
+                {
+                  post_id: post.post.id,
+                  save: !post.saved,
+                  auth: apiClient.loginDetails?.jwt,
+                },
+                isExpanded,
+                useCommunity
+              )
+              .then(() => {
+                ToastAndroid.showWithGravity(
+                  !post.saved ? "Post saved" : "Post removed from saved",
+                  ToastAndroid.SHORT,
+                  ToastAndroid.CENTER
+                );
+              });
             break;
           case deleteIndex:
             onPostDelete();
@@ -369,7 +379,7 @@ function PostIconRow({
       </TouchableOpacity>,
     ];
     return preferences.swapVotingButtons ? buttons.reverse() : buttons;
-  }, [preferences.swapVotingButtons]);
+  }, [preferences.swapVotingButtons, post.my_vote]);
   return (
     <View
       style={{

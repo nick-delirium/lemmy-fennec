@@ -6,10 +6,13 @@ Minimalistic and easy to use Lemmy client written for general public enjoyment, 
 I hope that it will be easy and fun to use for everyone, including people with impaired vision abilities.
 
 # Installation
-**With [Obtanium](https://github.com/ImranR98/Obtainium/releases):** download [Obtanium](https://github.com/ImranR98/Obtainium/releases), then go to "Add App", type in "https://github.com/nick-delirium/lemmy-fennec/" to the first field and add the app. Voila! Now you will get all new releases automatically or notified about it if you will chose "track only" mode.
+**With [Obtainium](https://github.com/ImranR98/Obtainium/releases):** download [Obtainium](https://github.com/ImranR98/Obtainium/releases), then go to "Add App", type in "https://github.com/nick-delirium/lemmy-fennec/" to the first field and add the app. Voila! Now you will get all new releases automatically or notified about it if you will chose "track only" mode.
 
 **Manual download:**
 [Latest release](https://github.com/nick-delirium/lemmy-fennec/releases/latest)
+
+**Google play:**
+[Here](https://play.google.com/store/apps/details?id=com.nick.delirium.arctius)
 
 # Why React Native? 
 

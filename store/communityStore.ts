@@ -4,18 +4,17 @@ import {
   CommunityView,
   GetCommunityResponse,
   LoginResponse,
-  ListCommunitiesResponse,
   CommunityResponse,
   BlockCommunityResponse,
+  Community,
 } from "lemmy-js-client";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 
 class CommunityStore extends DataClass {
   communityId = 0;
   community: CommunityView | null = null;
-  followedCommunities: CommunityView[] = [];
-  favoriteCommunities: CommunityView[] = [];
-  page = 1;
+  followedCommunities: Community[] = [];
+  favoriteCommunities: Community[] = [];
 
   constructor() {
     super();
@@ -25,25 +24,28 @@ class CommunityStore extends DataClass {
       community: observable,
       followedCommunities: observable,
       favoriteCommunities: observable,
-      page: observable,
       setFavoriteCommunities: action,
       setCommunityId: action,
       setCommunity: action,
       setIsLoading: action,
       setFollowedCommunities: action,
-      setPage: action,
     });
 
     asyncStorageHandler.readData(dataKeys.favCommunities).then((value) => {
       if (value) {
-        this.setFavoriteCommunities(JSON.parse(value));
+        let comms: CommunityView[] | Community[] = JSON.parse(value);
+        // @ts-ignore
+        if (comms[0]?.community?.id) {
+          comms = (comms as CommunityView[]).map((c) => c.community);
+        }
+        this.setFavoriteCommunities(comms as Community[]);
       }
     });
   }
 
-  setFavoriteCommunities(communities: CommunityView[]) {
+  setFavoriteCommunities(communities: Community[]) {
     communities.forEach((c) => {
-      c.community.description = "";
+      c.description = "";
     });
     this.favoriteCommunities = communities;
     void asyncStorageHandler.setData(
@@ -54,35 +56,26 @@ class CommunityStore extends DataClass {
 
   get regularFollowedCommunities() {
     return this.followedCommunities.filter(
-      (c) =>
-        this.favoriteCommunities.findIndex(
-          (f) => f.community.id === c.community.id
-        ) === -1
+      (c) => this.favoriteCommunities.findIndex((f) => f.id === c.id) === -1
     );
   }
 
-  addToFavorites(community: CommunityView) {
+  addToFavorites(community: Community) {
     const communities = [...this.favoriteCommunities];
     communities.push(community);
     this.setFavoriteCommunities(communities);
   }
 
-  removeFromFavorites(community: CommunityView) {
+  removeFromFavorites(community: Community) {
     const communities = [...this.favoriteCommunities];
-    const index = communities.findIndex(
-      (c) => c.community.id === community.community.id
-    );
+    const index = communities.findIndex((c) => c.id === community.id);
     if (index > -1) {
       communities.splice(index, 1);
     }
     this.setFavoriteCommunities(communities);
   }
 
-  setPage(page: number) {
-    this.page = page;
-  }
-
-  setFollowedCommunities(communities: CommunityView[]) {
+  setFollowedCommunities(communities: Community[]) {
     this.followedCommunities = communities;
   }
 
@@ -101,36 +94,6 @@ class CommunityStore extends DataClass {
       (error) => console.log(error)
     );
   }
-
-  async getFollowedCommunities(auth?: LoginResponse) {
-    await this.fetchData<ListCommunitiesResponse>(
-      () =>
-        this.api.getCommunities({
-          auth: auth?.jwt,
-          type_: "Subscribed",
-          limit: 30,
-          page: this.page,
-          sort: "TopAll",
-          show_nsfw: true,
-        }),
-      (data) => {
-        this.setFollowedCommunities(data.communities);
-      },
-      (error) => console.log(error)
-    );
-  }
-
-  nextPage = (auth?: LoginResponse) => {
-    this.setPage(this.page + 1);
-    void this.getFollowedCommunities(auth);
-  };
-
-  prevPage = (auth?: LoginResponse) => {
-    if (this.page > 1) {
-      this.setPage(this.page - 1);
-    }
-    void this.getFollowedCommunities(auth);
-  };
 
   async followCommunity(id: number, follow: boolean, auth: LoginResponse) {
     await this.fetchData<CommunityResponse>(

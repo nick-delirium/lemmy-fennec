@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { CommunityView } from "lemmy-js-client";
+import { Community as ICommunity } from "lemmy-js-client";
 import { useNavigation } from "@react-navigation/native";
 import { apiClient } from "../../store/apiClient";
 import { StyleSheet, View } from "react-native";
@@ -7,11 +7,11 @@ import { Icon, TouchableOpacity } from "../../ThemedComponents";
 import { Community } from "../Search/ListComponents";
 import React from "react";
 
-function FollowedCommunity({ item }: { item: CommunityView }) {
+function FollowedCommunity({ item }: { item: ICommunity }) {
   const navigation = useNavigation();
   const isFavorite =
     apiClient.communityStore.favoriteCommunities.findIndex(
-      (i) => i.community.id === item.community.id
+      (i) => i.id === item.id
     ) !== -1;
   const onPress = () => {
     if (isFavorite) {

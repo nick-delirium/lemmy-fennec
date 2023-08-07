@@ -7,22 +7,6 @@ import Pagination from "../../components/Pagination";
 import FollowedCommunity from "./FollowedCommunity";
 
 function FollowsList() {
-  React.useEffect(() => {
-    if (apiClient.communityStore.followedCommunities.length === 0) {
-      apiClient.communityStore.setPage(1);
-      void apiClient.communityStore.getFollowedCommunities(
-        apiClient.loginDetails
-      );
-    }
-  }, []);
-
-  const nextPage = () => {
-    apiClient.communityStore.nextPage(apiClient.loginDetails);
-  };
-  const prevPage = () => {
-    apiClient.communityStore.prevPage(apiClient.loginDetails);
-  };
-
   const renderItem = ({ item }) => <FollowedCommunity item={item} />;
   return (
     <View style={{ flex: 1 }}>
@@ -36,29 +20,15 @@ function FollowsList() {
             </Text>
           </View>
         }
-        onRefresh={() =>
-          void apiClient.communityStore.getFollowedCommunities(
-            apiClient.loginDetails
-          )
-        }
+        onRefresh={apiClient.getGeneralData}
         data={[
           ...apiClient.communityStore.favoriteCommunities,
           ...apiClient.communityStore.regularFollowedCommunities,
         ]}
-        refreshing={apiClient.communityStore.isLoading}
+        refreshing={apiClient.isLoading}
         renderItem={renderItem}
-        keyExtractor={(item) => item.community.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
       />
-      {apiClient.communityStore.isLoading ? null : (
-        <Pagination
-          prevPage={prevPage}
-          nextPage={nextPage}
-          page={apiClient.communityStore.page}
-          itemsLength={
-            apiClient.communityStore.followedCommunities?.length ?? 0
-          }
-        />
-      )}
     </View>
   );
 }

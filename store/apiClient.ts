@@ -182,14 +182,18 @@ class ApiClient {
     // extract this two to filter out posts;
     // community_blocks: Array<CommunityBlockView>;
     // person_blocks: Array<PersonBlockView>;
+    this.setIsLoading(true);
     try {
       const { my_user: user } = await this.api.getGeneralData({
         auth: this.loginDetails.jwt,
       });
-      const { community_blocks, person_blocks } = user;
+      const { community_blocks, person_blocks, follows } = user;
       if (user.moderates.length > 0) {
         this.profileStore.setModeratedCommunities(user.moderates);
       }
+      apiClient.communityStore.setFollowedCommunities(
+        follows.map((c) => c.community)
+      );
       this.profileStore.setBlocks(person_blocks, community_blocks);
       return this.profileStore.setLocalUser(user.local_user_view);
     } catch (e) {
@@ -198,6 +202,8 @@ class ApiClient {
           ? `get site data ${e}`
           : `get site data --- ${e.name}: ${e.message}; ${e.stack}`
       );
+    } finally {
+      this.setIsLoading(false);
     }
   }
 }

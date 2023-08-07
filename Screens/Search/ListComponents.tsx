@@ -1,5 +1,10 @@
 import React from "react";
-import { CommunityView, PersonView, PostView } from "lemmy-js-client";
+import {
+  CommunityView,
+  PersonView,
+  PostView,
+  Community as ICommunity,
+} from "lemmy-js-client";
 import { Dimensions, Image, StyleSheet, View } from "react-native";
 import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { makeDateString } from "../../utils/utils";
@@ -11,29 +16,41 @@ export function hostname(url: string): string {
   return matches ? matches[1] : "";
 }
 
+function isCommunityView(
+  item: ICommunity | CommunityView
+): item is CommunityView {
+  return (item as CommunityView).community !== undefined;
+}
+
 export function Community({
   sublemmy,
   navigation,
 }: {
-  sublemmy: CommunityView;
+  sublemmy: CommunityView | ICommunity;
   navigation: any;
 }) {
+  const isView = isCommunityView(sublemmy);
+  // @ts-ignore
+  let commonItemInterface: ICommunity = isView
+    ? // @ts-ignore
+      sublemmy.community
+    : sublemmy;
   const getCommunity = () => {
     apiClient.postStore.setCommunityPosts([]);
     apiClient.communityStore.setCommunity(null);
-    navigation.navigate("Community", { id: sublemmy.community.id });
+    navigation.navigate("Community", { id: commonItemInterface.id });
   };
 
-  const name = sublemmy.community.local
-    ? sublemmy.community.name
-    : `${sublemmy.community.name}@${hostname(sublemmy.community.actor_id)}`;
+  const name = commonItemInterface.local
+    ? commonItemInterface.name
+    : `${commonItemInterface.name}@${hostname(commonItemInterface.actor_id)}`;
 
   return (
     <TouchableOpacity simple onPressCb={getCommunity}>
       <View style={styles.community}>
-        {sublemmy.community.icon ? (
+        {commonItemInterface.icon ? (
           <Image
-            source={{ uri: sublemmy.community.icon }}
+            source={{ uri: commonItemInterface.icon }}
             style={styles.communityIcon}
           />
         ) : (
@@ -41,7 +58,12 @@ export function Community({
         )}
         <View>
           <Text style={styles.communityName}>{name}</Text>
-          <Text>{sublemmy.counts.subscribers} subscribers</Text>
+          {isView ? (
+            <Text>
+              {(sublemmy as unknown as CommunityView).counts?.subscribers}
+              {" subscribers"}
+            </Text>
+          ) : null}
         </View>
       </View>
     </TouchableOpacity>

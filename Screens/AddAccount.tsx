@@ -21,7 +21,7 @@ import { apiClient } from "../store/apiClient";
 import { useTheme } from "@react-navigation/native";
 import { Text, TextInput, TouchableOpacity } from "../ThemedComponents";
 
-function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
+function AddAccount({ navigation }: NativeStackScreenProps<any, "AddAccount">) {
   const passRef = React.useRef<any>(null);
   const { colors } = useTheme();
 
@@ -31,14 +31,6 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
   const [mfa, setMfa] = React.useState("");
 
   const saveInstance = async () => {
-    if (login === "" || password === "") {
-      const client: LemmyHttp = new LemmyHttp(instanceHref);
-      apiClient.setClient(client);
-      asyncStorageHandler.setData(dataKeys.instance, instanceHref).then(() => {
-        navigation.replace("Home");
-      });
-    }
-
     const loginDetails = {
       username_or_email: login,
       password,
@@ -61,8 +53,17 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
             loginDetails.username_or_email
           ),
         ]);
-        apiClient.setActiveJWT(auth.jwt);
-        navigation.replace("Home");
+        const currentAccounts = apiClient.accounts;
+        apiClient.setAccounts(
+          currentAccounts.concat({
+            login,
+            auth: JSON.stringify(auth),
+            instance: instanceHref,
+          })
+        );
+        apiClient.getGeneralData().then(() => {
+          navigation.goBack();
+        });
       })
       .catch(() => {
         ToastAndroid.showWithGravity(
@@ -110,22 +111,9 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
                   instanceHref === "" ? setHref("https://") : null
                 }
               />
-              <View
-                style={{
-                  ...styles.container,
-                  flexDirection: "row",
-                  width: "100%",
-                  marginTop: 12,
-                }}
-              >
-                <TouchableOpacity style={{ flex: 1 }} onPressCb={() => null}>
-                  <Text>Connect</Text>
-                </TouchableOpacity>
-              </View>
-              <Text style={{ alignSelf: "center", marginVertical: 8 }}>or</Text>
               <Text>Username/email</Text>
               <TextInput
-                placeholder="king_julien"
+                placeholder="batman"
                 value={login}
                 importantForAutofill={"yes"}
                 onChangeText={(text) => setLogin(text)}
@@ -139,7 +127,7 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
               />
               <Text>Password</Text>
               <TextInput
-                placeholder="banana"
+                placeholder="waruwannakillme"
                 value={password}
                 ref={passRef}
                 importantForAutofill={"yes"}
@@ -179,7 +167,7 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
                 }}
               >
                 <TouchableOpacity style={{ flex: 1 }} onPressCb={saveInstance}>
-                  <Text>Log in</Text>
+                  <Text>Add Account</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -201,9 +189,9 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={{ flex: 1 }}
-                onPressCb={() => navigation.replace("Home")}
+                onPressCb={() => navigation.goBack()}
               >
-                <Text>Skip for now</Text>
+                <Text>Cancel</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -227,4 +215,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(LoginScreen);
+export default observer(AddAccount);

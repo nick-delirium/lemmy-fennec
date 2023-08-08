@@ -27,9 +27,19 @@ export const ReportMode = {
   Comment: 2,
 };
 
+export interface Account {
+  login: string;
+  /** contains .jwt key */
+  auth: string;
+  instance: string;
+  avatar?: string;
+}
+
 class ApiClient {
   public api: ApiService;
 
+  public accounts: Account[] = [];
+  public activeJWT = "";
   public isLoggedIn = false;
   public isLoading = false;
   public loginDetails: LoginResponse;
@@ -53,27 +63,42 @@ class ApiClient {
 
   constructor() {
     makeAutoObservable(this);
+    asyncStorageHandler
+      .readSecureData(dataKeys.accounts)
+      .then((accounts) => {
+        if (accounts) {
+          this.setAccounts(JSON.parse(accounts), true);
+        }
+      })
+      .finally(() => {
+        this.init();
+      });
+  }
+
+  setAccounts(accounts: Account[], coldRun?: boolean) {
+    this.accounts = accounts;
+    if (coldRun) return;
+    void asyncStorageHandler.setSecureData(
+      dataKeys.accounts,
+      JSON.stringify(accounts)
+    );
+  }
+
+  init() {
     Promise.all([
       asyncStorageHandler.readData(dataKeys.instance),
       asyncStorageHandler.readSecureData(dataKeys.login),
       asyncStorageHandler.readData(dataKeys.username),
     ])
       .then((values) => {
-        const [possibleInstance, possibleUser, possibleUsername] = values;
+        const [possibleInstance, possibleJWT, possibleUsername] = values;
         this.currentInstance = possibleInstance ?? "https://lemmy.ml";
-        if (possibleInstance && possibleUser && possibleUsername) {
-          const auth: LoginResponse = JSON.parse(possibleUser);
-          const client: LemmyHttp = new LemmyHttp(possibleInstance, {
-            fetchFunction: undefined,
-            headers: {
-              "User-Agent": `Arctius Android 0.1.1`,
-            },
-          });
-          this.setClient(client);
-          this.setLoginDetails(auth);
-          this.setLoginState(true);
-          this.profileStore.setUsername(possibleUsername);
-          void this.getGeneralData();
+        if (possibleInstance && possibleJWT && possibleUsername) {
+          this.createLoggedClient(
+            possibleJWT,
+            possibleInstance,
+            possibleUsername
+          );
         } else {
           const client: LemmyHttp = new LemmyHttp(
             possibleInstance || "https://lemmy.ml",
@@ -99,6 +124,34 @@ class ApiClient {
         });
         this.setClient(client);
       });
+  }
+
+  createLoggedClient(jwt: string, instance: string, username: string) {
+    const auth: LoginResponse = JSON.parse(jwt);
+    const client: LemmyHttp = new LemmyHttp(instance, {
+      fetchFunction: undefined,
+      headers: {
+        "User-Agent": `Arctius Android 0.2.0`,
+      },
+    });
+    this.setClient(client);
+    this.setLoginDetails(auth);
+    this.setLoginState(true);
+    this.profileStore.setUsername(username);
+    if (this.accounts.length === 0) {
+      this.setAccounts([
+        {
+          login: username,
+          auth: jwt,
+          instance: instance,
+        },
+      ]);
+    }
+    void this.getGeneralData();
+  }
+
+  setActiveJWT(jwt: string) {
+    this.activeJWT = jwt;
   }
 
   getCurrentInstance() {
@@ -179,9 +232,6 @@ class ApiClient {
 
   async getGeneralData() {
     if (!this.loginDetails?.jwt) return;
-    // extract this two to filter out posts;
-    // community_blocks: Array<CommunityBlockView>;
-    // person_blocks: Array<PersonBlockView>;
     this.setIsLoading(true);
     try {
       const { my_user: user } = await this.api.getGeneralData({
@@ -195,6 +245,27 @@ class ApiClient {
         follows.map((c) => c.community)
       );
       this.profileStore.setBlocks(person_blocks, community_blocks);
+      const localAccountInd = this.accounts.findIndex(
+        (a) => JSON.parse(a.auth).jwt === this.loginDetails.jwt
+      );
+      if (localAccountInd !== -1) {
+        if (
+          this.accounts[localAccountInd]?.avatar !==
+          user.local_user_view.person.avatar
+        ) {
+          const newAccounts = this.accounts.map((a, i) => {
+            if (i === localAccountInd) {
+              return {
+                ...a,
+                avatar: user.local_user_view.person.avatar,
+              };
+            }
+            return a;
+          });
+          this.setAccounts(newAccounts);
+        }
+      }
+      this.setActiveJWT(this.loginDetails.jwt);
       return this.profileStore.setLocalUser(user.local_user_view);
     } catch (e) {
       debugStore.addError(

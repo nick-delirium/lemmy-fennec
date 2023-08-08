@@ -17,6 +17,7 @@ import Bio from "./Bio";
 import { Icon, TouchableOpacity, Text } from "../../ThemedComponents";
 import { asyncStorageHandler } from "../../asyncStorage";
 import { useTheme } from "@react-navigation/native";
+import AccountPicker from "../../components/AccountPicker/AccountPicker";
 
 // even though its actually inside tab, main nav context is a stack right now
 function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
@@ -41,6 +42,10 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
   };
 
   const logoutHandler = () => {
+    const accounts = apiClient.accounts.filter((a) => {
+      return JSON.parse(a.auth).jwt !== apiClient.loginDetails.jwt;
+    });
+    apiClient.setAccounts(accounts);
     asyncStorageHandler.logout();
     apiClient.profileStore.setLocalUser(null);
     apiClient.setLoginState(false);
@@ -139,18 +144,25 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
         </TouchableOpacity>
 
         {apiClient.isLoggedIn ? (
-          <TouchableOpacity onPressCb={logoutHandler} simple style={styles.row}>
-            <Icon size={24} name={"log-out"} />
-            <Text
-              style={{
-                color: colors.border,
-                textDecorationLine: "underline",
-                textDecorationColor: colors.border,
-              }}
+          <>
+            <TouchableOpacity
+              onPressCb={logoutHandler}
+              simple
+              style={styles.row}
             >
-              Logout
-            </Text>
-          </TouchableOpacity>
+              <Icon size={24} name={"log-out"} />
+              <Text
+                style={{
+                  color: colors.border,
+                  textDecorationLine: "underline",
+                  textDecorationColor: colors.border,
+                }}
+              >
+                Logout
+              </Text>
+            </TouchableOpacity>
+            <AccountPicker />
+          </>
         ) : (
           <View>
             <TouchableOpacity onPressCb={() => navigation.replace("Login")}>

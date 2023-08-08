@@ -19,6 +19,7 @@ export const dataKeys = {
   paginatedFeed: "fennec-paginated-feed",
   ignoredInstances: "fennec-ignored-instances",
   votingButtons: "fennec-voting-buttons",
+  accounts: "fennec-accounts",
 } as const;
 
 type Keys = keyof typeof dataKeys;

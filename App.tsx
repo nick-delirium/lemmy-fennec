@@ -21,6 +21,7 @@ import MessageWrite from "./Screens/Unreads/MessageWrite";
 import Prompt from "./components/Prompt";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import BlocksScreen from "./Screens/Blocks/BlocksScreen";
+import AddAccount from "./Screens/AddAccount";
 
 const Stack = createNativeStackNavigator();
 
@@ -115,6 +116,11 @@ const App = observer(() => {
               component={CommunityScreen}
             />
             <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen
+              options={{ headerTitle: "Add Account" }}
+              name={"AddAccount"}
+              component={AddAccount}
+            />
             <Stack.Screen name="User" component={UserScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Debug" component={DebugScreen} />

@@ -7,6 +7,7 @@ import { observer } from "mobx-react-lite";
 import { useNavigation } from "@react-navigation/native";
 import { commonColors } from "../../commonStyles";
 import { asyncStorageHandler, dataKeys } from "../../asyncStorage";
+import { LoginResponse } from "lemmy-js-client";
 
 function AddNew() {
   const navigation = useNavigation();
@@ -86,6 +87,7 @@ function AccountPicker() {
         asyncStorageHandler.setData(dataKeys.username, username),
       ]);
       apiClient.createLoggedClient(account.auth, instance, username);
+      void apiClient.postStore.getPosts({ jwt: account.auth } as LoginResponse);
     } catch (e) {
       ToastAndroid.showWithGravity(
         "Error changing account",

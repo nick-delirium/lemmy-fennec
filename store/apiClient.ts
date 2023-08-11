@@ -123,6 +123,9 @@ class ApiClient {
           },
         });
         this.setClient(client);
+      })
+      .finally(() => {
+        void this.postStore.getPosts(this.loginDetails);
       });
   }
 

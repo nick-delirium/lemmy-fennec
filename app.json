@@ -2,7 +2,7 @@
   "expo": {
     "name": "Arctius",
     "slug": "fennec",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -58,7 +58,7 @@
         "android.permission.USE_BIOMETRIC",
         "android.permission.RECORD_AUDIO",
       ],
-      "versionCode": 16
+      "versionCode": 17
     },
     "web": {
       "favicon": "./assets/favicon.png"

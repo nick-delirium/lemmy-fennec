@@ -40,7 +40,6 @@ class ApiClient {
 
   public accounts: Account[] = [];
   public activeJWT = "";
-  public isLoggedIn = false;
   public isLoading = false;
   public loginDetails: LoginResponse;
   public postStore = postStore;
@@ -75,6 +74,14 @@ class ApiClient {
       });
   }
 
+  get isLoggedIn() {
+    return Boolean(this.loginDetails?.jwt) || this.activeJWT !== "";
+  }
+
+  setIsLoading(state: boolean) {
+    this.isLoading = state;
+  }
+
   setAccounts(accounts: Account[], coldRun?: boolean) {
     this.accounts = accounts;
     if (coldRun) return;
@@ -90,11 +97,11 @@ class ApiClient {
       asyncStorageHandler.readSecureData(dataKeys.login),
       asyncStorageHandler.readData(dataKeys.username),
     ])
-      .then((values) => {
+      .then(async (values) => {
         const [possibleInstance, possibleJWT, possibleUsername] = values;
         this.currentInstance = possibleInstance ?? "https://lemmy.ml";
         if (possibleInstance && possibleJWT && possibleUsername) {
-          this.createLoggedClient(
+          await this.createLoggedClient(
             possibleJWT,
             possibleInstance,
             possibleUsername
@@ -129,7 +136,7 @@ class ApiClient {
       });
   }
 
-  createLoggedClient(jwt: string, instance: string, username: string) {
+  async createLoggedClient(jwt: string, instance: string, username: string) {
     const auth: LoginResponse = JSON.parse(jwt);
     const client: LemmyHttp = new LemmyHttp(instance, {
       fetchFunction: undefined,
@@ -139,7 +146,6 @@ class ApiClient {
     });
     this.setClient(client);
     this.setLoginDetails(auth);
-    this.setLoginState(true);
     this.profileStore.setUsername(username);
     if (this.accounts.length === 0) {
       this.setAccounts([
@@ -150,7 +156,7 @@ class ApiClient {
         },
       ]);
     }
-    void this.getGeneralData();
+    await this.getGeneralData();
   }
 
   setActiveJWT(jwt: string) {
@@ -191,10 +197,6 @@ class ApiClient {
     this.reportedItemId = mode === ReportMode.Off ? null : itemId;
   }
 
-  setIsLoading(state: boolean) {
-    this.isLoading = state;
-  }
-
   setClient(client: LemmyHttp) {
     this.api = new ApiService(client);
     this.postStore.setClient(this.api);
@@ -211,7 +213,6 @@ class ApiClient {
       const auth = await this.api.login(form);
       this.setLoginDetails(auth);
       this.profileStore.setUsername(form.username_or_email);
-      this.setLoginState(true);
       return auth;
     } catch (e) {
       debugStore.addError(
@@ -223,10 +224,6 @@ class ApiClient {
     } finally {
       this.setIsLoading(false);
     }
-  }
-
-  setLoginState(state: boolean) {
-    this.isLoggedIn = state;
   }
 
   setLoginDetails(details: LoginResponse) {

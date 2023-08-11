@@ -86,8 +86,13 @@ function AccountPicker() {
         asyncStorageHandler.setData(dataKeys.instance, instance),
         asyncStorageHandler.setData(dataKeys.username, username),
       ]);
-      apiClient.createLoggedClient(account.auth, instance, username);
-      void apiClient.postStore.getPosts({ jwt: account.auth } as LoginResponse);
+      apiClient
+        .createLoggedClient(account.auth, instance, username)
+        .then(() => {
+          void apiClient.postStore.getPosts({
+            jwt: account.auth,
+          } as LoginResponse);
+        });
     } catch (e) {
       ToastAndroid.showWithGravity(
         "Error changing account",

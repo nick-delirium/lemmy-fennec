@@ -20,6 +20,7 @@ const Tab = createBottomTabNavigator();
 
 function HomeScreen() {
   const jwt = apiClient.loginDetails?.jwt;
+  const isLoggedIn = apiClient.isLoggedIn;
   React.useEffect(() => {
     if (jwt) {
       void apiClient.mentionsStore.fetchUnreads(jwt);
@@ -72,19 +73,19 @@ function HomeScreen() {
           headerRight: () => <Icon name={"arrow-up"} size={24} />,
         })}
       />
-      {apiClient.loginDetails?.jwt ? (
-        <Tab.Screen name={"Saved"} component={FollowsScreen} />
+      {isLoggedIn ? (
+        <>
+          <Tab.Screen name={"Saved"} component={FollowsScreen} />
+          <Tab.Screen
+            name={"Unreads"}
+            component={Unreads}
+            options={{
+              tabBarBadge: unreadCount > 0 ? displayedUnreads : undefined,
+            }}
+          />
+        </>
       ) : null}
       <Tab.Screen name={"Search"} component={Search} />
-      {apiClient.loginDetails?.jwt ? (
-        <Tab.Screen
-          name={"Unreads"}
-          component={Unreads}
-          options={{
-            tabBarBadge: unreadCount > 0 ? displayedUnreads : undefined,
-          }}
-        />
-      ) : null}
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );

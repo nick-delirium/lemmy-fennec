@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, TextStyle } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
 import { AccessibilityRole } from "react-native/Libraries/Components/View/ViewAccessibility";
 

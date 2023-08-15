@@ -1,13 +1,14 @@
 import React from "react";
-import { View, StyleSheet, Image, ToastAndroid } from "react-native";
-import { Text, TouchableOpacity, Icon } from "../../ThemedComponents";
+import { Image, StyleSheet, ToastAndroid, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
-import { apiClient, Account as IAccount } from "../../store/apiClient";
-import { observer } from "mobx-react-lite";
 import { useNavigation } from "@react-navigation/native";
-import { commonColors } from "../../commonStyles";
-import { asyncStorageHandler, dataKeys } from "../../asyncStorage";
 import { LoginResponse } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { asyncStorageHandler, dataKeys } from "../../asyncStorage";
+import { Account as IAccount, apiClient } from "../../store/apiClient";
 
 function AddNew() {
   const navigation = useNavigation();

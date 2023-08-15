@@ -1,13 +1,14 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
 import { ActivityIndicator, View } from "react-native";
-import { apiClient, ReportMode } from "../../store/apiClient";
-import ExpandedPost from "../../components/Post/ExpandedPost";
+
 import { useTheme } from "@react-navigation/native";
-import CommentsFloatingMenu from "./CommentsFloatingMenu";
-import CommentFlatList from "./CommentsFlatlist";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import Prompt from "../../components/Prompt";
+import { observer } from "mobx-react-lite";
+
+import ExpandedPost from "../../components/Post/ExpandedPost";
+import { apiClient } from "../../store/apiClient";
+import CommentFlatList from "./CommentsFlatlist";
+import CommentsFloatingMenu from "./CommentsFloatingMenu";
 
 function PostScreen({
   navigation,
@@ -80,17 +81,17 @@ function PostScreen({
   const onEndReached = () => {
     // I'm fairly sure that they return everything at the moment, no matter the limit/page.
     return console.log("endreached", apiClient.commentsStore.comments.length);
-    if (
-      apiClient.commentsStore.comments.length >=
-      apiClient.postStore.singlePost.counts.comments - 1
-    ) {
-      return;
-    } else {
-      void apiClient.commentsStore.nextPage(
-        post.post.id,
-        apiClient.loginDetails
-      );
-    }
+    // if (
+    //   apiClient.commentsStore.comments.length >=
+    //   apiClient.postStore.singlePost.counts.comments - 1
+    // ) {
+    //   return;
+    // } else {
+    //   void apiClient.commentsStore.nextPage(
+    //     post.post.id,
+    //     apiClient.loginDetails
+    //   );
+    // }
   };
 
   const showAllButton = Boolean(parentId);

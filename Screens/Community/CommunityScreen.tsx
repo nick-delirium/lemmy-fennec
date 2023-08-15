@@ -1,14 +1,16 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
 import { ActivityIndicator } from "react-native";
+
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { observer } from "mobx-react-lite";
+
+import { apiClient } from "../../store/apiClient";
+import { communityStore } from "../../store/communityStore";
 import CommunityFeed from "./CommunityFeed";
 import CommunityInfos from "./CommunityInfos";
 
 const Tab = createMaterialTopTabNavigator();
-import { apiClient } from "../../store/apiClient";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { communityStore } from "../../store/communityStore";
 
 function CommunityScreen({
   navigation,

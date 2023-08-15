@@ -1,21 +1,23 @@
 import React from "react";
 import {
-  View,
-  StyleSheet,
-  ToastAndroid,
   Image,
   ScrollView,
+  StyleSheet,
+  ToastAndroid,
+  View,
 } from "react-native";
-import { Icon, Text, TextInput, TouchableOpacity } from "../ThemedComponents";
+
 import { useTheme } from "@react-navigation/native";
-import { commonColors } from "../commonStyles";
-import { Toggler } from "./Settings/AppSettings";
-import { observer } from "mobx-react-lite";
-import { ButtonsRow } from "./CommentWrite/CommentWrite";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { apiClient } from "../store/apiClient";
 import * as ImagePicker from "expo-image-picker";
 import { UploadImageResponse } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, Text, TextInput, TouchableOpacity } from "../ThemedComponents";
+import { commonColors } from "../commonStyles";
+import { apiClient } from "../store/apiClient";
+import { ButtonsRow } from "./CommentWrite/CommentWrite";
+import { Toggler } from "./Settings/Looks";
 
 const imageTypes = {
   jpg: "image/jpeg",

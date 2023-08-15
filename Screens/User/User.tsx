@@ -1,14 +1,16 @@
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { observer } from "mobx-react-lite";
-import { apiClient } from "../../store/apiClient";
-import UserRow from "../Profile/UserRow";
-import UserRating from "../Profile/UserRating";
-import Counters from "../Profile/Counters";
-import Bio from "../Profile/Bio";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
+
 import { useNavigation } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+
+import { Text, TouchableOpacity } from "../../ThemedComponents";
+import { apiClient } from "../../store/apiClient";
 import { makeDateString } from "../../utils/utils";
+import Bio from "../Profile/Bio";
+import Counters from "../Profile/Counters";
+import UserRating from "../Profile/UserRating";
+import UserRow from "../Profile/UserRow";
 
 function User() {
   const navigation = useNavigation();

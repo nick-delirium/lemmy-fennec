@@ -1,5 +1,7 @@
 import React from "react";
+
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+
 import BlockedCommunities from "./BlockedCommunities";
 import BlockedUsers from "./BlockedUsers";
 

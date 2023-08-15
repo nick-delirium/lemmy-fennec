@@ -27,9 +27,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#2b4777"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "config": {
@@ -56,7 +54,7 @@
       "package": "com.nick.delirium.arctius",
       "blockedPermissions": [
         "android.permission.USE_BIOMETRIC",
-        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
       ],
       "versionCode": 17
     },

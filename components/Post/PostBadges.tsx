@@ -1,8 +1,10 @@
 import React from "react";
-import { PostView } from "lemmy-js-client";
 import { StyleSheet, View } from "react-native";
-import { Icon, Text } from "../../ThemedComponents";
+
+import { PostView } from "lemmy-js-client";
 import { observer } from "mobx-react-lite";
+
+import { Icon, Text } from "../../ThemedComponents";
 
 function PostBadges({ post, isNsfw }: { post: PostView; isNsfw?: boolean }) {
   return (

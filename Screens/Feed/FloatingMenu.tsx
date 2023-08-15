@@ -1,12 +1,14 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { useTheme, Theme } from "@react-navigation/native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+
+import { Theme, useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { apiClient } from "../../store/apiClient";
+
 import { Icon, Text } from "../../ThemedComponents";
-import { SortTypeMap, ListingTypeMap } from "../../store/postStore";
-import FAB from "../../components/FAB";
 import { commonStyles } from "../../commonStyles";
+import FAB from "../../components/FAB";
+import { apiClient } from "../../store/apiClient";
+import { ListingTypeMap, SortTypeMap } from "../../store/postStore";
 
 function splitCamelCase(str: string) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");

@@ -20,13 +20,14 @@ export const dataKeys = {
   ignoredInstances: "fennec-ignored-instances",
   votingButtons: "fennec-voting-buttons",
   accounts: "fennec-accounts",
+  lowTraffic: "fennec-low-traffic",
 } as const;
 
 type Keys = keyof typeof dataKeys;
 type DataValues = (typeof dataKeys)[Keys];
 
 class AsyncStoragehandler {
-  readData = async (key: DataValues) => {
+  readData = async (key: DataValues): Promise<string | null> => {
     try {
       const value = await AsyncStorage.getItem(key);
       if (value !== null) {
@@ -53,7 +54,7 @@ class AsyncStoragehandler {
     }
   };
 
-  readSecureData = async (key) => {
+  readSecureData = async (key: string): Promise<string | null> => {
     try {
       const value = await SecureStore.getItemAsync(key);
       if (value !== null) {

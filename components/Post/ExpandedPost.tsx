@@ -1,18 +1,20 @@
 import React from "react";
-import { PostView } from "lemmy-js-client";
+import { StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
-import { observer } from "mobx-react-lite";
-import { View, StyleSheet, useColorScheme, Image, Share } from "react-native";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
-import { apiClient } from "../../store/apiClient";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { makeDateString } from "../../utils/utils";
+import { PostView } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Text, TouchableOpacity } from "../../ThemedComponents";
 import Embed from "../../components/Post/Embed";
-import PostTitle from "./PostTitle";
-import PostIconRow from "./PostIconRow";
+import { apiClient } from "../../store/apiClient";
+import { makeDateString } from "../../utils/utils";
 import MdRenderer from "../MdRenderer";
-import ImageViewer from "./ImageViewer";
+import Media from "./Media";
 import PostBadges from "./PostBadges";
+import PostIconRow from "./PostIconRow";
+import PostTitle from "./PostTitle";
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -30,7 +32,6 @@ function Post({
   showAllButton?: boolean;
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
 }) {
-  const [visible, setIsVisible] = React.useState(false);
   const { colors } = useTheme();
 
   // flags to mark the post
@@ -87,25 +88,9 @@ function Post({
     navigation.navigate("CommentWrite");
   };
 
-  const shareImage = () => {
-    void Share.share({
-      url: post.post.url,
-      message: post.post.url,
-      title: "Share post image",
-    });
-  };
   return (
     <>
       <View style={{ ...styles.container, borderColor: colors.border }}>
-        {isPic ? (
-          <ImageViewer
-            url={post.post.url}
-            name={post.post.name}
-            visible={visible}
-            setIsVisible={setIsVisible}
-            shareImage={shareImage}
-          />
-        ) : null}
         <PostTitle
           post={post}
           getCommunity={getCommunity}
@@ -124,16 +109,7 @@ function Post({
         <PostBadges isNsfw={isNsfw} post={post} />
         <View>
           {isPic ? (
-            <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
-              <Image
-                source={{ uri: post.post.url }}
-                style={styles.postImg}
-                progressiveRenderingEnabled
-                resizeMode={"contain"}
-                alt={"Image for post" + post.post.name}
-                accessibilityLabel={"Image for post" + post.post.name}
-              />
-            </TouchableOpacity>
+            <Media url={post.post.url} name={post.post.name} isNsfw={isNsfw} />
           ) : null}
           {post.post.url || post.post.embed_title ? (
             <Embed

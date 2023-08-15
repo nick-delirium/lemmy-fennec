@@ -1,13 +1,15 @@
 import React from "react";
-import { View, TouchableOpacity, ActivityIndicator } from "react-native";
-import { useTheme, Theme } from "@react-navigation/native";
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
+
+import { Theme, useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { apiClient } from "../../store/apiClient";
+
 import { Icon, Text } from "../../ThemedComponents";
-import { CommentSortTypeMap } from "../../store/commentsStore";
-import FAB from "../../components/FAB";
 // I know its basically a copy paste of Feed FAB but I'm very lazy
 import { commonStyles } from "../../commonStyles";
+import FAB from "../../components/FAB";
+import { apiClient } from "../../store/apiClient";
+import { CommentSortTypeMap } from "../../store/commentsStore";
 
 function splitCamelCase(str: string) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");

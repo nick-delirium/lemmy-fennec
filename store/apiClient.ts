@@ -1,14 +1,15 @@
-import { makeAutoObservable } from "mobx";
 import { LemmyHttp, Login, LoginResponse } from "lemmy-js-client";
-import ApiService from "../services/apiService";
-import { postStore } from "./postStore";
-import { profileStore } from "./profileStore";
-import { commentsStore } from "./commentsStore";
-import { searchStore } from "./searchStore";
-import { communityStore } from "./communityStore";
+import { makeAutoObservable } from "mobx";
+
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
+import ApiService from "../services/apiService";
+import { commentsStore } from "./commentsStore";
+import { communityStore } from "./communityStore";
 import { debugStore } from "./debugStore";
 import { mentionsStore } from "./mentionsStore";
+import { postStore } from "./postStore";
+import { profileStore } from "./profileStore";
+import { searchStore } from "./searchStore";
 
 /**
  * !!! TODO: !!!

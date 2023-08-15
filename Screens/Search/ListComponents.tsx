@@ -1,14 +1,16 @@
 import React from "react";
+import { Dimensions, Image, StyleSheet, View } from "react-native";
+
 import {
   CommunityView,
+  Community as ICommunity,
   PersonView,
   PostView,
-  Community as ICommunity,
 } from "lemmy-js-client";
-import { Dimensions, Image, StyleSheet, View } from "react-native";
+
 import { Text, TouchableOpacity } from "../../ThemedComponents";
-import { makeDateString } from "../../utils/utils";
 import { apiClient } from "../../store/apiClient";
+import { makeDateString } from "../../utils/utils";
 
 export function hostname(url: string): string {
   const matches = url.match(/^https?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);

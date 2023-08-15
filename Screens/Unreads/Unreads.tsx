@@ -1,11 +1,13 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { apiClient } from "../../store/apiClient";
+
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Replies from "./Replies";
-import Messages from "./Messages";
-import Mentions from "./Mentions";
+import { observer } from "mobx-react-lite";
+
 import { Text } from "../../ThemedComponents";
+import { apiClient } from "../../store/apiClient";
+import Mentions from "./Mentions";
+import Messages from "./Messages";
+import Replies from "./Replies";
 
 const Tab = createMaterialTopTabNavigator();
 

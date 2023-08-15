@@ -1,8 +1,10 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
-import { TextInput, Text, TouchableOpacity } from "../../ThemedComponents";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+
+import { Text, TextInput, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { ButtonsRow } from "../CommentWrite/CommentWrite";
 

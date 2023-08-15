@@ -1,7 +1,9 @@
 import React from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
-import { Text, TouchableOpacity, TextInput } from "../ThemedComponents";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+
+import { Text, TextInput, TouchableOpacity } from "../ThemedComponents";
 import { ReportMode } from "../store/apiClient";
 
 function Prompt({ title, text, placeholder, onSubmit, onCancel, reportMode }) {

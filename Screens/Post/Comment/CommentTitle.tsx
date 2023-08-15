@@ -1,6 +1,7 @@
 import React from "react";
-import { Icon, Text, TouchableOpacity } from "../../../ThemedComponents";
 import { StyleSheet, View } from "react-native";
+
+import { Icon, Text, TouchableOpacity } from "../../../ThemedComponents";
 import { CommentNode } from "../../../store/commentsStore";
 import { makeDateString } from "../../../utils/utils";
 

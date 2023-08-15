@@ -1,25 +1,27 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { StatusBar } from "expo-status-bar";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
-  StyleSheet,
-  View,
-  ToastAndroid,
   ActivityIndicator,
-  Linking,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
+  Linking,
+  Platform,
   ScrollView,
+  StyleSheet,
+  ToastAndroid,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { asyncStorageHandler, dataKeys } from "../asyncStorage";
-import { LemmyHttp } from "lemmy-js-client";
-import { apiClient } from "../store/apiClient";
+
 import { useTheme } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StatusBar } from "expo-status-bar";
+import { LemmyHttp } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import { Text, TextInput, TouchableOpacity } from "../ThemedComponents";
+import { asyncStorageHandler, dataKeys } from "../asyncStorage";
+import { apiClient } from "../store/apiClient";
 
 function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
   const passRef = React.useRef<any>(null);

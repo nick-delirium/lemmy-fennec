@@ -1,6 +1,7 @@
+import { ToastAndroid } from "react-native";
+
 import ApiService from "../services/apiService";
 import { debugStore } from "./debugStore";
-import { ToastAndroid } from "react-native";
 
 export default class DataClass {
   public api: ApiService;

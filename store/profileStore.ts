@@ -1,5 +1,3 @@
-import { makeObservable, observable, action } from "mobx";
-import DataClass from "./dataClass";
 import {
   BlockPersonResponse,
   CommunityBlockView,
@@ -12,6 +10,9 @@ import {
   SaveUserSettings,
   SortType,
 } from "lemmy-js-client";
+import { action, makeObservable, observable } from "mobx";
+
+import DataClass from "./dataClass";
 
 class ProfileStore extends DataClass {
   public userProfile: GetPersonDetailsResponse | null = null;

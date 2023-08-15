@@ -1,7 +1,9 @@
-import { Icon, Text } from "../../ThemedComponents";
-import { View } from "react-native";
 import React from "react";
+import { View } from "react-native";
+
 import { PersonAggregates } from "lemmy-js-client";
+
+import { Icon, Text } from "../../ThemedComponents";
 
 function UserRating({ counts }: { counts: PersonAggregates }) {
   return (

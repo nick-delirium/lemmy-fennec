@@ -1,12 +1,14 @@
 import React from "react";
+import { ActivityIndicator, View } from "react-native";
+
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import User from "./User";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { observer } from "mobx-react-lite";
+
+import { apiClient } from "../../store/apiClient";
 import OwnComments from "../Profile/OwnComments";
 import OwnPosts from "../Profile/OwnPosts";
-import { apiClient } from "../../store/apiClient";
-import { ActivityIndicator, View } from "react-native";
-import { observer } from "mobx-react-lite";
+import User from "./User";
 
 const Tab = createMaterialTopTabNavigator();
 

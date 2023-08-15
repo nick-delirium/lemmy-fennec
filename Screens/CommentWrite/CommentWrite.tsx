@@ -1,23 +1,25 @@
 import React from "react";
 import {
-  View,
-  StyleSheet,
-  ScrollView,
   ActivityIndicator,
-  Dimensions,
   BackHandler,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
+
+import { useFocusEffect, useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { useTheme, useFocusEffect } from "@react-navigation/native";
+
 import {
+  Icon,
   Text,
   TextInput,
   TouchableOpacity,
-  Icon,
 } from "../../ThemedComponents";
-import { apiClient } from "../../store/apiClient";
-import MiniComment from "../../components/TinyComment";
 import { commonStyles } from "../../commonStyles";
+import MiniComment from "../../components/TinyComment";
+import { apiClient } from "../../store/apiClient";
 
 function CommentWrite({ navigation, route }) {
   const [text, setText] = React.useState("");

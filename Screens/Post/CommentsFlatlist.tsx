@@ -1,11 +1,13 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { Theme } from "@react-navigation/native";
-import { CommentNode } from "../../store/commentsStore";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import Comment from "./Comment";
-import { apiClient } from "../../store/apiClient";
+
+import { Theme } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+
 import { Icon, TouchableOpacity } from "../../ThemedComponents";
+import { apiClient } from "../../store/apiClient";
+import { CommentNode } from "../../store/commentsStore";
+import Comment from "./Comment";
 
 const CommentFlatList = observer(
   ({

@@ -1,7 +1,9 @@
 import React from "react";
-import { View, StyleSheet, Linking } from "react-native";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
+import { Linking, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+
+import { Text, TouchableOpacity } from "../../ThemedComponents";
 
 interface Props {
   embed_description?: string;

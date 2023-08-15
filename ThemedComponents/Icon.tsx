@@ -1,7 +1,8 @@
-import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { useTheme } from "@react-navigation/native";
 import { ViewStyle } from "react-native";
+
+import { Feather } from "@expo/vector-icons";
+import { useTheme } from "@react-navigation/native";
 
 interface Props {
   name: keyof typeof Feather.glyphMap;

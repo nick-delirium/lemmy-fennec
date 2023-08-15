@@ -1,8 +1,10 @@
 import React from "react";
+
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Profile from "./Profile";
+
 import OwnComments from "./OwnComments";
 import OwnPosts from "./OwnPosts";
+import Profile from "./Profile";
 
 const Tab = createMaterialTopTabNavigator();
 

@@ -1,5 +1,6 @@
-import { TextInput, TextStyle, StyleSheet } from "react-native";
 import React from "react";
+import { StyleSheet, TextInput, TextStyle } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
 
 interface Props {

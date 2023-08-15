@@ -1,9 +1,11 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { apiClient } from "../../store/apiClient";
 import { FlatList, Image, StyleSheet, View } from "react-native";
-import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+
 import { CommunityBlockView } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { apiClient } from "../../store/apiClient";
 import { hostname } from "../Search/ListComponents";
 
 function BlockedCommunities() {

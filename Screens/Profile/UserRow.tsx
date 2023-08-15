@@ -1,9 +1,11 @@
 import React from "react";
-import { Image, View, Linking } from "react-native";
-import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
-import { Person } from "lemmy-js-client";
-import { makeDateString } from "../../utils/utils";
+import { Image, Linking, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+import { Person } from "lemmy-js-client";
+
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { makeDateString } from "../../utils/utils";
 
 function UserRow({
   person,

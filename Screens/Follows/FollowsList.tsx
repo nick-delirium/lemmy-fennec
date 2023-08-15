@@ -1,9 +1,10 @@
 import React from "react";
-import { View, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+
 import { observer } from "mobx-react-lite";
-import { apiClient } from "../../store/apiClient";
+
 import { Text } from "../../ThemedComponents";
-import Pagination from "../../components/Pagination";
+import { apiClient } from "../../store/apiClient";
 import FollowedCommunity from "./FollowedCommunity";
 
 function FollowsList() {

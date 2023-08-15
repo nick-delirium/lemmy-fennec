@@ -1,32 +1,34 @@
 import React from "react";
 import {
-  View,
-  StyleSheet,
-  Platform,
-  KeyboardAvoidingView,
-  Keyboard,
-  SectionList,
   ActivityIndicator,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  SectionList,
+  StyleSheet,
+  View,
 } from "react-native";
+
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useTheme } from "@react-navigation/native";
 import {
-  Icon,
-  TextInput,
-  TouchableOpacity,
-  Text,
-} from "../../ThemedComponents";
-import {
   CommunityView,
-  PostView,
   PersonView,
+  PostView,
   SearchResponse,
 } from "lemmy-js-client";
 import { observer } from "mobx-react-lite";
-import { apiClient } from "../../store/apiClient";
-import SearchSettings from "./SearchSettings";
-import { Post, User, Community } from "./ListComponents";
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+
+import {
+  Icon,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from "../../ThemedComponents";
 import Pagination from "../../components/Pagination";
+import { apiClient } from "../../store/apiClient";
+import { Community, Post, User } from "./ListComponents";
+import SearchSettings from "./SearchSettings";
 
 interface SearchResult {
   title: "Communities" | "Users" | "Posts" | "Comments";

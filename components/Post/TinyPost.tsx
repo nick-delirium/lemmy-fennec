@@ -1,24 +1,18 @@
 // still empty, thinking about making mini version of a post component for mini feed where everything has set height
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  useColorScheme,
-  Image,
-  Dimensions,
-  Share,
-} from "react-native";
-import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
-import PostTitle from "./PostTitle";
-import PostIconRow from "./PostIconRow";
-import { makeDateString } from "../../utils/utils";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { apiClient } from "../../store/apiClient";
+import { Dimensions, Image, Share, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
-import { observer } from "mobx-react-lite";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { PostView } from "lemmy-js-client";
-import { preferences } from "../../store/preferences";
-import ImageViewer from "./ImageViewer";
+import { observer } from "mobx-react-lite";
+
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { apiClient } from "../../store/apiClient";
+import { makeDateString } from "../../utils/utils";
+import Media from "./Media";
+import PostIconRow from "./PostIconRow";
+import PostTitle from "./PostTitle";
 
 function TinyPost({
   post,
@@ -29,7 +23,6 @@ function TinyPost({
   useCommunity?: boolean;
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
 }) {
-  const [visible, setIsVisible] = React.useState(false);
   const { colors } = useTheme();
 
   const isNsfw = post.post.nsfw || post.community.nsfw;
@@ -68,25 +61,8 @@ function TinyPost({
 
   const customReadColor = post.read ? "#ababab" : colors.text;
 
-  const shareImage = () => {
-    void Share.share({
-      url: post.post.url,
-      message: post.post.url,
-      title: "Share post image",
-    });
-  };
-
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
-      {isPic ? (
-        <ImageViewer
-          url={post.post.url}
-          name={post.post.name}
-          visible={visible}
-          setIsVisible={setIsVisible}
-          shareImage={shareImage}
-        />
-      ) : null}
       <PostTitle
         post={post}
         dateStr={dateStr}
@@ -102,17 +78,12 @@ function TinyPost({
           }}
         >
           {isPic ? (
-            <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
-              <Image
-                source={{ uri: post.post.url }}
-                style={styles.postImg}
-                progressiveRenderingEnabled
-                resizeMode={"cover"}
-                alt={"Image for post" + post.post.name}
-                accessibilityLabel={"Image for post" + post.post.name}
-                blurRadius={isNsfw && !preferences.unblurNsfw ? 55 : 0}
-              />
-            </TouchableOpacity>
+            <Media
+              url={post.post.url}
+              name={post.post.name}
+              isNsfw={isNsfw}
+              small
+            />
           ) : (
             <View style={{ ...styles.imageLike, backgroundColor: colors.card }}>
               <Icon

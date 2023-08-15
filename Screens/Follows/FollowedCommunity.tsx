@@ -1,11 +1,13 @@
-import { observer } from "mobx-react-lite";
-import { Community as ICommunity } from "lemmy-js-client";
-import { useNavigation } from "@react-navigation/native";
-import { apiClient } from "../../store/apiClient";
-import { StyleSheet, View } from "react-native";
-import { Icon, TouchableOpacity } from "../../ThemedComponents";
-import { Community } from "../Search/ListComponents";
 import React from "react";
+import { StyleSheet, View } from "react-native";
+
+import { useNavigation } from "@react-navigation/native";
+import { Community as ICommunity } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, TouchableOpacity } from "../../ThemedComponents";
+import { apiClient } from "../../store/apiClient";
+import { Community } from "../Search/ListComponents";
 
 function FollowedCommunity({ item }: { item: ICommunity }) {
   const navigation = useNavigation();

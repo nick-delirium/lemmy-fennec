@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 
 export enum Theme {
@@ -26,6 +27,7 @@ export class Preferences {
   public hapticsOff = false;
   public paginatedFeed = false;
   public ignoredInstances: string[] = [];
+  public lowTrafficMode = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -75,6 +77,17 @@ export class Preferences {
     asyncStorageHandler.readData(dataKeys.votingButtons).then((value) => {
       this.setSwapVotingButtons(value === "1");
     });
+    asyncStorageHandler.readData(dataKeys.lowTraffic).then((value) => {
+      this.setLowTrafficMode(value === "1");
+    });
+  }
+
+  setLowTrafficMode(lowTrafficMode: boolean) {
+    this.lowTrafficMode = lowTrafficMode;
+    void asyncStorageHandler.setData(
+      dataKeys.lowTraffic,
+      lowTrafficMode ? "1" : "0"
+    );
   }
 
   setSwapVotingButtons(swapVotingButtons: boolean) {

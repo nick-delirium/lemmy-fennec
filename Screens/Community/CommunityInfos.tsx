@@ -1,10 +1,12 @@
 import React from "react";
-import { View, StyleSheet, Image, Linking, ScrollView } from "react-native";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
-import { apiClient } from "../../store/apiClient";
-import { observer } from "mobx-react-lite";
-import MdRenderer from "../../components/MdRenderer";
+import { Image, Linking, ScrollView, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+
+import { Text, TouchableOpacity } from "../../ThemedComponents";
+import MdRenderer from "../../components/MdRenderer";
+import { apiClient } from "../../store/apiClient";
 
 function CommunityInfos({ navigation, route }) {
   const { colors } = useTheme();

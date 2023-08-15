@@ -1,8 +1,10 @@
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
+
 import { PostView } from "lemmy-js-client";
+
 import { hostname } from "../../Screens/Search/ListComponents";
+import { Text, TouchableOpacity } from "../../ThemedComponents";
 
 interface Props {
   post: PostView;

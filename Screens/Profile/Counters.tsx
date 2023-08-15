@@ -1,6 +1,8 @@
-import { PersonView } from "lemmy-js-client";
 import React from "react";
 import { StyleSheet, View } from "react-native";
+
+import { PersonView } from "lemmy-js-client";
+
 import { Icon, Text as ThemedText } from "../../ThemedComponents";
 
 function Counters({ profile }: { profile: PersonView }) {

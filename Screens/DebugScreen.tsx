@@ -1,8 +1,10 @@
 import React from "react";
+import { FlatList, View } from "react-native";
+
 import { observer } from "mobx-react-lite";
-import { View, FlatList } from "react-native";
-import { debugStore } from "../store/debugStore";
+
 import { Text } from "../ThemedComponents";
+import { debugStore } from "../store/debugStore";
 
 function DebugScreen() {
   return (

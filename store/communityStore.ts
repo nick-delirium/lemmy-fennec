@@ -1,14 +1,15 @@
-import { makeObservable, observable, action, computed } from "mobx";
-import DataClass from "./dataClass";
 import {
+  BlockCommunityResponse,
+  Community,
+  CommunityResponse,
   CommunityView,
   GetCommunityResponse,
   LoginResponse,
-  CommunityResponse,
-  BlockCommunityResponse,
-  Community,
 } from "lemmy-js-client";
+import { action, makeObservable, observable } from "mobx";
+
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
+import DataClass from "./dataClass";
 
 class CommunityStore extends DataClass {
   communityId = 0;

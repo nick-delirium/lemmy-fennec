@@ -1,25 +1,26 @@
-import { makeObservable, observable, action } from "mobx";
-import DataClass from "./dataClass";
 import {
-  PostView,
-  PostId,
-  GetPostsResponse,
-  LoginResponse,
-  PostResponse,
-  ListingType,
-  SortType,
-  CommunityId,
-  SavePost,
-  MarkPostAsRead,
-  DeletePost,
-  RemovePost,
-  LockPost,
   BanFromCommunity,
   BanFromCommunityResponse,
+  CommunityId,
+  DeletePost,
   FeaturePost,
+  GetPostsResponse,
+  ListingType,
+  LockPost,
+  LoginResponse,
+  MarkPostAsRead,
+  PostId,
+  PostResponse,
+  PostView,
+  RemovePost,
+  SavePost,
+  SortType,
 } from "lemmy-js-client";
-import { Score } from "./apiClient";
+import { action, makeObservable, observable } from "mobx";
+
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
+import { Score } from "./apiClient";
+import DataClass from "./dataClass";
 import { preferences } from "./preferences";
 
 /**

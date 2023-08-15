@@ -1,13 +1,15 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { View, FlatList, StyleSheet, Share, ToastAndroid } from "react-native";
-import { Text, Icon, TouchableOpacity } from "../../ThemedComponents";
-import { apiClient } from "../../store/apiClient";
+import { FlatList, Share, StyleSheet, View } from "react-native";
+
+import { useTheme } from "@react-navigation/native";
 import { CommentReplyView } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { commonStyles } from "../../commonStyles";
-import { useTheme, NavigationProp } from "@react-navigation/native";
 import FAB from "../../components/FAB";
 import MiniComment from "../../components/TinyComment";
+import { apiClient } from "../../store/apiClient";
 import { preferences } from "../../store/preferences";
 
 function Replies({ navigation }) {

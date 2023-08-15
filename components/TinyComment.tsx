@@ -1,10 +1,11 @@
-import { makeDateString } from "../utils/utils";
-import { Image, StyleSheet, View } from "react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+
 import { Text } from "../ThemedComponents";
 import { commonColors, commonStyles } from "../commonStyles";
-import React from "react";
-import MdRenderer from "./MdRenderer";
+import { makeDateString } from "../utils/utils";
 import CommunityIcon from "./CommunityIcon";
+import MdRenderer from "./MdRenderer";
 
 function MiniComment({
   published,

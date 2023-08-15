@@ -1,18 +1,19 @@
-import { makeObservable, observable, action } from "mobx";
-import DataClass from "./dataClass";
 import {
-  PostId,
-  LoginResponse,
-  ListingType,
-  CommentSortType,
   CommentId,
-  CommentView,
-  GetCommentsResponse,
-  CreateComment,
   CommentResponse,
+  CommentSortType,
+  CommentView,
+  CreateComment,
+  GetCommentsResponse,
+  ListingType,
+  LoginResponse,
+  PostId,
 } from "lemmy-js-client";
-import { Score } from "./apiClient";
+import { action, makeObservable, observable } from "mobx";
+
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
+import { Score } from "./apiClient";
+import DataClass from "./dataClass";
 import { ListingTypeMap } from "./postStore";
 
 interface Filters {

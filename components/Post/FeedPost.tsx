@@ -1,19 +1,20 @@
 import React from "react";
-import { PostView } from "lemmy-js-client";
+import { Dimensions, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { PostView } from "lemmy-js-client";
 import { observer } from "mobx-react-lite";
-import { View, StyleSheet, Image, Dimensions, Share } from "react-native";
+
 import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { makeDateString } from "../../utils/utils";
-import Embed from "./Embed";
-import PostTitle from "./PostTitle";
-import PostIconRow from "./PostIconRow";
 import MdRenderer from "../MdRenderer";
-import { preferences } from "../../store/preferences";
-import ImageViewer from "./ImageViewer";
+import Embed from "./Embed";
+import Media from "./Media";
 import PostBadges from "./PostBadges";
+import PostIconRow from "./PostIconRow";
+import PostTitle from "./PostTitle";
 
 // !!!TODO!!!
 // 1. split stuff into components
@@ -28,7 +29,6 @@ function Post({
   useCommunity?: boolean;
   navigation?: NativeStackScreenProps<any, "Feed">["navigation"];
 }) {
-  const [visible, setIsVisible] = React.useState(false);
   const { colors } = useTheme();
 
   // flags to mark the post
@@ -70,26 +70,9 @@ function Post({
     navigation.navigate("Post", { post: post.post.id, openComment: 0 });
   };
 
-  const shareImage = () => {
-    void Share.share({
-      url: post.post.url,
-      message: post.post.url,
-      title: "Share post image",
-    });
-  };
-
   const customReadColor = post.read ? "#ababab" : colors.text;
   return (
     <View style={{ ...styles.container, borderColor: colors.border }}>
-      {isPic ? (
-        <ImageViewer
-          url={post.post.url}
-          name={post.post.name}
-          visible={visible}
-          setIsVisible={setIsVisible}
-          shareImage={shareImage}
-        />
-      ) : null}
       <PostTitle
         post={post}
         dateStr={dateStr}
@@ -122,17 +105,7 @@ function Post({
         }}
       >
         {isPic ? (
-          <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
-            <Image
-              source={{ uri: post.post.url }}
-              style={styles.postImg}
-              progressiveRenderingEnabled
-              resizeMode={"contain"}
-              alt={"Image for post" + post.post.name}
-              accessibilityLabel={"Image for post" + post.post.name}
-              blurRadius={isNsfw && !preferences.unblurNsfw ? 55 : 0}
-            />
-          </TouchableOpacity>
+          <Media url={post.post.url} name={post.post.name} isNsfw={isNsfw} />
         ) : (
           <View style={{ maxHeight: 200, overflow: "hidden" }}>
             {post.post.url || post.post.embed_title ? (
@@ -170,7 +143,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 8,
   },
-  postImg: { width: "100%", height: 340 },
 });
 
 export default observer(Post);

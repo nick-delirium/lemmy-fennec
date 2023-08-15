@@ -1,13 +1,14 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { View, FlatList, StyleSheet } from "react-native";
-import { Text, TouchableOpacity, Icon } from "../../ThemedComponents";
-import { apiClient } from "../../store/apiClient";
-import { PrivateMessageView } from "lemmy-js-client";
-import { commonColors } from "../../commonStyles";
+import { FlatList, StyleSheet, View } from "react-native";
+
 import { useNavigation, useTheme } from "@react-navigation/native";
+import { PrivateMessageView } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { commonColors } from "../../commonStyles";
+import { apiClient } from "../../store/apiClient";
 import { makeDateString } from "../../utils/utils";
-import { PrivateMessageId } from "lemmy-js-client/dist/types/PrivateMessageId";
 
 function Messages({ navigation }) {
   const { colors } = useTheme();
@@ -82,7 +83,7 @@ function Message({ item }: { item: PrivateMessageView }) {
         auth: apiClient.loginDetails.jwt,
       })
       .then(() => {
-        apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt);
+        void apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt);
       });
   };
 

@@ -1,15 +1,17 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+
 import { Feather } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+
+import { Icon } from "../ThemedComponents";
+import { apiClient } from "../store/apiClient";
 import Feed from "./Feed/FeedScreen";
+import FollowsScreen from "./Follows/FollowsScreen";
 import Profile from "./Profile/ProfileScreen";
 import Search from "./Search/SearchScreen";
-import FollowsScreen from "./Follows/FollowsScreen";
 import Unreads from "./Unreads/Unreads";
-import { apiClient } from "../store/apiClient";
-import { Icon } from "../ThemedComponents";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 const getTitle = (route, title) => {
   const parsed = getFocusedRouteNameFromRoute(route) ?? "Feed";

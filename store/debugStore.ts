@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+
 class DebugStore {
   errors: string[] = [];
   warnings: string[] = [];

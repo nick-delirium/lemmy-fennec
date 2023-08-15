@@ -1,16 +1,18 @@
 import React from "react";
 import { FlatList, View } from "react-native";
-import { observer } from "mobx-react-lite";
+
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { PostView } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, TouchableOpacity } from "../../ThemedComponents";
 import { commonStyles } from "../../commonStyles";
-import { apiClient } from "../../store/apiClient";
+import Pagination from "../../components/Pagination";
 import FeedPost from "../../components/Post/FeedPost";
 import TinyPost from "../../components/Post/TinyPost";
-import FloatingMenu from "./FloatingMenu";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { apiClient } from "../../store/apiClient";
 import { preferences } from "../../store/preferences";
-import { TouchableOpacity, Icon } from "../../ThemedComponents";
-import Pagination from "../../components/Pagination";
+import FloatingMenu from "./FloatingMenu";
 
 function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   const isFocused = navigation.isFocused();

@@ -1,12 +1,14 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
 import { StyleSheet, View } from "react-native";
-import { Text } from "../../ThemedComponents";
+
 import { Picker } from "@react-native-picker/picker";
-import { apiClient } from "../../store/apiClient";
-import { SearchTypeMap } from "../../store/searchStore";
-import { ListingTypeMap } from "../../store/postStore";
 import { useTheme } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+
+import { Text } from "../../ThemedComponents";
+import { apiClient } from "../../store/apiClient";
+import { ListingTypeMap } from "../../store/postStore";
+import { SearchTypeMap } from "../../store/searchStore";
 
 function SearchSettings() {
   const { colors } = useTheme();

@@ -1,20 +1,21 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
 import {
   ActivityIndicator,
-  StyleSheet,
-  Switch,
-  View,
   Dimensions,
   ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
+import { observer } from "mobx-react-lite";
+
 import { Text, TextInput, TouchableOpacity } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
-import { preferences, Theme, ThemeMap } from "../../store/preferences";
+import { preferences } from "../../store/preferences";
+import { Toggler } from "./Looks";
 
-function AppSettings() {
+function Behavior() {
   const [ignoredInst, setIgnoredInst] = React.useState(
     preferences.ignoredInstances.join(", ")
   );
@@ -39,15 +40,8 @@ function AppSettings() {
     preferences.setBlurNsfw(!preferences.unblurNsfw);
   };
 
-  const toggleLeftHanded = () => {
-    preferences.setLeftHanded(!preferences.leftHanded);
-  };
-  const toggleVotingButtons = () => {
-    preferences.setSwapVotingButtons(!preferences.swapVotingButtons);
-  };
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>App Behavior</Text>
       <Toggler
         label={"Blur NSFW posts"}
         value={!preferences.unblurNsfw}
@@ -61,59 +55,41 @@ function AppSettings() {
           preferences.setReadOnScroll(!preferences.readOnScroll)
         }
       />
-      <Toggler
-        label={"Left handed layout"}
-        value={preferences.leftHanded}
-        onValueChange={toggleLeftHanded}
-      />
-      <Toggler
-        label={"Swap voting buttons"}
-        value={preferences.swapVotingButtons}
-        onValueChange={toggleVotingButtons}
-      />
-      <Toggler
-        label={"Collapse parent comments"}
-        value={preferences.collapseParentComment}
-        onValueChange={() =>
-          preferences.setCollapseParentComment(
-            !preferences.collapseParentComment
-          )
-        }
-      />
-      <Toggler
-        label={"Compact post layout in feed"}
-        value={preferences.compactPostLayout}
-        onValueChange={() =>
-          preferences.setPostLayout(!preferences.compactPostLayout)
-        }
-      />
-      <Toggler
-        label={"Turn off Haptic Feedback"}
-        value={preferences.hapticsOff}
-        onValueChange={() => preferences.setHapticsOff(!preferences.hapticsOff)}
-      />
-      <Toggler
-        label={"Use paginated feed"}
-        value={preferences.paginatedFeed}
-        onValueChange={() =>
-          preferences.setPaginatedFeed(!preferences.paginatedFeed)
-        }
-      />
-      <ThemePicker />
 
-      <Text style={styles.title}>Account Settings</Text>
       <Toggler
-        useLogin
-        label={"Hide read posts"}
-        value={!profile?.local_user.show_read_posts}
-        onValueChange={toggleReadPosts}
+        label={"Data saving mode"}
+        value={preferences.lowTrafficMode}
+        onValueChange={() =>
+          preferences.setLowTrafficMode(!preferences.lowTrafficMode)
+        }
       />
-      <Toggler
-        useLogin
-        label={"Hide NSFW posts"}
-        value={!profile?.local_user.show_nsfw}
-        onValueChange={toggleNSFW}
-      />
+      <Text
+        style={{
+          fontSize: 12,
+          opacity: 0.6,
+          marginTop: -6,
+        }}
+      >
+        App will not load media unless you open it.
+      </Text>
+
+      {apiClient.isLoggedIn ? (
+        <>
+          <Text style={styles.title}>Account Settings</Text>
+          <Toggler
+            useLogin
+            label={"Hide read posts"}
+            value={!profile?.local_user.show_read_posts}
+            onValueChange={toggleReadPosts}
+          />
+          <Toggler
+            useLogin
+            label={"Hide NSFW posts"}
+            value={!profile?.local_user.show_nsfw}
+            onValueChange={toggleNSFW}
+          />
+        </>
+      ) : null}
 
       <Text style={{ ...styles.title, marginBottom: 8 }}>
         Ignored instances
@@ -173,58 +149,6 @@ function AppSettings() {
   );
 }
 
-export function Toggler({
-  useLogin,
-  label,
-  value,
-  onValueChange,
-}: {
-  useLogin?: boolean;
-  label: string;
-  value: boolean;
-  onValueChange: (value: boolean) => void;
-}) {
-  if (useLogin && !apiClient.isLoggedIn) return null;
-  return (
-    <View style={styles.longRow}>
-      <Text>{label}</Text>
-      <Switch
-        style={{ height: 26 }}
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        value={value}
-        onValueChange={onValueChange}
-      />
-    </View>
-  );
-}
-
-const ThemePicker = observer(() => {
-  const { colors } = useTheme();
-  return (
-    <View style={styles.longRow}>
-      <Text>Theme</Text>
-      <Picker
-        style={{
-          width: "50%",
-          color: colors.text,
-          borderColor: colors.border,
-          borderWidth: 1,
-        }}
-        selectedValue={preferences.theme}
-        mode={"dropdown"}
-        accessibilityLabel={"App Theme Picker"}
-        dropdownIconColor={colors.text}
-        itemStyle={{ color: colors.text, backgroundColor: colors.card }}
-        onValueChange={(itemValue) => preferences.setTheme(itemValue)}
-      >
-        {[Theme.System, Theme.Light, Theme.Dark, Theme.Amoled].map((type) => (
-          <Picker.Item key={type} label={ThemeMap[type]} value={type} />
-        ))}
-      </Picker>
-    </View>
-  );
-});
-
 const styles = StyleSheet.create({
   container: {
     gap: 12,
@@ -248,4 +172,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(AppSettings);
+export default observer(Behavior);

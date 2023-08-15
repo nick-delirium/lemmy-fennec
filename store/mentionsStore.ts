@@ -1,15 +1,16 @@
-import { makeObservable, observable, action } from "mobx";
-import DataClass from "./dataClass";
 import {
   CommentReplyResponse,
   CommentReplyView,
   GetPersonMentionsResponse,
-  PrivateMessagesResponse,
-  PrivateMessageView,
   GetRepliesResponse,
   GetUnreadCountResponse,
   PersonMentionView,
+  PrivateMessageView,
+  PrivateMessagesResponse,
 } from "lemmy-js-client";
+import { action, makeObservable, observable } from "mobx";
+
+import DataClass from "./dataClass";
 
 interface Unreads {
   replies: number;

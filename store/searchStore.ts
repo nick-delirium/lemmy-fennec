@@ -1,11 +1,12 @@
-import { makeObservable, observable, action } from "mobx";
-import DataClass from "./dataClass";
 import {
-  SearchResponse,
-  LoginResponse,
-  SearchType,
   ListingType,
+  LoginResponse,
+  SearchResponse,
+  SearchType,
 } from "lemmy-js-client";
+import { action, makeObservable, observable } from "mobx";
+
+import DataClass from "./dataClass";
 import { ListingTypeMap } from "./postStore";
 
 export const SearchTypeMap = {

@@ -1,16 +1,18 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { View, StyleSheet, Share, Platform } from "react-native";
-import { apiClient, ReportMode, Score } from "../../store/apiClient";
-import { Text, TouchableOpacity } from "../../ThemedComponents";
-import { CommentNode } from "../../store/commentsStore";
+import { Platform, Share, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+import { setStringAsync } from "expo-clipboard";
+import { observer } from "mobx-react-lite";
+
+import { Text, TouchableOpacity } from "../../ThemedComponents";
 import { commonColors } from "../../commonStyles";
 import MdRenderer from "../../components/MdRenderer";
+import { ReportMode, Score, apiClient } from "../../store/apiClient";
+import { CommentNode } from "../../store/commentsStore";
 import { preferences } from "../../store/preferences";
-import CommentTitle from "./Comment/CommentTitle";
 import CommentIconRow from "./Comment/CommentIconRow";
-import { setStringAsync } from "expo-clipboard";
+import CommentTitle from "./Comment/CommentTitle";
 
 function Comment({
   comment,

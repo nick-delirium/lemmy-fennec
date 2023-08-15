@@ -1,8 +1,10 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { StyleSheet, ViewStyle, Pressable } from "react-native";
+import { Pressable, StyleSheet, ViewStyle } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
-import { impactAsync, ImpactFeedbackStyle } from "expo-haptics";
+import { ImpactFeedbackStyle, impactAsync } from "expo-haptics";
+import { observer } from "mobx-react-lite";
+
 import { preferences } from "../store/preferences";
 
 interface Props {

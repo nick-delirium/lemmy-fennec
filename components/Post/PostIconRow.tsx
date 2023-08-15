@@ -5,16 +5,18 @@ import {
   Share,
   StyleSheet,
   ToastAndroid,
-  useColorScheme,
   View,
+  useColorScheme,
 } from "react-native";
-import { PostView } from "lemmy-js-client";
-import { useNavigation, useTheme } from "@react-navigation/native";
-import { observer } from "mobx-react-lite";
+
 import { useActionSheet } from "@expo/react-native-action-sheet";
-import { apiClient, ReportMode, Score } from "../../store/apiClient";
+import { useNavigation, useTheme } from "@react-navigation/native";
+import { PostView } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { commonColors, commonStyles } from "../../commonStyles";
+import { ReportMode, Score, apiClient } from "../../store/apiClient";
 import { preferences } from "../../store/preferences";
 import { shortenNumbers } from "../../utils/utils";
 

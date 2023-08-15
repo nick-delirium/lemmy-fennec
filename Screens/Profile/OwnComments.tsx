@@ -1,14 +1,16 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { View, FlatList, StyleSheet, Share } from "react-native";
-import { Text, Icon, TouchableOpacity } from "../../ThemedComponents";
-import { apiClient } from "../../store/apiClient";
-import { CommentView } from "lemmy-js-client";
-import { commonStyles, commonColors } from "../../commonStyles";
+import { FlatList, Share, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+import { CommentView } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { commonColors, commonStyles } from "../../commonStyles";
+import Pagination from "../../components/Pagination";
 // import FAB from "../../components/FAB";
 import MiniComment from "../../components/TinyComment";
-import Pagination from "../../components/Pagination";
+import { apiClient } from "../../store/apiClient";
 import { preferences } from "../../store/preferences";
 
 // TODO: FAB with sort type

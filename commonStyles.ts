@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+
 import { DarkTheme, DefaultTheme } from "@react-navigation/native";
 
 export const AppTheme = {

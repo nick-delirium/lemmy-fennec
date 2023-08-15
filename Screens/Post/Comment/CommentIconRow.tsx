@@ -1,11 +1,13 @@
 import React from "react";
-import { preferences } from "../../../store/preferences";
 import { StyleSheet, View } from "react-native";
-import { Icon, Text, TouchableOpacity } from "../../../ThemedComponents";
-import { apiClient, Score } from "../../../store/apiClient";
-import { commonColors, commonStyles } from "../../../commonStyles";
+
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useTheme } from "@react-navigation/native";
+
+import { Icon, Text, TouchableOpacity } from "../../../ThemedComponents";
+import { commonColors, commonStyles } from "../../../commonStyles";
+import { Score, apiClient } from "../../../store/apiClient";
+import { preferences } from "../../../store/preferences";
 import { shortenNumbers } from "../../../utils/utils";
 
 function CommentIconRow({

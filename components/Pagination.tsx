@@ -1,6 +1,8 @@
 import React from "react";
+import { StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
-import { View, StyleSheet } from "react-native";
+
 import { Text, TouchableOpacity } from "../ThemedComponents";
 
 interface Props {

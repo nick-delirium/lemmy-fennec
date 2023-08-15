@@ -1,27 +1,32 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
 import { StatusBar, useColorScheme } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { NavigationContainer } from "@react-navigation/native";
-import { apiClient, ReportMode } from "./store/apiClient";
-import LoginScreen from "./Screens/LoginScreen";
-import HomeScreen from "./Screens/HomeScreen";
-import { AppAmoledTheme, AppDarkTheme, AppTheme } from "./commonStyles";
-import PostScreen from "./Screens/Post/PostScreen";
-import CommunityScreen from "./Screens/Community/CommunityScreen";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import UserScreen from "./Screens/User/UserScreen";
-import SettingsScreen from "./Screens/SettingsScreen";
-import DebugScreen from "./Screens/DebugScreen";
-import CommentWrite from "./Screens/CommentWrite/CommentWrite";
-import PostWrite from "./Screens/PostWrite";
-import { preferences, Theme } from "./store/preferences";
-import { Icon } from "./ThemedComponents";
-import MessageWrite from "./Screens/Unreads/MessageWrite";
-import Prompt from "./components/Prompt";
+
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
-import BlocksScreen from "./Screens/Blocks/BlocksScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { observer } from "mobx-react-lite";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import AddAccount from "./Screens/AddAccount";
+import BlocksScreen from "./Screens/Blocks/BlocksScreen";
+import CommentWrite from "./Screens/CommentWrite/CommentWrite";
+import CommunityScreen from "./Screens/Community/CommunityScreen";
+import DebugScreen from "./Screens/DebugScreen";
+import HomeScreen from "./Screens/HomeScreen";
+import LoginScreen from "./Screens/LoginScreen";
+import PostScreen from "./Screens/Post/PostScreen";
+import PostWrite from "./Screens/PostWrite";
+import Behavior from "./Screens/Settings/Behavior";
+import Looks from "./Screens/Settings/Looks";
+import ProfileSettings from "./Screens/Settings/ProfileSettings";
+import SettingsScreen from "./Screens/SettingsScreen";
+import MessageWrite from "./Screens/Unreads/MessageWrite";
+import UserScreen from "./Screens/User/UserScreen";
+import { Icon } from "./ThemedComponents";
+import { AppAmoledTheme, AppDarkTheme, AppTheme } from "./commonStyles";
+import Prompt from "./components/Prompt";
+import { ReportMode, apiClient } from "./store/apiClient";
+import { Theme, preferences } from "./store/preferences";
 
 const Stack = createNativeStackNavigator();
 
@@ -125,6 +130,9 @@ const App = observer(() => {
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="Debug" component={DebugScreen} />
             <Stack.Screen name="Blocks" component={BlocksScreen} />
+            <Stack.Screen name="Looks" component={Looks} />
+            <Stack.Screen name="Behavior" component={Behavior} />
+            <Stack.Screen name="ProfileSettings" component={ProfileSettings} />
           </Stack.Navigator>
           {apiClient.showPrompt ? (
             <Prompt

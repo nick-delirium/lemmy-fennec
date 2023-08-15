@@ -1,10 +1,12 @@
 import React, { isValidElement } from "react";
-import Markdown, { Renderer } from "react-native-marked";
-import { mdTheme } from "../commonStyles";
 import { Linking, TextStyle, useColorScheme } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
-import { Text, TouchableOpacity } from "../ThemedComponents";
 import { useNavigation } from "@react-navigation/native";
+import Markdown, { Renderer } from "react-native-marked";
+
+import { Text, TouchableOpacity } from "../ThemedComponents";
+import { mdTheme } from "../commonStyles";
 import { apiClient } from "../store/apiClient";
 
 const hasChildren = (element: React.ReactNode) =>

@@ -1,12 +1,14 @@
 import React from "react";
-import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import { observer } from "mobx-react-lite";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
+
 import { useTheme } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+
 import {
+  Icon,
   Text,
   TextInput,
   TouchableOpacity,
-  Icon,
 } from "../../ThemedComponents";
 import { apiClient } from "../../store/apiClient";
 import { MessageBody } from "./Messages";

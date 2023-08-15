@@ -1,14 +1,16 @@
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import { observer } from "mobx-react-lite";
-import { commonStyles } from "../../commonStyles";
-import { apiClient } from "../../store/apiClient";
-import FeedPost from "../../components/Post/FeedPost";
-import FloatingMenu from "../Feed/FloatingMenu";
-import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
-import TinyPost from "../../components/Post/TinyPost";
-import { preferences } from "../../store/preferences";
+
 import { PostView } from "lemmy-js-client";
+import { observer } from "mobx-react-lite";
+
+import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { commonStyles } from "../../commonStyles";
+import FeedPost from "../../components/Post/FeedPost";
+import TinyPost from "../../components/Post/TinyPost";
+import { apiClient } from "../../store/apiClient";
+import { preferences } from "../../store/preferences";
+import FloatingMenu from "../Feed/FloatingMenu";
 
 function CommunityFeed({ navigation }: { navigation: any }) {
   const { community } = apiClient.communityStore;

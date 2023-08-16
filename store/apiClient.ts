@@ -113,7 +113,7 @@ class ApiClient {
             {
               fetchFunction: undefined,
               headers: {
-                "User-Agent": `Arctius Android 0.1.1`,
+                "User-Agent": `Arctius Android 0.2.2`,
               },
             }
           );
@@ -127,7 +127,7 @@ class ApiClient {
         const client: LemmyHttp = new LemmyHttp("https://lemmy.ml", {
           fetchFunction: undefined,
           headers: {
-            "User-Agent": `Arctius Android 0.1.1`,
+            "User-Agent": `Arctius Android 0.2.2`,
           },
         });
         this.setClient(client);
@@ -142,7 +142,7 @@ class ApiClient {
     const client: LemmyHttp = new LemmyHttp(instance, {
       fetchFunction: undefined,
       headers: {
-        "User-Agent": `Arctius Android 0.2.0`,
+        "User-Agent": `Arctius Android 0.2.2`,
       },
     });
     this.setClient(client);

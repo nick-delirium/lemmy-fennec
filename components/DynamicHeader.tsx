@@ -5,19 +5,19 @@ import { useTheme } from "@react-navigation/native";
 
 import { Text } from "../ThemedComponents";
 
-const Max_Header_Height = 56;
-const Min_Header_Height = 0;
-const Scroll_Distance = Max_Header_Height - Min_Header_Height;
+const MAX_HEIGHT = 56;
+const MIN_HEIGHT = 0;
+const scrollDistance = MAX_HEIGHT - MIN_HEIGHT;
 
 const DynamicHeader = ({ animHeaderValue, title, rightAction }) => {
   const { colors } = useTheme();
   const animatedHeaderHeight = animHeaderValue.interpolate({
-    inputRange: [0, Scroll_Distance],
-    outputRange: [Max_Header_Height, Min_Header_Height],
+    inputRange: [0, scrollDistance],
+    outputRange: [MAX_HEIGHT, MIN_HEIGHT],
     extrapolate: "clamp",
   });
   const animateHeaderBackgroundColor = animHeaderValue.interpolate({
-    inputRange: [0, Scroll_Distance],
+    inputRange: [0, scrollDistance],
     outputRange: [colors.card, colors.background],
     extrapolate: "clamp",
   });

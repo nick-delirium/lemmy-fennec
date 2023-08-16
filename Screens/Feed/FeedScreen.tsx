@@ -99,6 +99,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     );
   }, []);
 
+  // literally no idea how exactly does this magic works here
   const onScroll = React.useCallback(
     (e: any) => {
       if (preferences.disableDynamicHeaders) return;

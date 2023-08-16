@@ -21,6 +21,7 @@ export const dataKeys = {
   votingButtons: "fennec-voting-buttons",
   accounts: "fennec-accounts",
   lowTraffic: "fennec-low-traffic",
+  dynamicHeaders: "fennec-dynamic-headers",
 } as const;
 
 type Keys = keyof typeof dataKeys;

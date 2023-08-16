@@ -23,6 +23,8 @@ const CommentFlatList = observer(
     onRefresh,
     onEndReached,
     level,
+    onScroll,
+    scrollEventThrottle,
   }: {
     colors: Theme["colors"];
     refreshing?: boolean;
@@ -36,6 +38,8 @@ const CommentFlatList = observer(
     onRefresh?: () => void;
     level?: number;
     onEndReached?: () => void;
+    onScroll?: (e: any) => void;
+    scrollEventThrottle?: number;
   }) => {
     // this keeps state reactive, but does not trigger re-renders
     const scrolledToItem = React.useRef<number>(0);
@@ -113,7 +117,8 @@ const CommentFlatList = observer(
     return (
       <>
         <FlatList
-          scrollEventThrottle={100}
+          scrollEventThrottle={scrollEventThrottle}
+          onScroll={onScroll}
           onScrollToTop={resetScroll}
           onRefresh={onRefresh}
           ref={listRef}

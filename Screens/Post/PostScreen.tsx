@@ -10,10 +10,13 @@ import { apiClient } from "../../store/apiClient";
 import CommentFlatList from "./CommentsFlatlist";
 import CommentsFloatingMenu from "./CommentsFloatingMenu";
 
+let lastOffset = 0;
+
 function PostScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any, "Feed">) {
+  const [showFab, setShowFab] = React.useState(true);
   const post = apiClient.postStore.singlePost;
   const openComment = route.params.openComment;
   const parentId = route.params.parentId;
@@ -114,10 +117,20 @@ function PostScreen({
         openComment={openComment}
         openCommenting={openCommenting}
         navigation={navigation}
+        onScroll={(e) => {
+          if (Math.abs(e.nativeEvent.contentOffset.y - lastOffset) < 10) return;
+          let isUp = e.nativeEvent.contentOffset.y > lastOffset;
+          lastOffset = e.nativeEvent.contentOffset.y;
+          if (isUp && showFab) return setShowFab(false);
+          else if (!isUp && !showFab) return setShowFab(true);
+        }}
+        scrollEventThrottle={32}
         level={1}
         footer={<View style={{ height: 112, width: "100%" }} />}
       />
-      <CommentsFloatingMenu isLoading={apiClient.commentsStore.isLoading} />
+      {showFab ? (
+        <CommentsFloatingMenu isLoading={apiClient.commentsStore.isLoading} />
+      ) : null}
     </View>
   );
 }

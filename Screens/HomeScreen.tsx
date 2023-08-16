@@ -13,11 +13,6 @@ import Profile from "./Profile/ProfileScreen";
 import Search from "./Search/SearchScreen";
 import Unreads from "./Unreads/Unreads";
 
-const getTitle = (route, title) => {
-  const parsed = getFocusedRouteNameFromRoute(route) ?? "Feed";
-  return parsed === "Feed" ? title : parsed;
-};
-
 const Tab = createBottomTabNavigator();
 
 function HomeScreen() {
@@ -30,18 +25,6 @@ function HomeScreen() {
   }, [jwt]);
   const unreadCount = apiClient.mentionsStore.unreadsCount;
   const displayedUnreads = unreadCount > 99 ? "99+" : unreadCount;
-
-  const [title, setTitle] = React.useState<string>("Feed");
-  React.useEffect(() => {
-    setTitle(
-      `Feed | ${
-        apiClient.postStore.filters.type_
-      } | ${apiClient.postStore.filters.sort.replace(
-        /([a-z])([A-Z])/g,
-        "$1 $2"
-      )}`
-    );
-  }, [apiClient.postStore.filters.type_, apiClient.postStore.filters.sort]);
 
   return (
     <Tab.Navigator
@@ -70,10 +53,9 @@ function HomeScreen() {
       <Tab.Screen
         name="Feed"
         component={Feed}
-        options={(route) => ({
-          headerTitle: getTitle(route, title),
-          headerRight: () => <Icon name={"arrow-up"} size={24} />,
-        })}
+        options={{
+          headerShown: false,
+        }}
       />
       {isLoggedIn ? (
         <>

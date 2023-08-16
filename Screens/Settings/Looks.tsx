@@ -56,6 +56,15 @@ function Looks() {
           preferences.setPaginatedFeed(!preferences.paginatedFeed)
         }
       />
+      <Toggler
+        label={"Use dynamic headers"}
+        value={!preferences.disableDynamicHeaders}
+        onValueChange={() =>
+          preferences.setDisableDynamicHeaders(
+            !preferences.disableDynamicHeaders
+          )
+        }
+      />
       <ThemePicker />
     </ScrollView>
   );

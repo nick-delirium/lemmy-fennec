@@ -33,3 +33,14 @@ export const shortenNumbers = (num: number) => {
   if (num < 1000000) return `${(num / 1000).toFixed(1)}K`;
   return `${(num / 1000000).toFixed(1)}M`;
 };
+
+export function debounce(func: any, delay: number) {
+  let timeout: NodeJS.Timeout;
+  return function (...args: any[]) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func.apply(context, args);
+    }, delay);
+  };
+}

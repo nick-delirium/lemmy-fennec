@@ -28,6 +28,7 @@ export class Preferences {
   public paginatedFeed = false;
   public ignoredInstances: string[] = [];
   public lowTrafficMode = false;
+  public disableDynamicHeaders = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -80,6 +81,17 @@ export class Preferences {
     asyncStorageHandler.readData(dataKeys.lowTraffic).then((value) => {
       this.setLowTrafficMode(value === "1");
     });
+    asyncStorageHandler.readData(dataKeys.dynamicHeaders).then((value) => {
+      this.setDisableDynamicHeaders(value === "1");
+    });
+  }
+
+  setDisableDynamicHeaders(disableDynamicHeaders: boolean) {
+    this.disableDynamicHeaders = disableDynamicHeaders;
+    void asyncStorageHandler.setData(
+      dataKeys.dynamicHeaders,
+      disableDynamicHeaders ? "1" : "0"
+    );
   }
 
   setLowTrafficMode(lowTrafficMode: boolean) {

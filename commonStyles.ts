@@ -53,7 +53,6 @@ export const commonStyles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
   },
   hrefInput: {
     width: "60%",

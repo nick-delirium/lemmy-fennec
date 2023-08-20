@@ -27,17 +27,26 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
   const { colors } = useTheme();
 
   React.useEffect(() => {
-    if (!profile) {
-      reload();
-    } else {
-      void apiClient.profileStore.getProfile(apiClient.loginDetails, {
-        person_id: profile.local_user.person_id,
-        sort: "New",
-        page: 1,
-        limit: 30,
-      });
-    }
-  }, [profile]);
+    const unsubscribe = navigation.addListener("focus", () => {
+      if (!profile) {
+        reload();
+      } else {
+        if (
+          apiClient.profileStore.userProfile?.person_view.person.id !==
+          profile?.person.id
+        ) {
+          void apiClient.profileStore.getProfile(apiClient.loginDetails, {
+            person_id: profile.local_user.person_id,
+            sort: "New",
+            page: 1,
+            limit: 30,
+          });
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, [profile, navigation]);
 
   const reload = () => {
     void apiClient.getGeneralData();

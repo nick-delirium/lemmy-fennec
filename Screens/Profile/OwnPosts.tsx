@@ -126,12 +126,22 @@ function OwnPost({
           />
         </TouchableOpacity>
         <View style={styles.row}>
-          <Icon name={"arrow-up"} color={commonColors.upvote} size={24} />
-          <Text customColor={commonColors.upvote}>{item.counts.upvotes}</Text>
+          <Icon
+            name={"arrow-up"}
+            color={preferences.voteColors.upvote}
+            size={24}
+          />
+          <Text customColor={preferences.voteColors.upvote}>
+            {item.counts.upvotes}
+          </Text>
         </View>
         <View style={styles.row}>
-          <Icon name={"arrow-down"} color={commonColors.downvote} size={24} />
-          <Text customColor={commonColors.downvote}>
+          <Icon
+            name={"arrow-down"}
+            color={preferences.voteColors.downvote}
+            size={24}
+          />
+          <Text customColor={preferences.voteColors.downvote}>
             {item.counts.downvotes}
           </Text>
         </View>

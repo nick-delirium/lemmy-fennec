@@ -15,7 +15,7 @@ import { PostView } from "lemmy-js-client";
 import { observer } from "mobx-react-lite";
 
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
-import { commonColors, commonStyles } from "../../commonStyles";
+import { commonStyles } from "../../commonStyles";
 import { ReportMode, Score, apiClient } from "../../store/apiClient";
 import { preferences } from "../../store/preferences";
 import { shortenNumbers } from "../../utils/utils";
@@ -121,8 +121,8 @@ function PostIconRow({
   const scoreColor = !post.my_vote
     ? undefined
     : post.my_vote === 1
-    ? commonColors.upvote
-    : commonColors.downvote;
+    ? preferences.voteColors.upvote
+    : preferences.voteColors.downvote;
 
   const openReporting = () => {
     apiClient.setReportMode(ReportMode.Post, post.post.id);
@@ -354,7 +354,9 @@ function PostIconRow({
           accessibilityLabel={"downvote post"}
           name={"arrow-down"}
           size={24}
-          color={post.my_vote === -1 ? commonColors.downvote : undefined}
+          color={
+            post.my_vote === -1 ? preferences.voteColors.downvote : undefined
+          }
         />
       </TouchableOpacity>,
       <TouchableOpacity
@@ -376,7 +378,7 @@ function PostIconRow({
           accessibilityLabel={"upvote post"}
           name={"arrow-up"}
           size={24}
-          color={post.my_vote === 1 ? commonColors.upvote : undefined}
+          color={post.my_vote === 1 ? preferences.voteColors.upvote : undefined}
         />
       </TouchableOpacity>,
     ];

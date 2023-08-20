@@ -22,6 +22,7 @@ export const dataKeys = {
   accounts: "fennec-accounts",
   lowTraffic: "fennec-low-traffic",
   dynamicHeaders: "fennec-dynamic-headers",
+  altUpvote: "fennec-alt-upvote",
 } as const;
 
 type Keys = keyof typeof dataKeys;

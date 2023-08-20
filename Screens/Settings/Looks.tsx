@@ -66,6 +66,20 @@ function Looks() {
         }
       />
       <ThemePicker />
+      <Toggler
+        label={"Swap vote button colors"}
+        value={preferences.altUpvote}
+        onValueChange={() => preferences.setAltUpvote(!preferences.altUpvote)}
+      />
+      <Text
+        style={{
+          fontSize: 12,
+          opacity: 0.6,
+          marginTop: -6,
+        }}
+      >
+        Requires restart.
+      </Text>
     </ScrollView>
   );
 }

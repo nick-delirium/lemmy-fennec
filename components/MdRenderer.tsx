@@ -32,8 +32,8 @@ class CustomRenderer extends Renderer {
     const hrefDomain = href.split("/")[2];
 
     const isLocalLink = apiClient.getCurrentInstance().includes(hrefDomain);
-    // regexp to match "(@?)text@instance.com"
-    const isForeign = /^@?.+@.+\..+$/.test(text);
+    // regexp to match "(@/!)text@instance.com"
+    const isForeign = /^(@,!)?.+@.+\..+$/.test(text);
 
     console.log(isForeign, text, href, hrefDomain);
     if (isLocalLink) {

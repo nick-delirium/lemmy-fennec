@@ -89,8 +89,8 @@ function Comment({
   const scoreColor = React.useMemo(() => {
     return comment.my_vote
       ? comment.my_vote === Score.Upvote
-        ? commonColors.upvote
-        : commonColors.downvote
+        ? preferences.voteColors.upvote
+        : preferences.voteColors.downvote
       : undefined;
   }, [comment.my_vote]);
 

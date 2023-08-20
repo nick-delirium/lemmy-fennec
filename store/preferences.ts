@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
+import { commonColors } from "../commonStyles";
 
 export enum Theme {
   System,
@@ -29,6 +30,7 @@ export class Preferences {
   public ignoredInstances: string[] = [];
   public lowTrafficMode = false;
   public disableDynamicHeaders = false;
+  public altUpvote = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -84,6 +86,26 @@ export class Preferences {
     asyncStorageHandler.readData(dataKeys.dynamicHeaders).then((value) => {
       this.setDisableDynamicHeaders(value === "1");
     });
+    asyncStorageHandler.readData(dataKeys.altUpvote).then((value) => {
+      this.setAltUpvote(value === "1");
+    });
+  }
+
+  setAltUpvote(altUpvote: boolean) {
+    this.altUpvote = altUpvote;
+    void asyncStorageHandler.setData(dataKeys.altUpvote, altUpvote ? "1" : "0");
+  }
+
+  get voteColors() {
+    return this.altUpvote
+      ? {
+          upvote: commonColors.upvoteAlt,
+          downvote: commonColors.downvoteAlt,
+        }
+      : {
+          upvote: commonColors.upvote,
+          downvote: commonColors.downvote,
+        };
   }
 
   setDisableDynamicHeaders(disableDynamicHeaders: boolean) {

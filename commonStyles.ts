@@ -103,5 +103,7 @@ export const commonColors = {
   author: "orange",
   community: "violet",
   upvote: "red",
+  upvoteAlt: "blue",
   downvote: "blue",
-};
+  downvoteAlt: "red",
+} as const;

@@ -107,7 +107,11 @@ function CommentIconRow({
           accessibilityLabel={"downvote comment"}
           name={"arrow-down"}
           size={24}
-          color={my_vote === Score.Downvote ? commonColors.downvote : undefined}
+          color={
+            my_vote === Score.Downvote
+              ? preferences.voteColors.downvote
+              : undefined
+          }
         />
       </TouchableOpacity>,
       <TouchableOpacity
@@ -121,7 +125,9 @@ function CommentIconRow({
           accessibilityLabel={"upvote comment"}
           name={"arrow-up"}
           size={24}
-          color={my_vote === Score.Upvote ? commonColors.upvote : undefined}
+          color={
+            my_vote === Score.Upvote ? preferences.voteColors.upvote : undefined
+          }
         />
       </TouchableOpacity>,
     ];

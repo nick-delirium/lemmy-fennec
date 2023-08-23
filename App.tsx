@@ -97,7 +97,11 @@ const App = observer(() => {
               component={HomeScreen}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="Post" component={PostScreen} />
+            <Stack.Screen
+              name="Post"
+              component={PostScreen}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               options={{ headerTitle: "New Comment" }}
               name={"CommentWrite"}

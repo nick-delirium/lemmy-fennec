@@ -1,12 +1,15 @@
 import React from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Animated, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
 
+import { Icon, TouchableOpacity } from "../../ThemedComponents";
+import DynamicHeader from "../../components/DynamicHeader";
 import ExpandedPost from "../../components/Post/ExpandedPost";
 import { apiClient } from "../../store/apiClient";
+import { preferences } from "../../store/preferences";
 import CommentFlatList from "./CommentsFlatlist";
 import CommentsFloatingMenu from "./CommentsFloatingMenu";
 
@@ -16,6 +19,8 @@ function PostScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any, "Feed">) {
+  const scrollOffsetY = React.useRef(new Animated.Value(0)).current;
+
   const [showFab, setShowFab] = React.useState(true);
   const post = apiClient.postStore.singlePost;
   const openComment = route.params.openComment;
@@ -71,6 +76,28 @@ function PostScreen({
     };
   }, []);
 
+  const onScroll = React.useCallback(
+    (e: any) => {
+      if (preferences.disableDynamicHeaders) return;
+      const currentScrollY = e.nativeEvent.contentOffset.y;
+      const deltaY = currentScrollY - lastOffset;
+      const isGoingDown = currentScrollY > lastOffset;
+
+      if (isGoingDown) {
+        // @ts-ignore using internal value for dynamic animation
+        scrollOffsetY.setValue(Math.min(scrollOffsetY._value + deltaY, 56));
+      } else {
+        // @ts-ignore using internal value for dynamic animation
+        scrollOffsetY.setValue(Math.max(scrollOffsetY._value + deltaY, 0));
+      }
+
+      if (showFab !== !isGoingDown) setShowFab(!isGoingDown);
+
+      lastOffset = currentScrollY;
+    },
+    [showFab, scrollOffsetY, preferences.disableDynamicHeaders]
+  );
+
   if (!post) return <ActivityIndicator />;
 
   const getAuthor = (id: number) => {
@@ -100,6 +127,20 @@ function PostScreen({
   const showAllButton = Boolean(parentId);
   return (
     <View style={{ flex: 1 }}>
+      <DynamicHeader
+        animHeaderValue={scrollOffsetY}
+        title={post.post.name || "Post"}
+        leftAction={
+          <TouchableOpacity
+            style={{ marginLeft: 16 }}
+            simple
+            onPressCb={() => navigation.goBack()}
+          >
+            <Icon name={"arrow-left"} color={colors.text} size={24} />
+          </TouchableOpacity>
+        }
+      />
+
       <CommentFlatList
         getAuthor={getAuthor}
         header={
@@ -117,14 +158,8 @@ function PostScreen({
         openComment={openComment}
         openCommenting={openCommenting}
         navigation={navigation}
-        onScroll={(e) => {
-          if (Math.abs(e.nativeEvent.contentOffset.y - lastOffset) < 10) return;
-          let isUp = e.nativeEvent.contentOffset.y > lastOffset;
-          lastOffset = e.nativeEvent.contentOffset.y;
-          if (isUp && showFab) return setShowFab(false);
-          else if (!isUp && !showFab) return setShowFab(true);
-        }}
-        scrollEventThrottle={32}
+        onScroll={onScroll}
+        scrollEventThrottle={8}
         level={1}
         footer={<View style={{ height: 112, width: "100%" }} />}
       />

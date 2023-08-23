@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 8,
     borderBottomWidth: 1,
+    marginTop: 56,
   },
   previewButton: {
     width: "100%",

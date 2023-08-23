@@ -9,7 +9,19 @@ const MAX_HEIGHT = 56;
 const MIN_HEIGHT = 0;
 const scrollDistance = MAX_HEIGHT - MIN_HEIGHT;
 
-const DynamicHeader = ({ animHeaderValue, title, rightAction }) => {
+interface IProps {
+  animHeaderValue: Animated.Value;
+  title: string;
+  rightAction?: React.ReactNode;
+  leftAction?: React.ReactNode;
+}
+
+const DynamicHeader = ({
+  animHeaderValue,
+  title,
+  rightAction,
+  leftAction,
+}: IProps) => {
   const { colors } = useTheme();
   const animatedHeaderHeight = animHeaderValue.interpolate({
     inputRange: [0, scrollDistance],
@@ -31,6 +43,7 @@ const DynamicHeader = ({ animHeaderValue, title, rightAction }) => {
         },
       ]}
     >
+      {leftAction}
       <Text style={styles.headerText}>{title}</Text>
       <View style={{ flex: 1 }} />
       {rightAction}

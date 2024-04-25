@@ -16,7 +16,7 @@ function Messages({ navigation }) {
   React.useEffect(() => {
     const unsub = navigation.addListener("focus", () => {
       if (apiClient.mentionsStore.messages.length !== 0) return;
-      void apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt);
+      void apiClient.mentionsStore.getMessages();
     });
 
     return () => {
@@ -29,9 +29,7 @@ function Messages({ navigation }) {
     <FlatList
       data={apiClient.mentionsStore.messages}
       renderItem={renderItem}
-      onRefresh={() =>
-        apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt)
-      }
+      onRefresh={() => apiClient.mentionsStore.getMessages()}
       refreshing={apiClient.mentionsStore.isLoading}
       ItemSeparatorComponent={() => (
         <View
@@ -80,10 +78,9 @@ function Message({ item }: { item: PrivateMessageView }) {
       .deletePrivateMessage({
         private_message_id: item.private_message.id,
         deleted: true,
-        auth: apiClient.loginDetails.jwt,
       })
       .then(() => {
-        void apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt);
+        void apiClient.mentionsStore.getMessages();
       });
   };
 

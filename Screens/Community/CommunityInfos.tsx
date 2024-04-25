@@ -42,8 +42,7 @@ function CommunityInfos({ navigation, route }) {
     if (community.subscribed === "Pending") return;
     void apiClient.communityStore.followCommunity(
       community.community.id,
-      !isFollowing,
-      apiClient.loginDetails
+      !isFollowing
     );
   };
 
@@ -57,8 +56,7 @@ function CommunityInfos({ navigation, route }) {
   const toggleBlockCommunity = () => {
     void apiClient.communityStore.blockCommunity(
       community.community.id,
-      !community.blocked,
-      apiClient.loginDetails
+      !community.blocked
     );
   };
 
@@ -68,7 +66,6 @@ function CommunityInfos({ navigation, route }) {
       (c) => c.community.id === community.community.id
     ) !== -1;
 
-  console.log(canPost);
   return (
     <ScrollView style={styles.wrapper}>
       <View style={styles.header}>

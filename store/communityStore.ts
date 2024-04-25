@@ -88,18 +88,17 @@ class CommunityStore extends DataClass {
     this.community = community;
   }
 
-  async getCommunity(auth?: LoginResponse, id?: number, name?: string) {
+  async getCommunity(id?: number, name?: string) {
     await this.fetchData<GetCommunityResponse>(
-      () => this.api.fetchCommunity({ auth: auth?.jwt, id, name }),
+      () => this.api.fetchCommunity({ id, name }),
       (data) => this.setCommunity(data.community_view),
       (error) => console.log(error)
     );
   }
 
-  async followCommunity(id: number, follow: boolean, auth: LoginResponse) {
+  async followCommunity(id: number, follow: boolean) {
     await this.fetchData<CommunityResponse>(
-      () =>
-        this.api.followCommunity({ auth: auth?.jwt, community_id: id, follow }),
+      () => this.api.followCommunity({ community_id: id, follow }),
       (data) => this.setCommunity(data.community_view),
       (error) => console.log(error),
       true,
@@ -107,10 +106,9 @@ class CommunityStore extends DataClass {
     );
   }
 
-  async blockCommunity(id: number, block: boolean, auth: LoginResponse) {
+  async blockCommunity(id: number, block: boolean) {
     await this.fetchData<BlockCommunityResponse>(
-      () =>
-        this.api.blockCommunity({ auth: auth?.jwt, community_id: id, block }),
+      () => this.api.blockCommunity({ community_id: id, block }),
       (data) => this.setCommunity(data.community_view),
       (error) => console.log(error),
       true,

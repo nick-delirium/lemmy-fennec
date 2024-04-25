@@ -21,7 +21,7 @@ function OwnComments({ navigation }) {
 
   const refresh = () => {
     apiClient.profileStore.setProfilePage(1);
-    void apiClient.profileStore.getProfile(apiClient.loginDetails, {
+    void apiClient.profileStore.getProfile({
       person_id: apiClient.profileStore.userProfile.person_view.person.id,
       limit: 30,
     });
@@ -39,7 +39,7 @@ function OwnComments({ navigation }) {
     apiClient.profileStore.setProfilePage(
       apiClient.profileStore.profilePage + 1
     );
-    void apiClient.profileStore.getProfile(apiClient.loginDetails, {
+    void apiClient.profileStore.getProfile({
       person_id: apiClient.profileStore.userProfile.person_view.person.id,
       limit: 30,
     });
@@ -49,7 +49,7 @@ function OwnComments({ navigation }) {
     apiClient.profileStore.setProfilePage(
       apiClient.profileStore.profilePage - 1
     );
-    void apiClient.profileStore.getProfile(apiClient.loginDetails, {
+    void apiClient.profileStore.getProfile({
       person_id: apiClient.profileStore.userProfile.person_view.person.id,
       limit: 30,
     });

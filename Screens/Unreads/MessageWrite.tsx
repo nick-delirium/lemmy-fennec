@@ -44,16 +44,14 @@ function MessageWrite({ navigation, route }) {
       ? apiClient.api.editPrivateMessage({
           private_message_id: messageId,
           content: text,
-          auth: apiClient.loginDetails.jwt,
         })
       : apiClient.api.createPrivateMessage({
           content: text,
           recipient_id: recipient,
-          auth: apiClient.loginDetails.jwt,
         });
     promise.then(() => {
       setIsSubmitting(false);
-      void apiClient.mentionsStore.getMessages(apiClient.loginDetails.jwt);
+      void apiClient.mentionsStore.getMessages();
       navigation.goBack();
     });
   };

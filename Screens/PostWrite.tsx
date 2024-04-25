@@ -83,7 +83,8 @@ function PostWrite({
           mode: "cors",
           headers: {
             Cookie: "jwt=" + apiClient.loginDetails.jwt,
-            "User-Agent": "Arctius Android 0.1.1",
+            Authorization: "Bearer " + apiClient.loginDetails.jwt,
+            "User-Agent": "Arctius Android 0.2.4",
             Accept: "application/json",
             "Content-Type": "multipart/form-data",
           },
@@ -124,7 +125,6 @@ function PostWrite({
     if (isEdit) {
       apiClient.api
         .editPost({
-          auth: apiClient.loginDetails.jwt,
           post_id: content.id,
           body: text,
           name: title,
@@ -132,7 +132,7 @@ function PostWrite({
           url: url === "" ? undefined : url,
         })
         .then(() => {
-          apiClient.postStore.getSinglePost(content.id, apiClient.loginDetails);
+          apiClient.postStore.getSinglePost(content.id);
           navigation.goBack();
         });
     } else {
@@ -141,7 +141,6 @@ function PostWrite({
           community_id: communityId,
           name: title,
           url: url === "" ? undefined : url,
-          auth: apiClient.loginDetails.jwt,
           nsfw: isNsfw,
           body: text,
         })

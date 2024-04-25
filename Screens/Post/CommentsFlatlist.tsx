@@ -213,11 +213,7 @@ const CommentRenderer = observer(
 
     const loadMore = () => {
       setIsExpanded(true);
-      void apiClient.commentsStore.getComments(
-        undefined,
-        apiClient.loginDetails,
-        comment.comment.id
-      );
+      void apiClient.commentsStore.getComments(undefined, comment.comment.id);
     };
 
     if (isExpanded) {

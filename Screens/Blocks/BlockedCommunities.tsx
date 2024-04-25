@@ -35,7 +35,7 @@ function RenderCommunity({ item }: { item: CommunityBlockView }) {
 
   const unblock = () => {
     apiClient.communityStore
-      .blockCommunity(item.community.id, false, apiClient.loginDetails)
+      .blockCommunity(item.community.id, false)
       .then(() => {
         apiClient.profileStore.setBlocks(
           apiClient.profileStore.blockedPeople,

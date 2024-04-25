@@ -35,7 +35,6 @@ class CustomRenderer extends Renderer {
     // regexp to match "(@/!)text@instance.com"
     const isForeign = /^(@,!)?.+@.+\..+$/.test(text);
 
-    console.log(isForeign, text, href, hrefDomain);
     if (isLocalLink) {
       // https://lemmyinst.any/post/123
       if (href.includes("/post/")) {

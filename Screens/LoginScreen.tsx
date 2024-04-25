@@ -44,7 +44,7 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
     const loginDetails = {
       username_or_email: login,
       password,
-      totp_2fa_token: mfa !== "" ? mfa : undefined,
+      totp_2fa_token: mfa.trim().length > 0 ? mfa : undefined,
     };
 
     const client: LemmyHttp = new LemmyHttp(instanceHref);
@@ -164,6 +164,7 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
                 accessibilityLabel={"2FA token"}
                 secureTextEntry
                 keyboardType="default"
+                textContentType={"oneTimeCode"}
               />
             </View>
             {apiClient.isLoading ? (

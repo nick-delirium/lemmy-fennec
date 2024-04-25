@@ -20,7 +20,7 @@ function HomeScreen() {
   const isLoggedIn = apiClient.isLoggedIn;
   React.useEffect(() => {
     if (jwt) {
-      void apiClient.mentionsStore.fetchUnreads(jwt);
+      void apiClient.mentionsStore.fetchUnreads();
     }
   }, [jwt]);
   const unreadCount = apiClient.mentionsStore.unreadsCount;

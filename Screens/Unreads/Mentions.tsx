@@ -21,7 +21,7 @@ function Mentions({ navigation }) {
     const unsub = navigation.addListener("focus", () => {
       if (apiClient.mentionsStore.mentions.length !== 0) return;
       else {
-        void apiClient.mentionsStore.getMentions(apiClient.loginDetails.jwt);
+        void apiClient.mentionsStore.getMentions();
       }
     });
 
@@ -38,11 +38,9 @@ function Mentions({ navigation }) {
     setIsOpen(false);
   };
   const markAllRead = () => {
-    apiClient.mentionsStore
-      .markAllRepliesRead(apiClient.loginDetails.jwt)
-      .then(() => {
-        void apiClient.mentionsStore.fetchUnreads(apiClient.loginDetails.jwt);
-      });
+    apiClient.mentionsStore.markAllRepliesRead().then(() => {
+      void apiClient.mentionsStore.fetchUnreads();
+    });
     closeAll();
   };
 
@@ -51,17 +49,15 @@ function Mentions({ navigation }) {
       apiClient.mentionsStore.setMentionsPage(
         apiClient.mentionsStore.mentionsPage + 1
       );
-      void apiClient.mentionsStore.getMentions(apiClient.loginDetails.jwt);
+      void apiClient.mentionsStore.getMentions();
     }
   };
 
   const refresh = () => {
     apiClient.mentionsStore.setMentionsPage(1);
-    apiClient.mentionsStore
-      .fetchUnreads(apiClient.loginDetails.jwt)
-      .then(() => {
-        void apiClient.mentionsStore.getMentions(apiClient.loginDetails.jwt);
-      });
+    apiClient.mentionsStore.fetchUnreads().then(() => {
+      void apiClient.mentionsStore.getMentions();
+    });
   };
 
   const renderItem = ({ item }) => (
@@ -176,9 +172,9 @@ function ReplyActions({
 
   const markRead = () => {
     void apiClient.mentionsStore
-      .markReplyRead(apiClient.loginDetails.jwt, item.person_mention.id)
+      .markReplyRead(item.person_mention.id)
       .then(() => {
-        void apiClient.mentionsStore.fetchUnreads(apiClient.loginDetails.jwt);
+        void apiClient.mentionsStore.fetchUnreads();
       });
   };
 

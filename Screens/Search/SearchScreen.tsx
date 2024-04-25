@@ -53,7 +53,7 @@ function SearchScreen({
     setIsFullSearch(false);
     Keyboard.dismiss();
     apiClient.searchStore.setLimit(12);
-    apiClient.searchStore.fetchSearch(apiClient.loginDetails).then(processData);
+    apiClient.searchStore.fetchSearch().then(processData);
   };
 
   React.useEffect(() => {
@@ -96,7 +96,7 @@ function SearchScreen({
     apiClient.searchStore.setSearchType(type);
     apiClient.searchStore.setPage(1);
     apiClient.searchStore.setLimit(50);
-    apiClient.searchStore.fetchSearch(apiClient.loginDetails).then(processData);
+    apiClient.searchStore.fetchSearch().then(processData);
   };
 
   const nextPage = () => {
@@ -104,7 +104,7 @@ function SearchScreen({
       listRef.current?.scrollToLocation({ sectionIndex: 0, itemIndex: 0 });
     }
     apiClient.searchStore.setPage(apiClient.searchStore.page + 1);
-    apiClient.searchStore.fetchSearch(apiClient.loginDetails).then(processData);
+    apiClient.searchStore.fetchSearch().then(processData);
   };
 
   const prevPage = () => {
@@ -113,7 +113,7 @@ function SearchScreen({
     }
     if (apiClient.searchStore.page === 1) return;
     apiClient.searchStore.setPage(apiClient.searchStore.page - 1);
-    apiClient.searchStore.fetchSearch(apiClient.loginDetails).then(processData);
+    apiClient.searchStore.fetchSearch().then(processData);
   };
 
   const renderItem = ({ item, section }) => {

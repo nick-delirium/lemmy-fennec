@@ -152,6 +152,7 @@ function AddAccount({ navigation }: NativeStackScreenProps<any, "AddAccount">) {
                 accessibilityLabel={"2FA token"}
                 secureTextEntry
                 keyboardType="default"
+                textContentType={"oneTimeCode"}
               />
             </View>
             {apiClient.isLoading ? (

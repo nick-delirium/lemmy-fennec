@@ -102,7 +102,6 @@ class CommentsStore extends DataClass {
 
   async getComments(
     postId: PostId | null,
-    loginDetails?: LoginResponse,
     parentId?: number,
     singleComment?: boolean
   ) {
@@ -121,7 +120,6 @@ class CommentsStore extends DataClass {
         this.api.getComments({
           ...this.filters,
           ...additionalFilters,
-          auth: loginDetails?.jwt,
           post_id: postId,
         }),
       ({ comments }) => {
@@ -141,7 +139,7 @@ class CommentsStore extends DataClass {
     );
   }
 
-  async nextPage(postId: PostId | null, loginDetails?: LoginResponse) {
+  async nextPage(postId: PostId | null) {
     if (this.isLoading || this.comments.length < 5) return;
     this.setPage(this.page + 1);
 
@@ -149,7 +147,6 @@ class CommentsStore extends DataClass {
       () =>
         this.api.getComments({
           ...this.filters,
-          auth: loginDetails?.jwt,
           post_id: postId,
           limit: 40,
           page: this.page,
@@ -193,10 +190,8 @@ class CommentsStore extends DataClass {
 
   async rateComment(
     commentId: CommentId,
-    loginDetails: LoginResponse,
     score: (typeof Score)[keyof typeof Score]
   ) {
-    if (!loginDetails.jwt) return;
     // update local comment rating because api is slow
     this.updateTreeCommentRating(this.commentTree, commentId, undefined, score);
     await this.fetchData(
@@ -204,7 +199,6 @@ class CommentsStore extends DataClass {
         this.api.rateComment({
           comment_id: commentId,
           score,
-          auth: loginDetails.jwt,
         }),
       ({ comment_view }) => {
         this.updateCommentById(commentId, comment_view);

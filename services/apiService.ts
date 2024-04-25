@@ -25,14 +25,11 @@ import {
   GetPostsResponse,
   GetPrivateMessages,
   GetReplies,
-  GetSite,
-  GetUnreadCount,
   LemmyHttp,
   ListCommunities,
   LockPost,
   Login,
   LoginResponse,
-  MarkAllAsRead,
   MarkCommentReplyAsRead,
   MarkPostAsRead,
   RemovePost,
@@ -56,8 +53,10 @@ export default class ApiService {
     return this.client.getPost(form);
   }
 
-  login(form: Login): Promise<LoginResponse> {
-    return this.client.login(form);
+  async login(form: Login): Promise<LoginResponse> {
+    const r = await this.client.login(form);
+    this.client.setHeaders({ Authorization: `Bearer ${r.jwt}` });
+    return r;
   }
 
   getProfile(form: GetPersonDetails) {
@@ -69,41 +68,26 @@ export default class ApiService {
   }
 
   savePost(form: SavePost) {
-    if (!form.auth) {
-      throw new Error("No jwt token for savePost");
-    }
     return this.client.savePost(form);
   }
 
   ratePost(form: CreatePostLike) {
-    if (!form.auth) {
-      throw new Error("No jwt token for likePost");
-    }
     return this.client.likePost(form);
   }
 
   rateComment(form: CreateCommentLike) {
-    if (!form.auth) {
-      throw new Error("No jwt token for likeComment");
-    }
     return this.client.likeComment(form);
   }
 
-  getGeneralData(form: GetSite) {
-    return this.client.getSite(form);
+  getGeneralData() {
+    return this.client.getSite();
   }
 
   markPostRead(form: MarkPostAsRead) {
-    if (!form.auth) {
-      throw new Error("No jwt token for markPostRead");
-    }
     return this.client.markPostAsRead(form);
   }
 
   saveUserSettings(form: SaveUserSettings) {
-    if (!form.auth) {
-      throw new Error("No jwt token for saveUserSettings");
-    }
     return this.client.saveUserSettings(form);
   }
 
@@ -116,9 +100,6 @@ export default class ApiService {
   }
 
   followCommunity(form: FollowCommunity) {
-    if (!form.auth) {
-      throw new Error("No jwt token for followCommunity");
-    }
     return this.client.followCommunity(form);
   }
 
@@ -126,8 +107,8 @@ export default class ApiService {
     return this.client.listCommunities(form);
   }
 
-  getUnreads(form: GetUnreadCount) {
-    return this.client.getUnreadCount(form);
+  getUnreads() {
+    return this.client.getUnreadCount();
   }
 
   getReplies(form: GetReplies) {
@@ -146,8 +127,8 @@ export default class ApiService {
     return this.client.markCommentReplyAsRead(form);
   }
 
-  markAllRead(form: MarkAllAsRead) {
-    return this.client.markAllAsRead(form);
+  markAllRead() {
+    return this.client.markAllAsRead();
   }
 
   createComment(form: CreateComment) {

@@ -19,7 +19,7 @@ function SavedFeed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   React.useEffect(() => {
     const getPosts = () => {
       if (apiClient.api && apiClient.postStore.savedPosts.length === 0) {
-        void apiClient.postStore.getSavedPosts(apiClient.loginDetails.jwt);
+        void apiClient.postStore.getSavedPosts();
       }
     };
 
@@ -46,13 +46,12 @@ function SavedFeed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     if (apiClient.postStore.savedPosts.length === 0) return;
     void apiClient.postStore.changeSavedPage(
       apiClient.postStore.savedPostsPage + 1,
-      apiClient.loginDetails.jwt,
       !preferences.paginatedFeed
     );
   }, [apiClient.postStore.savedPosts.length]);
   const onRefresh = React.useCallback(() => {
     apiClient.postStore.setSavedPostsPage(1);
-    void apiClient.postStore.getSavedPosts(apiClient.loginDetails.jwt);
+    void apiClient.postStore.getSavedPosts();
   }, []);
 
   // ref will be kept in memory in-between renders
@@ -65,9 +64,8 @@ function SavedFeed({ navigation }: NativeStackScreenProps<any, "Feed">) {
           preferences.getReadOnScroll()
         ) {
           void apiClient.postStore.markPostRead({
-            post_id: item.item.post.id,
+            post_ids: [item.item.post.id],
             read: true,
-            auth: apiClient.loginDetails.jwt,
           });
         }
       });
@@ -78,16 +76,14 @@ function SavedFeed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     if (apiClient.postStore.savedPosts.length === 0) return;
     listRef.current.scrollToOffset({ animated: true, offset: 0 });
     void apiClient.postStore.changeSavedPage(
-      apiClient.postStore.savedPostsPage + 1,
-      apiClient.loginDetails.jwt
+      apiClient.postStore.savedPostsPage + 1
     );
   }, []);
   const prevPage = React.useCallback(() => {
     if (apiClient.postStore.savedPosts.length === 0) return;
     listRef.current.scrollToOffset({ animated: true, offset: 0 });
     void apiClient.postStore.changeSavedPage(
-      apiClient.postStore.savedPostsPage - 1,
-      apiClient.loginDetails.jwt
+      apiClient.postStore.savedPostsPage - 1
     );
   }, []);
 

@@ -40,20 +40,15 @@ function CommentWrite({ navigation, route }) {
         .editComment({
           comment_id: item.parent_id,
           content: text,
-          auth: apiClient.loginDetails.jwt,
         })
         .then(() => {
-          void apiClient.commentsStore.getComments(
-            item.postId,
-            apiClient.loginDetails
-          );
+          void apiClient.commentsStore.getComments(item.postId);
           navigation.goBack();
         });
     } else
       apiClient.commentsStore
         .createComment(
           {
-            auth: apiClient.loginDetails.jwt,
             content: text,
             parent_id: apiClient.commentsStore.replyTo.parent_id,
             post_id: apiClient.commentsStore.replyTo.postId,

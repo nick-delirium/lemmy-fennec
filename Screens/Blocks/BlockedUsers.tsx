@@ -32,11 +32,7 @@ function RenderUser({ item }: { item: PersonBlockView }) {
   const userName = `${item.target.name}@${hostname(item.target.actor_id)}`;
 
   const unblock = () => {
-    void apiClient.profileStore.blockPerson(
-      item.target.id,
-      false,
-      apiClient.loginDetails?.jwt
-    );
+    void apiClient.profileStore.blockPerson(item.target.id, false);
   };
   return (
     <View style={styles.row}>

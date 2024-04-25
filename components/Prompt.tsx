@@ -21,7 +21,6 @@ function Prompt({ title, text, placeholder, onSubmit, onCancel, reportMode }) {
     onSubmit(value);
   };
 
-  console.log(reportMode);
   return (
     <View style={{ ...styles.container, backgroundColor: colors.card }}>
       {[ReportMode.Post, ReportMode.Comment].includes(reportMode) ? (

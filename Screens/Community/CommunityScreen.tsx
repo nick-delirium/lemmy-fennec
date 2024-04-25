@@ -35,16 +35,8 @@ function CommunityScreen({
       } else {
         if (commId || name) {
           apiClient.postStore.setCommPage(1);
-          void apiClient.postStore.getPosts(
-            apiClient.loginDetails,
-            commId,
-            name
-          );
-          void apiClient.communityStore.getCommunity(
-            apiClient.loginDetails,
-            commId,
-            name
-          );
+          void apiClient.postStore.getPosts(commId, name);
+          void apiClient.communityStore.getCommunity(commId, name);
         }
       }
     };

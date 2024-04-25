@@ -43,7 +43,6 @@ function Comment({
     if (!apiClient.loginDetails?.jwt) return;
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
-      apiClient.loginDetails,
       comment.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote
     );
   }, [comment.my_vote]);
@@ -51,7 +50,6 @@ function Comment({
     if (!apiClient.loginDetails?.jwt) return;
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
-      apiClient.loginDetails,
       comment.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote
     );
   }, []);

@@ -79,8 +79,7 @@ function SortMenu({
   ) => {
     void apiClient.commentsStore.setFilters({ sort: sort });
     void apiClient.commentsStore.getComments(
-      apiClient.postStore.singlePost.post.id,
-      apiClient.loginDetails
+      apiClient.postStore.singlePost.post.id
     );
     closeSelf();
   };

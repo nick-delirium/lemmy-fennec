@@ -49,9 +49,8 @@ function Post({
     if (apiClient.loginDetails?.jwt) {
       void apiClient.postStore.markPostRead(
         {
-          post_id: post.post.id,
+          post_ids: [post.post.id],
           read: true,
-          auth: apiClient.loginDetails.jwt,
         },
         useCommunity
       );
@@ -131,10 +130,7 @@ function Post({
         <TouchableOpacity
           onPressCb={() => {
             navigation.setParams({ post: post.post.id, parentId: undefined });
-            void apiClient.commentsStore.getComments(
-              post.post.id,
-              apiClient.loginDetails
-            );
+            void apiClient.commentsStore.getComments(post.post.id);
           }}
           simple
         >

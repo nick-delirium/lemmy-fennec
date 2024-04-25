@@ -48,7 +48,6 @@ function PostIconRow({
           {
             post_id: post.post.id,
             locked: !post.post.locked,
-            auth: apiClient.loginDetails?.jwt,
           },
           isExpanded,
           useCommunity
@@ -85,7 +84,6 @@ function PostIconRow({
     const onConfirm = () => {
       apiClient.postStore
         .deletePost({
-          auth: apiClient.loginDetails.jwt,
           post_id: post.post.id,
           deleted: true,
         })
@@ -223,7 +221,7 @@ function PostIconRow({
           //   break;
           case blockCommunityIndex:
             apiClient.communityStore
-              .blockCommunity(post.community.id, true, apiClient.loginDetails)
+              .blockCommunity(post.community.id, true)
               .then(() => {
                 ToastAndroid.showWithGravity(
                   "Community blocked",
@@ -253,7 +251,6 @@ function PostIconRow({
                 {
                   post_id: post.post.id,
                   featured: !post.post.featured_community,
-                  auth: apiClient.loginDetails?.jwt,
                   feature_type: "Community",
                 },
                 isExpanded,
@@ -280,7 +277,6 @@ function PostIconRow({
                     {
                       post_id: post.post.id,
                       removed: !post.post.removed,
-                      auth: apiClient.loginDetails?.jwt,
                       reason: text,
                     },
                     isExpanded,
@@ -304,7 +300,6 @@ function PostIconRow({
                 {
                   post_id: post.post.id,
                   save: !post.saved,
-                  auth: apiClient.loginDetails?.jwt,
                 },
                 isExpanded,
                 useCommunity
@@ -344,7 +339,6 @@ function PostIconRow({
           markRead();
           void apiClient.postStore.ratePost(
             post.post.id,
-            apiClient.loginDetails,
             post.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote,
             useCommunity
           );
@@ -368,7 +362,6 @@ function PostIconRow({
           markRead();
           void apiClient.postStore.ratePost(
             post.post.id,
-            apiClient.loginDetails,
             post.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote,
             useCommunity
           );

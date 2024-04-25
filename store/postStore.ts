@@ -15,6 +15,7 @@ import {
   RemovePost,
   SavePost,
   SortType,
+  SuccessResponse,
 } from "lemmy-js-client";
 import { action, makeObservable, observable } from "mobx";
 
@@ -164,11 +165,7 @@ class PostStore extends DataClass {
     this.filters = defaultFilters;
   }
 
-  async getPosts(
-    loginDetails?: LoginResponse,
-    communityId?: number,
-    communityName?: string
-  ) {
+  async getPosts(communityId?: number, communityName?: string) {
     const filters =
       communityId || communityName
         ? {
@@ -183,7 +180,6 @@ class PostStore extends DataClass {
         return this.api.getPosts({
           ...filters,
           page: 1,
-          auth: loginDetails ? loginDetails?.jwt : undefined,
         });
       },
       (result) => {
@@ -215,12 +211,11 @@ class PostStore extends DataClass {
     );
   }
 
-  async getSinglePost(postId: PostId, loginDetails?: LoginResponse) {
+  async getSinglePost(postId: PostId) {
     await this.fetchData<PostResponse>(
       () =>
         this.api.getSinglePost({
           id: postId,
-          auth: loginDetails ? loginDetails.jwt : undefined,
         }),
       ({ post_view }) => {
         this.setSinglePost(post_view);
@@ -231,7 +226,7 @@ class PostStore extends DataClass {
     );
   }
 
-  async changePage(page, loginDetails?: LoginResponse, communityId?: number) {
+  async changePage(page, communityId?: number) {
     if (communityId) {
       this.setCommPage(page);
     } else {
@@ -243,7 +238,6 @@ class PostStore extends DataClass {
           ...this.filters,
           page: communityId ? this.commPage : this.page,
           community_id: communityId,
-          auth: loginDetails ? loginDetails.jwt : undefined,
         }),
       ({ posts }) => {
         if (communityId) {
@@ -258,7 +252,7 @@ class PostStore extends DataClass {
     );
   }
 
-  async nextPage(loginDetails?: LoginResponse, communityId?: number) {
+  async nextPage(communityId?: number) {
     if (communityId) {
       this.setCommPage(this.commPage + 1);
     } else {
@@ -270,7 +264,6 @@ class PostStore extends DataClass {
           ...this.filters,
           page: communityId ? this.commPage : this.page,
           community_id: communityId,
-          auth: loginDetails ? loginDetails.jwt : undefined,
         }),
       ({ posts }) => {
         const ignoredInsts = preferences.getIgnoredInstances();
@@ -318,7 +311,6 @@ class PostStore extends DataClass {
 
   async ratePost(
     postId: PostId,
-    loginDetails,
     score: (typeof Score)[keyof typeof Score],
     communityPost?: boolean
   ) {
@@ -328,7 +320,6 @@ class PostStore extends DataClass {
     await this.fetchData<PostResponse>(
       () =>
         this.api.ratePost({
-          auth: loginDetails?.jwt,
           post_id: postId,
           score: score,
         }),
@@ -389,14 +380,11 @@ class PostStore extends DataClass {
   }
 
   async markPostRead(form: MarkPostAsRead, communityPost?: boolean) {
-    await this.fetchData<PostResponse>(
+    console.log(form);
+    await this.fetchData<SuccessResponse>(
       () => this.api.markPostRead(form),
-      ({ post_view }) =>
-        this.updatePostById(
-          form.post_id,
-          { read: post_view.read },
-          communityPost
-        ),
+      ({ success }) =>
+        this.updatePostById(form.post_ids[0], { read: success }, communityPost),
       (e) => console.error(e),
       true,
       "mark post read"
@@ -481,11 +469,10 @@ class PostStore extends DataClass {
     );
   }
 
-  async getSavedPosts(jwt: string) {
+  async getSavedPosts() {
     await this.fetchData<GetPostsResponse>(
       () =>
         this.api.getPosts({
-          auth: jwt,
           saved_only: true,
           page: 1,
           limit: 20,
@@ -502,12 +489,11 @@ class PostStore extends DataClass {
     );
   }
 
-  async changeSavedPage(page: number, jwt: string, concat?: boolean) {
+  async changeSavedPage(page: number, concat?: boolean) {
     this.setSavedPostsPage(page);
     await this.fetchData<GetPostsResponse>(
       () =>
         this.api.getPosts({
-          auth: jwt,
           saved_only: true,
           page: this.savedPostsPage,
           limit: 20,

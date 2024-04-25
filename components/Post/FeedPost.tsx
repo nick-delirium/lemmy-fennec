@@ -46,9 +46,8 @@ function Post({
     if (apiClient.loginDetails?.jwt) {
       void apiClient.postStore.markPostRead(
         {
-          post_id: post.post.id,
+          post_ids: [post.post.id],
           read: true,
-          auth: apiClient.loginDetails.jwt,
         },
         useCommunity
       );

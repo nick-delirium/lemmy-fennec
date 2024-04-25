@@ -26,7 +26,6 @@ function ProfileSettings() {
       bio,
       display_name: displayName,
       email,
-      auth: apiClient.loginDetails.jwt,
     });
   };
 

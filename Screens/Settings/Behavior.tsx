@@ -25,14 +25,12 @@ function Behavior() {
   const toggleReadPosts = () => {
     if (!apiClient.loginDetails?.jwt) return;
     void apiClient.profileStore.updateSettings({
-      auth: apiClient.loginDetails.jwt,
       show_read_posts: !profile.local_user.show_read_posts,
     });
   };
   const toggleNSFW = () => {
     if (!apiClient.loginDetails?.jwt) return;
     void apiClient.profileStore.updateSettings({
-      auth: apiClient.loginDetails.jwt,
       show_nsfw: !profile.local_user.show_nsfw,
     });
   };

@@ -28,23 +28,13 @@ function PostScreen({
   const { colors } = useTheme();
 
   const refreshAll = () => {
-    void apiClient.postStore.getSinglePost(
-      route.params.post,
-      apiClient.loginDetails
-    );
-    void apiClient.commentsStore.getComments(
-      post.post.id,
-      apiClient.loginDetails,
-      parentId
-    );
+    void apiClient.postStore.getSinglePost(route.params.post);
+    void apiClient.commentsStore.getComments(post.post.id, parentId);
   };
 
   React.useEffect(() => {
     if (route.params.post) {
-      void apiClient.postStore.getSinglePost(
-        route.params.post,
-        apiClient.loginDetails
-      );
+      void apiClient.postStore.getSinglePost(route.params.post);
     }
     return () => {
       apiClient.postStore.setSinglePost(null);
@@ -57,11 +47,9 @@ function PostScreen({
         post.counts.comments > 0
         // apiClient.commentsStore.comments.length === 0
       ) {
-        console.log("fetching parent", parentId);
         apiClient.commentsStore.setPage(1);
         void apiClient.commentsStore.getComments(
           post.post.id,
-          apiClient.loginDetails,
           parentId,
           Boolean(parentId)
         );

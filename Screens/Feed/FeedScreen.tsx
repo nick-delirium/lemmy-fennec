@@ -32,7 +32,7 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   React.useEffect(() => {
     const getPosts = () => {
       if (apiClient.api && apiClient.postStore.posts.length === 0) {
-        void apiClient.postStore.getPosts(apiClient.loginDetails);
+        void apiClient.postStore.getPosts();
       }
     };
 
@@ -60,11 +60,11 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   );
   const onEndReached = React.useCallback(() => {
     if (apiClient.postStore.posts.length === 0) return;
-    void apiClient.postStore.nextPage(apiClient.loginDetails);
+    void apiClient.postStore.nextPage();
   }, [apiClient.postStore.posts.length]);
   const onRefresh = React.useCallback(() => {
     apiClient.postStore.setPage(1);
-    void apiClient.postStore.getPosts(apiClient.loginDetails);
+    void apiClient.postStore.getPosts();
   }, []);
 
   // ref will be kept in memory in-between renders
@@ -73,9 +73,8 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
       changed.forEach((item: Record<string, any>) => {
         if (!item.isViewable && preferences.getReadOnScroll()) {
           void apiClient.postStore.markPostRead({
-            post_id: item.item.post.id,
+            post_ids: [item.item.post.id],
             read: true,
-            auth: apiClient.loginDetails.jwt,
           });
         }
       });
@@ -85,18 +84,12 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   const nextPage = React.useCallback(() => {
     if (apiClient.postStore.posts.length === 0) return;
     listRef.current.scrollToOffset({ animated: true, offset: 0 });
-    void apiClient.postStore.changePage(
-      apiClient.postStore.page + 1,
-      apiClient.loginDetails
-    );
+    void apiClient.postStore.changePage(apiClient.postStore.page + 1);
   }, []);
   const prevPage = React.useCallback(() => {
     if (apiClient.postStore.posts.length === 0) return;
     listRef.current.scrollToOffset({ animated: true, offset: 0 });
-    void apiClient.postStore.changePage(
-      apiClient.postStore.page - 1,
-      apiClient.loginDetails
-    );
+    void apiClient.postStore.changePage(apiClient.postStore.page - 1);
   }, []);
 
   // literally no idea how exactly does this magic works here

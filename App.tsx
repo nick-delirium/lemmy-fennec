@@ -52,7 +52,6 @@ const App = observer(() => {
         .createPostReport({
           post_id: apiClient.reportedItemId,
           reason: text,
-          auth: apiClient.loginDetails.jwt,
         })
         .then(() => {
           closeReport();
@@ -62,7 +61,6 @@ const App = observer(() => {
         .createCommentReport({
           comment_id: apiClient.reportedItemId,
           reason: text,
-          auth: apiClient.loginDetails.jwt,
         })
         .then(() => {
           closeReport();

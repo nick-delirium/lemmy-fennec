@@ -69,14 +69,13 @@ class ProfileStore extends DataClass {
     this.localUser = localUser;
   }
 
-  async getProfile(loginDetails: LoginResponse, form: GetPersonDetails) {
+  async getProfile(form: GetPersonDetails) {
     await this.fetchData<GetPersonDetailsResponse>(
       () =>
         this.api.getProfile({
           ...form,
           page: this.profilePage,
           sort: this.profileSort,
-          auth: loginDetails?.jwt,
         }),
       (profile) => this.setProfile(profile),
       (e) => console.error(e),
@@ -115,13 +114,11 @@ class ProfileStore extends DataClass {
           bot_account: false,
           show_bot_accounts: this.localUser.local_user.show_bot_accounts,
           show_scores: this.localUser.local_user.show_scores,
-          show_new_post_notifs: this.localUser.local_user.show_new_post_notifs,
           email: form.email || this.localUser.local_user.email,
           bio: form.bio || this.localUser.person.bio,
           send_notifications_to_email:
             this.localUser.local_user.send_notifications_to_email,
           matrix_user_id: this.localUser.person.matrix_user_id,
-          auth: form.auth,
         }),
       () => {
         const currentUser = this.localUser;
@@ -131,13 +128,12 @@ class ProfileStore extends DataClass {
     );
   }
 
-  async blockPerson(id: number, blocked: boolean, auth: string) {
+  async blockPerson(id: number, blocked: boolean) {
     await this.fetchData<BlockPersonResponse>(
       () =>
         this.api.blockPerson({
           person_id: id,
           block: blocked,
-          auth,
         }),
       ({ person_view }) => {
         if (!blocked) {
@@ -146,7 +142,6 @@ class ProfileStore extends DataClass {
             this.blockedCommunities
           );
         }
-        console.log(blocked, this.userProfile.person_view.person.id === id);
         if (this.userProfile.person_view.person.id === id) {
           this.setProfile({
             ...this.userProfile,

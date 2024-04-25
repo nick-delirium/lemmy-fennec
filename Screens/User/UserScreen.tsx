@@ -32,7 +32,7 @@ function UserScreen({
   React.useEffect(() => {
     const paramsPresent = route.params?.personId || route.params?.username;
     if (paramsPresent) {
-      void apiClient.profileStore.getProfile(apiClient.loginDetails, {
+      void apiClient.profileStore.getProfile({
         person_id: route.params.personId,
         username: route.params.username,
       });

@@ -50,17 +50,11 @@ function CommunityFeed({ navigation }: { navigation: any }) {
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {
     if (apiClient.postStore.posts.length === 0) return;
-    void apiClient.postStore.nextPage(
-      apiClient.loginDetails,
-      community.community.id
-    );
+    void apiClient.postStore.nextPage(community.community.id);
   }, [community]);
   const onRefresh = React.useCallback(() => {
     apiClient.postStore.setCommPage(1);
-    void apiClient.postStore.getPosts(
-      apiClient.loginDetails,
-      community.community.id
-    );
+    void apiClient.postStore.getPosts(community.community.id);
   }, [community]);
 
   const onPostScroll = React.useRef(({ changed }) => {
@@ -68,9 +62,8 @@ function CommunityFeed({ navigation }: { navigation: any }) {
       changed.forEach((item) => {
         if (!item.isViewable && preferences.getReadOnScroll()) {
           void apiClient.postStore.markPostRead({
-            post_id: item.item.post.id,
+            post_ids: [item.item.post.id],
             read: true,
-            auth: apiClient.loginDetails.jwt,
           });
         }
       });

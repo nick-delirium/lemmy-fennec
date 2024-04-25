@@ -74,11 +74,11 @@ function FloatingMenu({
   const refresh = () => {
     if (useCommunity) {
       const id = apiClient.communityStore.community.community.id;
-      apiClient.postStore.getPosts(apiClient.loginDetails, id).then(() => {
+      apiClient.postStore.getPosts(id).then(() => {
         apiClient.postStore.bumpFeedKey();
       });
     } else {
-      apiClient.postStore.getPosts(apiClient.loginDetails).then(() => {
+      apiClient.postStore.getPosts().then(() => {
         apiClient.postStore.bumpFeedKey();
       });
     }
@@ -139,9 +139,9 @@ function SortMenu({
     void apiClient.postStore.setFilters({ sort: sort });
     if (useCommunity) {
       const id = apiClient.communityStore.community.community.id;
-      void apiClient.postStore.getPosts(apiClient.loginDetails, id);
+      void apiClient.postStore.getPosts(id);
     } else {
-      void apiClient.postStore.getPosts(apiClient.loginDetails);
+      void apiClient.postStore.getPosts();
     }
     closeSelf();
   };
@@ -171,7 +171,7 @@ function ListingMenu({
     listing: (typeof ListingTypeMap)[keyof typeof ListingTypeMap]
   ) => {
     void apiClient.postStore.setFilters({ type_: listing });
-    void apiClient.postStore.getPosts(apiClient.loginDetails);
+    void apiClient.postStore.getPosts();
     closeSelf();
   };
   return (

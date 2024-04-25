@@ -62,12 +62,11 @@ class SearchStore extends DataClass {
     this.searchQuery = query;
   }
 
-  async fetchSearch(loginDetails: LoginResponse): Promise<SearchResponse> {
+  async fetchSearch(): Promise<SearchResponse> {
     let results = null;
     await this.fetchData<SearchResponse>(
       () =>
         this.api.search({
-          auth: loginDetails?.jwt,
           q: this.searchQuery,
           limit: this.limit,
           page: this.page,

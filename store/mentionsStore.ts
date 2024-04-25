@@ -88,9 +88,9 @@ class MentionsStore extends DataClass {
     this.unreadsCount = count;
   }
 
-  async fetchUnreads(auth: string) {
+  async fetchUnreads() {
     await this.fetchData<GetUnreadCountResponse>(
-      () => this.api.getUnreads({ auth }),
+      () => this.api.getUnreads(),
       ({ mentions, replies, private_messages }) => {
         this.setUnreadsCount(mentions + replies + private_messages);
         this.setUnreads({ mentions, replies, messages: private_messages });
@@ -101,11 +101,10 @@ class MentionsStore extends DataClass {
     );
   }
 
-  async getReplies(auth: string) {
+  async getReplies() {
     await this.fetchData<GetRepliesResponse>(
       () =>
         this.api.getReplies({
-          auth,
           sort: "New",
           limit: 30,
           page: this.page,
@@ -117,11 +116,10 @@ class MentionsStore extends DataClass {
     );
   }
 
-  async getMessages(auth: string) {
+  async getMessages() {
     await this.fetchData<PrivateMessagesResponse>(
       () =>
         this.api.getMessages({
-          auth,
           limit: 30,
           page: this.page,
           unread_only: false,
@@ -135,11 +133,10 @@ class MentionsStore extends DataClass {
     );
   }
 
-  async getMentions(auth: string) {
+  async getMentions() {
     await this.fetchData<GetPersonMentionsResponse>(
       () =>
         this.api.getMentions({
-          auth,
           sort: "New",
           limit: 30,
           page: this.mentionsPage,
@@ -153,11 +150,10 @@ class MentionsStore extends DataClass {
     );
   }
 
-  async markReplyRead(auth: string, replyId: number) {
+  async markReplyRead(replyId: number) {
     await this.fetchData<CommentReplyResponse>(
       () =>
         this.api.markReplyRead({
-          auth,
           comment_reply_id: replyId,
           read: true,
         }),
@@ -174,9 +170,9 @@ class MentionsStore extends DataClass {
     );
   }
 
-  async markAllRepliesRead(auth: string) {
+  async markAllRepliesRead() {
     await this.fetchData<GetRepliesResponse>(
-      () => this.api.markAllRead({ auth }),
+      () => this.api.markAllRead(),
       ({ replies }) => this.setReplies(replies),
       (error) => console.log(error),
       false,

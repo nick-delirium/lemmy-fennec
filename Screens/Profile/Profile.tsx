@@ -18,7 +18,6 @@ import AccountPicker from "../../components/AccountPicker/AccountPicker";
 import { apiClient } from "../../store/apiClient";
 import Bio from "./Bio";
 import Counters from "./Counters";
-import UserRating from "./UserRating";
 import UserRow from "./UserRow";
 
 // even though its actually inside tab, main nav context is a stack right now
@@ -35,7 +34,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
           apiClient.profileStore.userProfile?.person_view.person.id !==
           profile?.person.id
         ) {
-          void apiClient.profileStore.getProfile(apiClient.loginDetails, {
+          void apiClient.profileStore.getProfile({
             person_id: profile.local_user.person_id,
             sort: "New",
             page: 1,
@@ -93,7 +92,6 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
           >
             <Bio profile={profile} />
           </ScrollView>
-          <UserRating counts={profile.counts} />
           <Counters profile={profile} />
         </View>
       ) : null}

@@ -9,7 +9,6 @@ import { apiClient } from "../../store/apiClient";
 import { makeDateString } from "../../utils/utils";
 import Bio from "../Profile/Bio";
 import Counters from "../Profile/Counters";
-import UserRating from "../Profile/UserRating";
 import UserRow from "../Profile/UserRow";
 
 function User() {
@@ -42,11 +41,7 @@ function User() {
   };
 
   const onBlock = () => {
-    void apiClient.profileStore.blockPerson(
-      profile.person.id,
-      !isBlocked,
-      apiClient.loginDetails.jwt
-    );
+    void apiClient.profileStore.blockPerson(profile.person.id, !isBlocked);
   };
 
   const hasBanner = Boolean(profile?.person?.banner);
@@ -64,7 +59,6 @@ function User() {
         />
       ) : null}
       <UserRow hasBanner={hasBanner} person={profile.person} />
-      <UserRating counts={profile.counts} />
       <Bio profile={profile} />
       <Counters profile={profile} />
       {apiClient.loginDetails.jwt ? (

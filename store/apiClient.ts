@@ -113,7 +113,7 @@ class ApiClient {
             {
               fetchFunction: undefined,
               headers: {
-                "User-Agent": `Arctius Android 0.2.2`,
+                "User-Agent": `Arctius Android 0.2.4`,
               },
             }
           );
@@ -127,13 +127,13 @@ class ApiClient {
         const client: LemmyHttp = new LemmyHttp("https://lemmy.ml", {
           fetchFunction: undefined,
           headers: {
-            "User-Agent": `Arctius Android 0.2.2`,
+            "User-Agent": `Arctius Android 0.2.4`,
           },
         });
         this.setClient(client);
       })
       .finally(() => {
-        void this.postStore.getPosts(this.loginDetails);
+        void this.postStore.getPosts();
       });
   }
 
@@ -142,8 +142,13 @@ class ApiClient {
     const client: LemmyHttp = new LemmyHttp(instance, {
       fetchFunction: undefined,
       headers: {
-        "User-Agent": `Arctius Android 0.2.2`,
+        "User-Agent": `Arctius Android 0.2.4`,
+        Authorization: `Bearer ${auth.jwt}`,
       },
+    });
+    client.setHeaders({
+      "User-Agent": `Arctius Android 0.2.4`,
+      Authorization: `Bearer ${auth.jwt}`,
     });
     this.setClient(client);
     this.setLoginDetails(auth);
@@ -235,9 +240,7 @@ class ApiClient {
     if (!this.loginDetails?.jwt) return;
     this.setIsLoading(true);
     try {
-      const { my_user: user } = await this.api.getGeneralData({
-        auth: this.loginDetails.jwt,
-      });
+      const { my_user: user } = await this.api.getGeneralData();
       const { community_blocks, person_blocks, follows } = user;
       if (user.moderates.length > 0) {
         this.profileStore.setModeratedCommunities(user.moderates);

@@ -8,6 +8,11 @@ import Markdown, { Renderer } from "react-native-marked";
 import { Text, TouchableOpacity } from "../ThemedComponents";
 import { mdTheme } from "../commonStyles";
 import { apiClient } from "../store/apiClient";
+import {
+  COMMUNITY_SCHEME,
+  USER_SCHEME,
+  linkifyMentions,
+} from "../utils/lemmyLinks";
 
 const hasChildren = (element: React.ReactNode) =>
   isValidElement(element) && Boolean(element.props.children);
@@ -28,12 +33,32 @@ class CustomRenderer extends Renderer {
   }
 
   handleLinkPress(href: string, text: string) {
+    // "!community@instance" / "@user@instance", rewritten by linkifyMentions
+    if (href.startsWith(COMMUNITY_SCHEME)) {
+      return this.navigation.navigate("Community", {
+        name: href.slice(COMMUNITY_SCHEME.length),
+      });
+    }
+    if (href.startsWith(USER_SCHEME)) {
+      return this.navigation.navigate("User", {
+        username: href.slice(USER_SCHEME.length),
+      });
+    }
+
     // getting the domain
     const hrefDomain = href.split("/")[2];
 
-    const isLocalLink = apiClient.getCurrentInstance().includes(hrefDomain);
+    const isLocalLink = hrefDomain
+      ? apiClient.getCurrentInstance().includes(hrefDomain)
+      : false;
     // regexp to match "(@/!)text@instance.com"
-    const isForeign = /^(@,!)?.+@.+\..+$/.test(text);
+    const isForeign = /^[@!]?[^@\s]+@[^@\s]+\.[^@\s]+$/.test(text);
+    // a slug can already carry its instance ("name@instance"), only the bare
+    // ones need the instance taken from the link text
+    const qualify = (slug: string) =>
+      !slug.includes("@") && isForeign
+        ? `${slug}${extractInstance(text)}`
+        : slug;
 
     if (isLocalLink) {
       // https://lemmyinst.any/post/123
@@ -45,20 +70,16 @@ class CustomRenderer extends Renderer {
       // https://lemmyinst.any/c/commname
       if (href.includes("/c/")) {
         const parts = href.split("/");
-        const communityName = parts[parts.length - 1];
-        const name = isForeign
-          ? `${communityName}${extractInstance(text)}`
-          : communityName;
-        return this.navigation.navigate("Community", { name });
+        return this.navigation.navigate("Community", {
+          name: qualify(parts[parts.length - 1]),
+        });
       }
       // https://lemmyinst.any/u/username
       if (href.includes("/u/")) {
         const parts = href.split("/");
-        const username = parts[parts.length - 1];
-        const name = isForeign
-          ? `${username}${extractInstance(text)}`
-          : username;
-        return this.navigation.navigate("User", { username: name });
+        return this.navigation.navigate("User", {
+          username: qualify(parts[parts.length - 1]),
+        });
       }
     }
     // any other link that hasn't been handled or is not local to the instance
@@ -115,9 +136,10 @@ function MdRenderer({ value }) {
   const theme = sch === "dark" ? mdTheme.dark : mdTheme.light;
 
   const themeWithBg = { ...theme, backgroundColor: colors.background };
+  const content = React.useMemo(() => linkifyMentions(value), [value]);
   return (
     <Markdown
-      value={value}
+      value={content}
       flatListProps={{
         style: { backgroundColor: colors.background },
       }}

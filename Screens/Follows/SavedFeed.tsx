@@ -39,14 +39,14 @@ function SavedFeed({ navigation }: NativeStackScreenProps<any, "Feed">) {
         <FeedPost post={item} navigation={navigation} />
       );
     },
-    [preferences.compactPostLayout]
+    [preferences.compactPostLayout],
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {
     if (apiClient.postStore.savedPosts.length === 0) return;
     void apiClient.postStore.changeSavedPage(
       apiClient.postStore.savedPostsPage + 1,
-      !preferences.paginatedFeed
+      !preferences.paginatedFeed,
     );
   }, [apiClient.postStore.savedPosts.length]);
   const onRefresh = React.useCallback(() => {
@@ -76,14 +76,14 @@ function SavedFeed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     if (apiClient.postStore.savedPosts.length === 0) return;
     listRef.current.scrollToOffset({ animated: true, offset: 0 });
     void apiClient.postStore.changeSavedPage(
-      apiClient.postStore.savedPostsPage + 1
+      apiClient.postStore.savedPostsPage + 1,
     );
   }, []);
   const prevPage = React.useCallback(() => {
     if (apiClient.postStore.savedPosts.length === 0) return;
     listRef.current.scrollToOffset({ animated: true, offset: 0 });
     void apiClient.postStore.changeSavedPage(
-      apiClient.postStore.savedPostsPage - 1
+      apiClient.postStore.savedPostsPage - 1,
     );
   }, []);
 

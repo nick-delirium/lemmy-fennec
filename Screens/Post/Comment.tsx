@@ -36,21 +36,21 @@ function Comment({
         message: Platform.OS === "ios" ? "" : comment.comment.ap_id,
         title: comment.comment.ap_id,
       },
-      { dialogTitle: comment.comment.ap_id }
+      { dialogTitle: comment.comment.ap_id },
     );
   }, [comment.my_vote]);
   const upvoteComment = React.useCallback(() => {
     if (!apiClient.loginDetails?.jwt) return;
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
-      comment.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote
+      comment.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote,
     );
   }, [comment.my_vote]);
   const downvoteComment = React.useCallback(() => {
     if (!apiClient.loginDetails?.jwt) return;
     void apiClient.commentsStore.rateComment(
       comment.comment.id,
-      comment.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote
+      comment.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote,
     );
   }, []);
 

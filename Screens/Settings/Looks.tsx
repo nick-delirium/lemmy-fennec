@@ -1,11 +1,10 @@
 import React from "react";
 import { ScrollView, StyleSheet, Switch, View } from "react-native";
 
-import { Picker } from "@react-native-picker/picker";
-import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 
 import { Text } from "../../ThemedComponents";
+import Select from "../../components/Select";
 import { apiClient } from "../../store/apiClient";
 import { Theme, ThemeMap, preferences } from "../../store/preferences";
 
@@ -33,7 +32,7 @@ function Looks() {
         value={preferences.collapseParentComment}
         onValueChange={() =>
           preferences.setCollapseParentComment(
-            !preferences.collapseParentComment
+            !preferences.collapseParentComment,
           )
         }
       />
@@ -61,7 +60,7 @@ function Looks() {
         value={!preferences.disableDynamicHeaders}
         onValueChange={() =>
           preferences.setDisableDynamicHeaders(
-            !preferences.disableDynamicHeaders
+            !preferences.disableDynamicHeaders,
           )
         }
       />
@@ -109,29 +108,22 @@ export function Toggler({
   );
 }
 
+const themeOptions = [Theme.System, Theme.Light, Theme.Dark, Theme.Amoled].map(
+  (type) => ({ label: ThemeMap[type], value: type }),
+);
+
 const ThemePicker = observer(() => {
-  const { colors } = useTheme();
   return (
     <View style={styles.longRow}>
       <Text>Theme</Text>
-      <Picker
-        style={{
-          width: "50%",
-          color: colors.text,
-          borderColor: colors.border,
-          borderWidth: 1,
-        }}
-        selectedValue={preferences.theme}
-        mode={"dropdown"}
+      <Select
+        title={"App theme"}
         accessibilityLabel={"App Theme Picker"}
-        dropdownIconColor={colors.text}
-        itemStyle={{ color: colors.text, backgroundColor: colors.card }}
-        onValueChange={(itemValue) => preferences.setTheme(itemValue)}
-      >
-        {[Theme.System, Theme.Light, Theme.Dark, Theme.Amoled].map((type) => (
-          <Picker.Item key={type} label={ThemeMap[type]} value={type} />
-        ))}
-      </Picker>
+        style={{ minWidth: "45%" }}
+        value={preferences.theme}
+        options={themeOptions}
+        onChange={(value) => preferences.setTheme(value)}
+      />
     </View>
   );
 });

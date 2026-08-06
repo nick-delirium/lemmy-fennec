@@ -67,7 +67,7 @@ function CommunityScreen({
     return <ActivityIndicator />;
 
   return (
-    <Tab.Navigator initialRouteName={"CommunityFeed"}>
+    <Tab.Navigator id={undefined} initialRouteName={"CommunityFeed"}>
       <Tab.Screen
         options={{
           tabBarLabel: "Posts",

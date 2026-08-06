@@ -40,6 +40,19 @@ class AsyncStoragehandler {
     }
   };
 
+  /** One bridge round-trip instead of one per key. */
+  readMany = async (
+    keys: readonly DataValues[],
+  ): Promise<Record<string, string | null>> => {
+    try {
+      const pairs = await AsyncStorage.multiGet(keys as string[]);
+      return Object.fromEntries(pairs);
+    } catch (e) {
+      console.error("regular data multi read:", e);
+      return {};
+    }
+  };
+
   setData = async (key: DataValues, value: string) => {
     try {
       await AsyncStorage.setItem(key, value);

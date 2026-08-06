@@ -7,7 +7,7 @@ import { observer } from "mobx-react-lite";
 
 import { Icon, TouchableOpacity } from "../../ThemedComponents";
 import { commonStyles } from "../../commonStyles";
-import DynamicHeader from "../../components/DynamicHeader";
+import DynamicHeader, { useHeaderOffset } from "../../components/DynamicHeader";
 import Pagination from "../../components/Pagination";
 import FeedPost from "../../components/Post/FeedPost";
 import TinyPost from "../../components/Post/TinyPost";
@@ -15,18 +15,22 @@ import { apiClient } from "../../store/apiClient";
 import { preferences } from "../../store/preferences";
 import FloatingMenu from "./FloatingMenu";
 
-let lastOffset = 0;
-
 function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
   const scrollOffsetY = React.useRef(new Animated.Value(0)).current;
+  const headerOffset = useHeaderOffset();
+  // per-mount, not module-level: a shared value leaked the previous screen's
+  // scroll position into the header animation on remount
+  const lastOffset = React.useRef(0);
 
   const [showFab, setShowFab] = React.useState(true);
   const isFocused = navigation.isFocused();
   const listRef = React.useRef<FlatList<PostView>>(null);
   const title = React.useMemo(() => {
-    return `Feed | ${apiClient.postStore.filters.type_ ?? ""} | ${
-      apiClient.postStore.filters.sort.replace(/([a-z])([A-Z])/g, "$1 $2") ?? ""
-    }`;
+    const { type_, sort } = apiClient.postStore.filters;
+    // `sort.replace(...) ?? ""` threw on an undefined sort — the ?? applied to
+    // the result of the call, not to `sort`
+    const spacedSort = sort?.replace(/([a-z])([A-Z])/g, "$1 $2") ?? "";
+    return `Feed | ${type_ ?? ""} | ${spacedSort}`;
   }, [apiClient.postStore.filters.type_, apiClient.postStore.filters.sort]);
 
   React.useEffect(() => {
@@ -52,11 +56,11 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
         <FeedPost post={item} navigation={navigation} />
       );
     },
-    [preferences.compactPostLayout]
+    [preferences.compactPostLayout],
   );
   const extractor = React.useCallback(
     (p: Record<string, any>) => p.post.id.toString(),
-    []
+    [],
   );
   const onEndReached = React.useCallback(() => {
     if (apiClient.postStore.posts.length === 0) return;
@@ -97,8 +101,19 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
     (e: any) => {
       if (preferences.disableDynamicHeaders) return;
       const currentScrollY = e.nativeEvent.contentOffset.y;
-      const deltaY = currentScrollY - lastOffset;
-      const isGoingDown = currentScrollY > lastOffset;
+
+      // ios rubber-banding reports negative offsets past the top, and feeding
+      // those deltas in scrolled the header away exactly when the list was at
+      // rest at the top. At or above the top the header is always fully shown.
+      if (currentScrollY <= 0) {
+        scrollOffsetY.setValue(0);
+        if (!showFab) setShowFab(true);
+        lastOffset.current = 0;
+        return;
+      }
+
+      const deltaY = currentScrollY - lastOffset.current;
+      const isGoingDown = currentScrollY > lastOffset.current;
 
       if (isGoingDown) {
         // @ts-ignore using internal value for dynamic animation
@@ -110,9 +125,9 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
 
       if (showFab !== !isGoingDown) setShowFab(!isGoingDown);
 
-      lastOffset = currentScrollY;
+      lastOffset.current = currentScrollY;
     },
-    [showFab, scrollOffsetY, preferences.disableDynamicHeaders]
+    [showFab, scrollOffsetY, preferences.disableDynamicHeaders],
   );
 
   React.useEffect(() => {
@@ -156,7 +171,9 @@ function Feed({ navigation }: NativeStackScreenProps<any, "Feed">) {
         onEndReachedThreshold={preferences.paginatedFeed ? undefined : 1}
         keyExtractor={extractor}
         onViewableItemsChanged={onPostScroll}
-        ListHeaderComponent={<View style={{ height: 56, width: "100%" }} />}
+        ListHeaderComponent={
+          <View style={{ height: headerOffset, width: "100%" }} />
+        }
         ListFooterComponent={
           preferences.paginatedFeed ? (
             <Pagination

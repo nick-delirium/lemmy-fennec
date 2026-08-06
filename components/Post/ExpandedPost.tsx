@@ -52,7 +52,7 @@ function Post({
           post_ids: [post.post.id],
           read: true,
         },
-        useCommunity
+        useCommunity,
       );
     }
   };
@@ -73,7 +73,7 @@ function Post({
   const customReadColor = post.read ? "#ababab" : colors.text;
 
   const openCommenting = () => {
-    if (post.post.locked) return;
+    if (post.post.locked || !apiClient.isLoggedIn) return;
     apiClient.commentsStore.setReplyTo({
       postId: post.post.id,
       parent_id: undefined,

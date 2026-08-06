@@ -1,6 +1,6 @@
 // still empty, thinking about making mini version of a post component for mini feed where everything has set height
 import React from "react";
-import { Dimensions, Image, Share, StyleSheet, View } from "react-native";
+import { Dimensions, Share, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -38,7 +38,7 @@ function TinyPost({
           post_ids: [post.post.id],
           read: true,
         },
-        useCommunity
+        useCommunity,
       );
     }
   };

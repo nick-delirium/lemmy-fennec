@@ -9,7 +9,7 @@ const Tab = createMaterialTopTabNavigator();
 
 function BlocksScreen() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator id={undefined}>
       <Tab.Screen name={"Blocked Communities"} component={BlockedCommunities} />
       <Tab.Screen name={"Blocked Users"} component={BlockedUsers} />
     </Tab.Navigator>

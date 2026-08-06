@@ -1,7 +1,8 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
+import { Image } from "expo-image";
 import { observer } from "mobx-react-lite";
 
 import { Text, TouchableOpacity } from "../../ThemedComponents";
@@ -17,7 +18,7 @@ function User() {
   const profile = loadedProfile?.person_view;
   const isBlocked =
     apiClient.profileStore.blockedPeople.findIndex(
-      (p) => p.target.id === profile.person.id
+      (p) => p.target.id === profile.person.id,
     ) !== -1;
 
   const onMessagePress = () => {
@@ -50,7 +51,7 @@ function User() {
     <View style={styles.container}>
       {hasBanner ? (
         <Image
-          resizeMode={"cover"}
+          contentFit={"cover"}
           source={{ uri: profile.person.banner }}
           style={{
             width: "100%",

@@ -2,7 +2,10 @@ import { StyleSheet } from "react-native";
 
 import { DarkTheme, DefaultTheme } from "@react-navigation/native";
 
+// spreading the whole base theme, not just its colors, keeps `fonts` in place —
+// react-navigation 7 requires it on a Theme
 export const AppTheme = {
+  ...DefaultTheme,
   dark: false,
   colors: {
     ...DefaultTheme.colors,
@@ -12,6 +15,7 @@ export const AppTheme = {
   },
 };
 export const AppDarkTheme = {
+  ...DarkTheme,
   dark: true,
   colors: {
     ...DarkTheme.colors,
@@ -22,6 +26,7 @@ export const AppDarkTheme = {
   },
 };
 export const AppAmoledTheme = {
+  ...DarkTheme,
   dark: true,
   colors: {
     ...DarkTheme.colors,
@@ -31,21 +36,14 @@ export const AppAmoledTheme = {
   },
 };
 
-export const mdTheme = {
-  light: {
-    code: "#f6f8fa",
-    link: "#58a6ff",
-    text: "#333333",
-    border: "#d0d7de",
-    ...AppTheme.colors,
-  },
-  dark: {
-    code: "#161b22",
-    link: "#58a6ff",
-    text: "#eeeeee",
-    border: "#30363d",
-    ...AppDarkTheme.colors,
-  },
+/**
+ * Code-block background for rendered markdown. Everything else in the markdown
+ * palette is derived from the active navigation theme, so it can't drift out of
+ * step with it.
+ */
+export const mdCodeBackground = {
+  light: "#f6f8fa",
+  dark: "#161b22",
 } as const;
 
 export const commonStyles = StyleSheet.create({

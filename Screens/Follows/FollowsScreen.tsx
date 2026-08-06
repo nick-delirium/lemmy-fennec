@@ -9,7 +9,7 @@ const Tab = createMaterialTopTabNavigator();
 
 function FollowsScreen() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator id={undefined}>
       <Tab.Screen name={"Communities"} component={FollowsList} />
       <Tab.Screen
         options={{

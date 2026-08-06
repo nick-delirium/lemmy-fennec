@@ -1,6 +1,7 @@
 import React from "react";
-import { FlatList, Image, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 
+import { Image } from "expo-image";
 import { CommunityBlockView } from "lemmy-js-client";
 import { observer } from "mobx-react-lite";
 
@@ -30,7 +31,7 @@ function BlockedCommunities() {
 
 function RenderCommunity({ item }: { item: CommunityBlockView }) {
   const commName = `${item.community.name}@${hostname(
-    item.community.actor_id
+    item.community.actor_id,
   )}`;
 
   const unblock = () => {
@@ -40,8 +41,8 @@ function RenderCommunity({ item }: { item: CommunityBlockView }) {
         apiClient.profileStore.setBlocks(
           apiClient.profileStore.blockedPeople,
           apiClient.profileStore.blockedCommunities.filter(
-            (c) => c.community.id !== item.community.id
-          )
+            (c) => c.community.id !== item.community.id,
+          ),
         );
       });
   };

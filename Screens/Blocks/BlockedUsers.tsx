@@ -1,6 +1,7 @@
 import React from "react";
-import { FlatList, Image, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 
+import { Image } from "expo-image";
 import { PersonBlockView } from "lemmy-js-client";
 import { observer } from "mobx-react-lite";
 

@@ -4,22 +4,26 @@ import { ActivityIndicator, Animated, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Icon, TouchableOpacity } from "../../ThemedComponents";
-import DynamicHeader from "../../components/DynamicHeader";
+import DynamicHeader, { useHeaderOffset } from "../../components/DynamicHeader";
 import ExpandedPost from "../../components/Post/ExpandedPost";
 import { apiClient } from "../../store/apiClient";
 import { preferences } from "../../store/preferences";
 import CommentFlatList from "./CommentsFlatlist";
 import CommentsFloatingMenu from "./CommentsFloatingMenu";
 
-let lastOffset = 0;
-
 function PostScreen({
   navigation,
   route,
 }: NativeStackScreenProps<any, "Feed">) {
   const scrollOffsetY = React.useRef(new Animated.Value(0)).current;
+  // per-mount, not module-level: a shared value leaked the previous screen's
+  // scroll position into the header animation on remount
+  const lastOffset = React.useRef(0);
+  const headerOffset = useHeaderOffset();
+  const insets = useSafeAreaInsets();
 
   const [showFab, setShowFab] = React.useState(true);
   const post = apiClient.postStore.singlePost;
@@ -51,7 +55,7 @@ function PostScreen({
         void apiClient.commentsStore.getComments(
           post.post.id,
           parentId,
-          Boolean(parentId)
+          Boolean(parentId),
         );
       }
     }
@@ -68,8 +72,19 @@ function PostScreen({
     (e: any) => {
       if (preferences.disableDynamicHeaders) return;
       const currentScrollY = e.nativeEvent.contentOffset.y;
-      const deltaY = currentScrollY - lastOffset;
-      const isGoingDown = currentScrollY > lastOffset;
+
+      // ios rubber-banding reports negative offsets past the top, and feeding
+      // those deltas in scrolled the header away exactly when the list was at
+      // rest at the top. At or above the top the header is always fully shown.
+      if (currentScrollY <= 0) {
+        scrollOffsetY.setValue(0);
+        if (!showFab) setShowFab(true);
+        lastOffset.current = 0;
+        return;
+      }
+
+      const deltaY = currentScrollY - lastOffset.current;
+      const isGoingDown = currentScrollY > lastOffset.current;
 
       if (isGoingDown) {
         // @ts-ignore using internal value for dynamic animation
@@ -81,9 +96,9 @@ function PostScreen({
 
       if (showFab !== !isGoingDown) setShowFab(!isGoingDown);
 
-      lastOffset = currentScrollY;
+      lastOffset.current = currentScrollY;
     },
-    [showFab, scrollOffsetY, preferences.disableDynamicHeaders]
+    [showFab, scrollOffsetY, preferences.disableDynamicHeaders],
   );
 
   if (!post) return <ActivityIndicator />;
@@ -132,14 +147,17 @@ function PostScreen({
       <CommentFlatList
         getAuthor={getAuthor}
         header={
-          <ExpandedPost
-            post={post}
-            navigation={navigation}
-            showAllButton={showAllButton}
-          />
+          <>
+            <View style={{ height: headerOffset, width: "100%" }} />
+            <ExpandedPost
+              post={post}
+              navigation={navigation}
+              showAllButton={showAllButton}
+            />
+          </>
         }
         refreshing={apiClient.commentsStore.isLoading}
-        comments={apiClient.commentsStore.commentTree}
+        comments={apiClient.commentsStore.visibleComments}
         colors={colors}
         onRefresh={refreshAll}
         onEndReached={onEndReached}
@@ -148,8 +166,7 @@ function PostScreen({
         navigation={navigation}
         onScroll={onScroll}
         scrollEventThrottle={8}
-        level={1}
-        footer={<View style={{ height: 112, width: "100%" }} />}
+        footer={<View style={{ height: 112 + insets.bottom, width: "100%" }} />}
       />
       {showFab ? (
         <CommentsFloatingMenu isLoading={apiClient.commentsStore.isLoading} />

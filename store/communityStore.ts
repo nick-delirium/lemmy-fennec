@@ -51,13 +51,13 @@ class CommunityStore extends DataClass {
     this.favoriteCommunities = communities;
     void asyncStorageHandler.setData(
       dataKeys.favCommunities,
-      JSON.stringify(communities)
+      JSON.stringify(communities),
     );
   }
 
   get regularFollowedCommunities() {
     return this.followedCommunities.filter(
-      (c) => this.favoriteCommunities.findIndex((f) => f.id === c.id) === -1
+      (c) => this.favoriteCommunities.findIndex((f) => f.id === c.id) === -1,
     );
   }
 
@@ -92,7 +92,7 @@ class CommunityStore extends DataClass {
     await this.fetchData<GetCommunityResponse>(
       () => this.api.fetchCommunity({ id, name }),
       (data) => this.setCommunity(data.community_view),
-      (error) => console.log(error)
+      (error) => console.log(error),
     );
   }
 
@@ -102,7 +102,7 @@ class CommunityStore extends DataClass {
       (data) => this.setCommunity(data.community_view),
       (error) => console.log(error),
       true,
-      "follow community"
+      "follow community",
     );
   }
 
@@ -112,7 +112,7 @@ class CommunityStore extends DataClass {
       (data) => this.setCommunity(data.community_view),
       (error) => console.log(error),
       true,
-      "block community"
+      "block community",
     );
   }
 }

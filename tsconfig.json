@@ -1,4 +1,9 @@
 {
-  "compilerOptions": {},
-  "extends": "expo/tsconfig.base"
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    // TypeScript 6 enables `strict` by default. This codebase predates that and
+    // has ~170 pre-existing null / implicit-any violations, so keep the previous
+    // behaviour; adopting strict mode is its own piece of work.
+    "strict": false
+  }
 }

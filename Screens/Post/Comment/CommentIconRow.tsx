@@ -90,7 +90,7 @@ function CommentIconRow({
           default:
             break;
         }
-      }
+      },
     );
   }, [apiClient.loginDetails?.jwt]);
 

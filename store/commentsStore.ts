@@ -9,12 +9,28 @@ import {
   LoginResponse,
   PostId,
 } from "lemmy-js-client";
-import { action, makeObservable, observable } from "mobx";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  observableDeep,
+  observableRef,
+} from "mobx";
 
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 import { Score } from "./apiClient";
+import {
+  CommentNode,
+  FlatComment,
+  buildCommentTree,
+  flattenCommentTree,
+} from "./commentTree";
 import DataClass from "./dataClass";
 import { ListingTypeMap } from "./postStore";
+
+export type { CommentNode, FlatComment } from "./commentTree";
+export { MAX_INDENT_DEPTH } from "./commentTree";
 
 interface Filters {
   max_depth: number;
@@ -23,21 +39,16 @@ interface Filters {
   type_: ListingType;
 }
 
+/** lemmy's FETCH_LIMIT_MAX — requests above this are rejected outright. */
+const FETCH_LIMIT_MAX = 50;
+const PAGE_LIMIT = 40;
+
 export const CommentSortTypeMap = {
   Hot: "Hot",
   Top: "Top",
   New: "New",
   Old: "Old",
 } as const;
-
-// basically making it easier to recursively render comments
-// is there any better way to do this?
-export interface CommentNode extends CommentView {
-  children: CommentNode[];
-}
-
-// !!!TODO!!!
-// grab sub comments and build subtrees (build tree and insert into children array)
 
 interface ReplyView {
   title: string;
@@ -56,6 +67,12 @@ class CommentsStore extends DataClass {
   public commentTree: CommentNode[] = [];
   public replyTo: ReplyView | null = null;
   public page = 1;
+  /**
+   * Ids of collapsed comments. Lives here rather than in row state because the
+   * list recycles rows — collapsing a thread and scrolling away used to reopen
+   * it. Replaced wholesale on every change so it can be an observable ref.
+   */
+  public collapsed: ReadonlySet<CommentId> = new Set();
   public filters: Filters = {
     max_depth: 2,
     saved_only: false,
@@ -65,11 +82,26 @@ class CommentsStore extends DataClass {
 
   constructor() {
     super();
+
+    // setFilters has always written these, but nothing read them back, so the
+    // comment sort reset to Hot on every launch
+    asyncStorageHandler.readData(dataKeys.commentFilters).then((filters) => {
+      if (filters) {
+        try {
+          this.setFilters(JSON.parse(filters));
+        } catch (e) {
+          console.warn("bad stored comment filters", e);
+        }
+      }
+    });
+
     makeObservable(this, {
-      comments: observable.deep,
-      filters: observable.deep,
+      comments: observableDeep,
+      filters: observableDeep,
       replyTo: observable,
-      commentTree: observable.deep,
+      commentTree: observableDeep,
+      collapsed: observableRef,
+      visibleComments: computed,
       page: observable,
       setPage: action,
       setFilters: action,
@@ -81,7 +113,22 @@ class CommentsStore extends DataClass {
       setClient: action,
       updateCommentById: action,
       updateTreeCommentRating: action,
+      toggleCollapsed: action,
     });
+  }
+
+  /**
+   * The tree, depth-first, with collapsed subtrees omitted. Feeds a single
+   * FlatList so windowing counts comments rather than top-level threads.
+   */
+  get visibleComments(): FlatComment[] {
+    return flattenCommentTree(this.commentTree, this.collapsed);
+  }
+
+  toggleCollapsed(commentId: CommentId) {
+    const next = new Set(this.collapsed);
+    if (!next.delete(commentId)) next.add(commentId);
+    this.collapsed = next;
   }
 
   setPage(page: number) {
@@ -93,26 +140,27 @@ class CommentsStore extends DataClass {
   }
 
   setFilters(filters: Partial<Filters>) {
-    this.filters = Object.assign(this.filters, filters);
+    this.filters = { ...this.filters, ...filters };
     void asyncStorageHandler.setData(
       dataKeys.commentFilters,
-      JSON.stringify(this.filters)
+      JSON.stringify(this.filters),
     );
   }
 
   async getComments(
     postId: PostId | null,
     parentId?: number,
-    singleComment?: boolean
+    singleComment?: boolean,
   ) {
     const additionalFilters = parentId
       ? {
           parent_id: parentId,
           max_depth: 8,
-          limit: 999,
+          // lemmy rejects anything above FETCH_LIMIT_MAX; this was 999
+          limit: FETCH_LIMIT_MAX,
         }
       : {
-          limit: 40,
+          limit: PAGE_LIMIT,
           max_depth: 2,
         };
     await this.fetchData<GetCommentsResponse>(
@@ -135,41 +183,51 @@ class CommentsStore extends DataClass {
       },
       (e) => console.error(e),
       false,
-      "get comments"
+      "get comments",
     );
   }
 
   async nextPage(postId: PostId | null) {
     if (this.isLoading || this.comments.length < 5) return;
-    this.setPage(this.page + 1);
+    // only advance once the page is actually in hand — incrementing up front
+    // left a permanent gap in the thread whenever the request failed
+    const nextPage = this.page + 1;
 
     await this.fetchData<GetCommentsResponse>(
       () =>
         this.api.getComments({
           ...this.filters,
           post_id: postId,
-          limit: 40,
-          page: this.page,
+          limit: PAGE_LIMIT,
+          page: nextPage,
         }),
       ({ comments }) => {
         const uniqueComments = comments.filter(
           (c) =>
             this.comments.findIndex((c2) => c2.comment.id === c.comment.id) ===
-            -1
+            -1,
         );
         if (uniqueComments.length > 0) {
-          const newComments = this.comments.concat(uniqueComments);
-          this.setComments(newComments);
+          this.setPage(nextPage);
+          this.setComments(this.comments.concat(uniqueComments));
         }
       },
       (e) => console.error(e),
       false,
-      "get comments next page: " + this.page
+      "get comments next page: " + nextPage,
     );
   }
 
   setComments(comments: CommentView[]) {
     this.comments = comments;
+    // drop collapse state for comments that are no longer loaded — that keeps it
+    // across pagination but clears it when the thread is torn down
+    if (this.collapsed.size > 0) {
+      const present = new Set(comments.map((c) => c.comment.id));
+      this.collapsed = new Set(
+        [...this.collapsed].filter((id) => present.has(id)),
+      );
+    }
     // easier for rendering
     this.buildTree(comments);
   }
@@ -190,7 +248,7 @@ class CommentsStore extends DataClass {
 
   async rateComment(
     commentId: CommentId,
-    score: (typeof Score)[keyof typeof Score]
+    score: (typeof Score)[keyof typeof Score],
   ) {
     // update local comment rating because api is slow
     this.updateTreeCommentRating(this.commentTree, commentId, undefined, score);
@@ -207,12 +265,12 @@ class CommentsStore extends DataClass {
           commentId,
           undefined,
           score,
-          comment_view.counts
+          comment_view.counts,
         );
       },
       (e) => console.error(e),
       true,
-      "rateComment"
+      "rateComment",
     );
   }
 
@@ -229,7 +287,7 @@ class CommentsStore extends DataClass {
     commentId: number,
     children?: CommentNode[],
     vote?: (typeof Score)[keyof typeof Score],
-    counts?: CommentNode["counts"]
+    counts?: CommentNode["counts"],
   ): boolean {
     for (const commentNode of commentTree) {
       if (commentNode.comment.id === commentId) {
@@ -247,7 +305,7 @@ class CommentsStore extends DataClass {
           commentId,
           children,
           vote,
-          counts
+          counts,
         )
       ) {
         this.commentTree = commentTree;
@@ -275,47 +333,9 @@ class CommentsStore extends DataClass {
       },
       (e) => console.error(e),
       false,
-      "createComment request"
+      "createComment request",
     );
   }
-}
-
-// yeah I really had no better idea. PRs welcome!
-function buildCommentTree(comments: CommentView[]) {
-  const commentMap: { [key: CommentId]: CommentNode } = {};
-  const commentTree: CommentNode[] = [];
-  for (const comment of comments) {
-    commentMap[comment.comment.path] = { ...comment, children: [] };
-  }
-
-  // Iterating over comments to build the tree structure
-  for (const comment of comments) {
-    const commentNode = commentMap[comment.comment.path];
-    if (!commentNode) {
-      // Skip if the comment does not have a valid parent path
-      // why can this happen? I saw it once
-      console.log("commentNode not found for comment", comment);
-      continue;
-    }
-
-    const parentPath = getParentPath(comment.comment.path);
-    const parentNode = commentMap[parentPath];
-
-    if (parentNode) {
-      parentNode.children.push(commentNode);
-    } else {
-      // If the parent node does not exist, add the comment node to the root level
-      commentTree.push(commentNode);
-    }
-  }
-  return commentTree;
-}
-
-// I think .pop is faster than splice here
-function getParentPath(path: string): string {
-  const pathSegments = path.split(".");
-  pathSegments.pop();
-  return pathSegments.join(".");
 }
 
 export const commentsStore = new CommentsStore();

@@ -10,7 +10,7 @@ import {
   SaveUserSettings,
   SortType,
 } from "lemmy-js-client";
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, observableDeep } from "mobx";
 
 import DataClass from "./dataClass";
 
@@ -27,7 +27,7 @@ class ProfileStore extends DataClass {
   constructor() {
     super();
     makeObservable(this, {
-      userProfile: observable.deep,
+      userProfile: observableDeep,
       isLoading: observable,
       username: observable,
       blockedPeople: observable,
@@ -80,7 +80,7 @@ class ProfileStore extends DataClass {
       (profile) => this.setProfile(profile),
       (e) => console.error(e),
       false,
-      "get profile _" + form.person_id
+      "get profile _" + form.person_id,
     );
   }
 
@@ -124,7 +124,7 @@ class ProfileStore extends DataClass {
         const currentUser = this.localUser;
         this.setLocalUser({ ...currentUser, local_user: newSettings });
       },
-      (e) => console.error(e)
+      (e) => console.error(e),
     );
   }
 
@@ -139,7 +139,7 @@ class ProfileStore extends DataClass {
         if (!blocked) {
           this.setBlocks(
             this.blockedPeople.filter((p) => p.target.id !== id),
-            this.blockedCommunities
+            this.blockedCommunities,
           );
         }
         if (this.userProfile.person_view.person.id === id) {
@@ -153,13 +153,13 @@ class ProfileStore extends DataClass {
           this.setBlocks(
             // @ts-ignore
             [...this.blockedPeople, { person: {}, target: person_view.person }],
-            this.blockedCommunities
+            this.blockedCommunities,
           );
         }
       },
       (e) => console.error(e),
       true,
-      "block person _" + id
+      "block person _" + id,
     );
   }
 }

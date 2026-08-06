@@ -1,6 +1,7 @@
 import React from "react";
-import { Dimensions, Image, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 
+import { Image } from "expo-image";
 import {
   CommunityView,
   Community as ICommunity,
@@ -19,7 +20,7 @@ export function hostname(url: string): string {
 }
 
 function isCommunityView(
-  item: ICommunity | CommunityView
+  item: ICommunity | CommunityView,
 ): item is CommunityView {
   return (item as CommunityView).community !== undefined;
 }
@@ -94,7 +95,8 @@ export function User({
           />
         ) : null}
         <Text style={{ color: "orange" }}>{user.person.name}</Text>
-        <Text>{user.counts.post_score + user.counts.comment_score} score</Text>
+        {/* lemmy 0.19 dropped post_score/comment_score from PersonAggregates */}
+        <Text>{user.counts.post_count} posts</Text>
         <Text>{user.counts.comment_count} comments</Text>
       </View>
     </TouchableOpacity>

@@ -17,7 +17,13 @@ import {
   SortType,
   SuccessResponse,
 } from "lemmy-js-client";
-import { action, makeObservable, observable } from "mobx";
+import {
+  action,
+  makeObservable,
+  observable,
+  observableDeep,
+  observableRef,
+} from "mobx";
 
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 import { Score } from "./apiClient";
@@ -68,11 +74,27 @@ const defaultFilters: Filters = {
   limit: 15,
 };
 
+/**
+ * Drops posts whose community lives on an instance the user ignores. Matched as
+ * a substring of the community actor_id ("https://lemmy.zone/c/name"), so an
+ * entry like "lemmy.ml" also hides "notlemmy.ml" — kept as-is to preserve the
+ * existing behaviour of saved ignore lists.
+ */
+function withoutIgnoredInstances(posts: PostView[]): PostView[] {
+  const ignored = preferences.getIgnoredInstances();
+  if (ignored.length === 0) return posts;
+  return posts.filter(
+    (post) => !ignored.some((inst) => post.community.actor_id.includes(inst)),
+  );
+}
+
 class PostStore extends DataClass {
   public posts: PostView[] = [];
   public communityPosts: PostView[] = [];
   public savedPosts: PostView[] = [];
-  public filters: Filters = defaultFilters;
+  // a copy — setFilters used to Object.assign straight onto `defaultFilters`,
+  // permanently rewriting the module constant that resetFilters restores from
+  public filters: Filters = { ...defaultFilters };
   public page = 1;
   public commPage = 1;
   public savedPostsPage = 1;
@@ -97,16 +119,19 @@ class PostStore extends DataClass {
     });
 
     makeObservable(this, {
-      posts: observable.deep,
+      // ref, not deep: every write replaces the array and the changed PostView
+      // (see updatePostById/concatPosts), so deep-proxying each post and all of
+      // its nested objects bought nothing but per-item overhead
+      posts: observableRef,
+      savedPosts: observableRef,
+      communityPosts: observableRef,
       page: observable,
       commPage: observable,
       savedPostsPage: observable,
-      savedPosts: observable.deep,
       singlePost: observable,
-      filters: observable.deep,
+      filters: observableDeep,
       isLoading: observable,
       feedKey: observable,
-      communityPosts: observable.deep,
       updatePostById: action,
       setPosts: action,
       setPage: action,
@@ -150,10 +175,10 @@ class PostStore extends DataClass {
   }
 
   setFilters(filters: Partial<Filters>) {
-    this.filters = Object.assign(this.filters, filters);
+    this.filters = { ...this.filters, ...filters };
     void asyncStorageHandler.setData(
       dataKeys.filters,
-      JSON.stringify(this.filters)
+      JSON.stringify(this.filters),
     );
   }
 
@@ -162,7 +187,7 @@ class PostStore extends DataClass {
   }
 
   resetFilters() {
-    this.filters = defaultFilters;
+    this.filters = { ...defaultFilters };
   }
 
   async getPosts(communityId?: number, communityName?: string) {
@@ -183,31 +208,16 @@ class PostStore extends DataClass {
         });
       },
       (result) => {
-        const ignoredInsts = preferences.getIgnoredInstances();
-        const len = ignoredInsts.length;
-        if (len > 0) {
-          result.posts = result.posts.filter((post) => {
-            // https://lemmy.zone/c/communityname
-            const inst = post.community.actor_id;
-            let includePost = true;
-            for (let i = 0; i < len; i++) {
-              const ignoredInst = ignoredInsts[i];
-              if (inst.includes(ignoredInst)) {
-                includePost = false;
-              }
-            }
-            return includePost;
-          });
-        }
+        const posts = withoutIgnoredInstances(result.posts);
         if (communityId || communityName) {
-          this.setCommunityPosts(result.posts);
+          this.setCommunityPosts(posts);
         } else {
-          this.setPosts(result.posts);
+          this.setPosts(posts);
         }
       },
       (e) => console.error(e),
       false,
-      "get posts"
+      "get posts",
     );
   }
 
@@ -222,7 +232,7 @@ class PostStore extends DataClass {
       },
       (e) => console.error(e),
       false,
-      "single post"
+      "single post",
     );
   }
 
@@ -240,15 +250,18 @@ class PostStore extends DataClass {
           community_id: communityId,
         }),
       ({ posts }) => {
+        // this path used to skip the ignored-instance filter entirely, so the
+        // paginated feed showed instances the user had hidden
+        const visible = withoutIgnoredInstances(posts);
         if (communityId) {
-          this.setCommunityPosts(posts);
+          this.setCommunityPosts(visible);
         } else {
-          this.setPosts(posts);
+          this.setPosts(visible);
         }
       },
       (e) => console.error(e),
       false,
-      "change page posts, page: " + page
+      "change page posts, page: " + page,
     );
   }
 
@@ -266,37 +279,22 @@ class PostStore extends DataClass {
           community_id: communityId,
         }),
       ({ posts }) => {
-        const ignoredInsts = preferences.getIgnoredInstances();
-        const len = ignoredInsts.length;
-        if (len > 0) {
-          posts = posts.filter((post) => {
-            // https://lemmy.zone/c/communityname
-            const inst = post.community.actor_id;
-            let includePost = true;
-            for (let i = 0; i < len; i++) {
-              const ignoredInst = ignoredInsts[i];
-              if (inst.includes(ignoredInst)) {
-                includePost = false;
-              }
-            }
-            return includePost;
-          });
-        }
+        const visible = withoutIgnoredInstances(posts);
         if (communityId) {
-          this.concatCommunityPosts(posts);
+          this.concatCommunityPosts(visible);
         } else {
-          this.concatPosts(posts);
+          this.concatPosts(visible);
         }
       },
       (e) => console.error(e),
       false,
-      "next page posts"
+      "next page posts",
     );
   }
 
   concatPosts(posts: PostView[]) {
     const uniquePosts = posts.filter(
-      (p) => this.posts.findIndex((p2) => p2.post.id === p.post.id) === -1
+      (p) => this.posts.findIndex((p2) => p2.post.id === p.post.id) === -1,
     );
     this.posts = this.posts.concat(uniquePosts);
   }
@@ -304,7 +302,7 @@ class PostStore extends DataClass {
   concatCommunityPosts(posts: PostView[]) {
     const uniquePosts = posts.filter(
       (p) =>
-        this.communityPosts.findIndex((p2) => p2.post.id === p.post.id) === -1
+        this.communityPosts.findIndex((p2) => p2.post.id === p.post.id) === -1,
     );
     this.communityPosts = this.communityPosts.concat(uniquePosts);
   }
@@ -312,7 +310,7 @@ class PostStore extends DataClass {
   async ratePost(
     postId: PostId,
     score: (typeof Score)[keyof typeof Score],
-    communityPost?: boolean
+    communityPost?: boolean,
   ) {
     // updating local state before request because they're hella slow rn
     this.updatePostById(postId, { my_vote: score }, communityPost);
@@ -325,18 +323,20 @@ class PostStore extends DataClass {
         }),
       ({ post_view }) => {
         this.updatePostById(postId, post_view);
-        if (this.singlePost) this.setSinglePost(post_view);
+        // only when the rated post *is* the open one — this used to replace the
+        // open post with whatever was voted on in the feed
+        if (this.singlePost?.post.id === postId) this.setSinglePost(post_view);
       },
       (e) => console.error(e),
       true,
-      "rate post"
+      "rate post",
     );
   }
 
   async savePost(
     form: SavePost,
     isSinglePost?: boolean,
-    useCommunity?: boolean
+    useCommunity?: boolean,
   ) {
     await this.fetchData<PostResponse>(
       () => this.api.savePost(form),
@@ -349,14 +349,14 @@ class PostStore extends DataClass {
       },
       (e) => console.error(e),
       false,
-      "save post"
+      "save post",
     );
   }
 
   updatePostById(
     postId: PostId,
     updatedPost: Partial<PostView>,
-    communityPost?: boolean
+    communityPost?: boolean,
   ) {
     if (communityPost) {
       this.communityPosts = this.communityPosts.map((post) => {
@@ -387,7 +387,7 @@ class PostStore extends DataClass {
         this.updatePostById(form.post_ids[0], { read: success }, communityPost),
       (e) => console.error(e),
       true,
-      "mark post read"
+      "mark post read",
     );
   }
 
@@ -397,14 +397,14 @@ class PostStore extends DataClass {
       () => null,
       (e) => console.error(e),
       false,
-      "delete post"
+      "delete post",
     );
   }
 
   async modRemovePost(
     form: RemovePost,
     isSinglePost?: boolean,
-    useCommunity?: boolean
+    useCommunity?: boolean,
   ) {
     await this.fetchData<PostResponse>(
       () => this.api.removePost(form),
@@ -416,14 +416,14 @@ class PostStore extends DataClass {
       },
       (e) => console.error(e),
       false,
-      "mod remove post"
+      "mod remove post",
     );
   }
 
   async modLockPost(
     form: LockPost,
     isSinglePost?: boolean,
-    useCommunity?: boolean
+    useCommunity?: boolean,
   ) {
     await this.fetchData<PostResponse>(
       () => this.api.lockPost(form),
@@ -433,7 +433,7 @@ class PostStore extends DataClass {
       },
       (e) => console.error(e),
       false,
-      "mod lock post"
+      "mod lock post",
     );
   }
 
@@ -443,14 +443,14 @@ class PostStore extends DataClass {
       () => true,
       (e) => console.error(e),
       false,
-      "mod ban community user"
+      "mod ban community user",
     );
   }
 
   async modFeaturePost(
     form: FeaturePost,
     isSinglePost?: boolean,
-    useCommunity?: boolean
+    useCommunity?: boolean,
   ) {
     await this.fetchData<PostResponse>(
       () => this.api.featurePost(form),
@@ -458,14 +458,14 @@ class PostStore extends DataClass {
         console.log(
           "result",
           post_view.post.featured_community,
-          post_view.post.featured_local
+          post_view.post.featured_local,
         );
         if (isSinglePost) this.setSinglePost(post_view);
         else this.updatePostById(post_view.post.id, post_view, useCommunity);
       },
       (e) => console.error(e),
       false,
-      "mod feature post"
+      "mod feature post",
     );
   }
 
@@ -485,7 +485,7 @@ class PostStore extends DataClass {
       },
       (e) => console.error(e),
       false,
-      "get saved posts"
+      "get saved posts",
     );
   }
 
@@ -506,13 +506,13 @@ class PostStore extends DataClass {
       },
       (e) => console.error(e),
       false,
-      "change saved posts page: " + page
+      "change saved posts page: " + page,
     );
   }
 
   concatSavedPosts(posts: PostView[]) {
     const uniquePosts = posts.filter(
-      (p) => this.savedPosts.findIndex((p2) => p2.post.id === p.post.id) === -1
+      (p) => this.savedPosts.findIndex((p2) => p2.post.id === p.post.id) === -1,
     );
     this.savedPosts = this.savedPosts.concat(uniquePosts);
   }

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
@@ -17,7 +11,7 @@ import { Toggler } from "./Looks";
 
 function Behavior() {
   const [ignoredInst, setIgnoredInst] = React.useState(
-    preferences.ignoredInstances.join(", ")
+    preferences.ignoredInstances.join(", "),
   );
   const { localUser: profile } = apiClient.profileStore;
   const { colors } = useTheme();
@@ -127,12 +121,13 @@ function Behavior() {
       {apiClient.profileStore.isLoading ? (
         <View
           style={{
+            // edge-anchored rather than a one-time Dimensions read, so the
+            // scrim still covers the screen after a rotation
             position: "absolute",
-            width: Dimensions.get("window").width,
-            height: Dimensions.get("window").height,
             top: 0,
             left: 0,
-            flex: 1,
+            right: 0,
+            bottom: 0,
             backgroundColor: "rgba(255,255,255, 0.15)",
             justifyContent: "center",
             alignItems: "center",

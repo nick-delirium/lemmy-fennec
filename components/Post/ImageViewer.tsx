@@ -1,9 +1,9 @@
 import React from "react";
-import { StyleSheet, ToastAndroid, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
 import { setImageAsync } from "expo-clipboard";
-import { documentDirectory, downloadAsync } from "expo-file-system";
+import { documentDirectory, downloadAsync } from "expo-file-system/legacy";
 import {
   addAssetsToAlbumAsync,
   createAlbumAsync,
@@ -14,6 +14,7 @@ import {
 import ImageView from "react-native-image-viewing";
 
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
+import { showToast } from "../../utils/toast";
 
 interface Props {
   url: string;
@@ -35,17 +36,9 @@ function ImageViewer({ url, name, visible, setIsVisible, shareImage }: Props) {
     try {
       const res = await downloadAsync(url, fileUri);
       await saveFile(res.uri);
-      ToastAndroid.showWithGravity(
-        "Image saved",
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER
-      );
+      showToast("Image saved");
     } catch (err) {
-      ToastAndroid.showWithGravity(
-        "Couldn't save image",
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER
-      );
+      showToast("Couldn't save image");
       console.log("FS Err: ", err);
     }
   };
@@ -59,7 +52,7 @@ function ImageViewer({ url, name, visible, setIsVisible, shareImage }: Props) {
         reader.onloadend = () => {
           const base64data = reader.result.toString().split(",")[1];
           setImageAsync(base64data.toString()).catch((err) =>
-            console.log("Copy err: ", err)
+            console.log("Copy err: ", err),
           );
         };
       });

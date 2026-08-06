@@ -1,6 +1,7 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { Image } from "expo-image";
 import { PostView } from "lemmy-js-client";
 
 import { hostname } from "../../Screens/Search/ListComponents";
@@ -47,6 +48,15 @@ function PostTitle({
             source={{ uri: post.community.icon }}
             style={styles.communityIcon}
             accessibilityLabel={"Icon for community: " + post.community.name}
+            cachePolicy={"memory-disk"}
+            recyclingKey={post.community.icon}
+            onError={({ error }) =>
+              console.warn(
+                "community icon failed to load",
+                post.community.icon,
+                error,
+              )
+            }
           />
         </TouchableOpacity>
       </View>

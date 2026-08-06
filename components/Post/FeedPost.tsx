@@ -49,7 +49,7 @@ function Post({
           post_ids: [post.post.id],
           read: true,
         },
-        useCommunity
+        useCommunity,
       );
     }
   };

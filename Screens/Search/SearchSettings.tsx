@@ -1,14 +1,23 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
-import { Picker } from "@react-native-picker/picker";
 import { useTheme } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 
 import { Text } from "../../ThemedComponents";
+import Select from "../../components/Select";
 import { apiClient } from "../../store/apiClient";
 import { ListingTypeMap } from "../../store/postStore";
 import { SearchTypeMap } from "../../store/searchStore";
+
+const searchTypeOptions = Object.values(SearchTypeMap).map((type) => ({
+  label: type,
+  value: type,
+}));
+const listingTypeOptions = Object.values(ListingTypeMap).map((type) => ({
+  label: type,
+  value: type,
+}));
 
 function SearchSettings() {
   const { colors } = useTheme();
@@ -16,61 +25,39 @@ function SearchSettings() {
   return (
     <View style={{ ...styles.searchControls, borderColor: colors.border }}>
       <View style={styles.flex}>
-        <Text>Search type:</Text>
-        <Picker
-          style={{
-            height: 50,
-            color: colors.text,
-            borderColor: colors.border,
-            borderWidth: 1,
-          }}
-          selectedValue={apiClient.searchStore.type}
-          mode={"dropdown"}
-          dropdownIconColor={colors.text}
-          itemStyle={{ color: colors.text, backgroundColor: colors.card }}
-          onValueChange={(itemValue) =>
-            apiClient.searchStore.setSearchType(itemValue)
-          }
-        >
-          {Object.values(SearchTypeMap).map((type) => (
-            <Picker.Item key={type} label={type} value={type} />
-          ))}
-        </Picker>
+        <Text style={styles.label}>Search type:</Text>
+        <Select
+          title={"Search type"}
+          accessibilityLabel={"Search type picker"}
+          value={apiClient.searchStore.type}
+          options={searchTypeOptions}
+          onChange={(value) => apiClient.searchStore.setSearchType(value)}
+        />
       </View>
       <View style={styles.flex}>
-        <Text>Listing type:</Text>
-        <Picker
-          style={{
-            height: 50,
-            color: colors.text,
-            borderColor: colors.border,
-            borderWidth: 1,
-          }}
-          selectedValue={apiClient.searchStore.listingType}
-          mode={"dropdown"}
-          dropdownIconColor={colors.text}
-          itemStyle={{ color: colors.text, backgroundColor: colors.card }}
-          onValueChange={(itemValue) =>
-            apiClient.searchStore.setListingType(itemValue)
-          }
-        >
-          {Object.values(ListingTypeMap).map((type) => (
-            <Picker.Item key={type} label={type} value={type} />
-          ))}
-        </Picker>
+        <Text style={styles.label}>Listing type:</Text>
+        <Select
+          title={"Listing type"}
+          accessibilityLabel={"Listing type picker"}
+          value={apiClient.searchStore.listingType}
+          options={listingTypeOptions}
+          onChange={(value) => apiClient.searchStore.setListingType(value)}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  flex: { flex: 1, gap: 4 },
+  label: { fontSize: 13, opacity: 0.6 },
   searchPage: { flex: 1, padding: 6 },
   searchControls: {
     borderBottomWidth: 1,
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 8,
+    padding: 8,
   },
   inputRow: {
     paddingHorizontal: 6,

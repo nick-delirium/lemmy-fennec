@@ -1,5 +1,7 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+
+import { Image } from "expo-image";
 
 function CommunityIcon({
   communityPic,

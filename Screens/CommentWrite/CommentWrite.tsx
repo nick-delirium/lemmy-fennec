@@ -2,7 +2,6 @@ import React from "react";
 import {
   ActivityIndicator,
   BackHandler,
-  Dimensions,
   ScrollView,
   StyleSheet,
   View,
@@ -20,10 +19,12 @@ import {
 import { commonStyles } from "../../commonStyles";
 import MiniComment from "../../components/TinyComment";
 import { apiClient } from "../../store/apiClient";
+import useBottomInset from "../../utils/useBottomInset";
 
 function CommentWrite({ navigation, route }) {
   const [text, setText] = React.useState("");
   const { colors } = useTheme();
+  const bottomInset = useBottomInset();
 
   const item = apiClient.commentsStore.replyTo;
   const isEdit = item?.isEdit;
@@ -53,14 +54,14 @@ function CommentWrite({ navigation, route }) {
             parent_id: apiClient.commentsStore.replyTo.parent_id,
             post_id: apiClient.commentsStore.replyTo.postId,
           },
-          item.parent_id === undefined
+          item.parent_id === undefined,
         )
         .then(() => {
           navigation.goBack();
         });
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingBottom: bottomInset }}>
       <ScrollView style={{ flex: 1 }}>
         <ScrollView
           horizontal={true}
@@ -132,10 +133,10 @@ export function ButtonsRow({
       };
       const subscription = BackHandler.addEventListener(
         "hardwareBackPress",
-        onBackPress
+        onBackPress,
       );
       return () => subscription.remove();
-    }, [showLinkPrompt])
+    }, [showLinkPrompt]),
   );
 
   const saveUrl = () => {
@@ -159,9 +160,9 @@ export function ButtonsRow({
             width: "70%",
             position: "absolute",
             bottom: 80,
-            left:
-              Dimensions.get("window").width / 2 -
-              (Dimensions.get("window").width * 0.7) / 2,
+            // (100% - 70%) / 2 — was hand-computed from Dimensions, which is
+            // captured once and so went off-centre after a rotation
+            left: "15%",
             padding: 8,
             borderRadius: 8,
             borderWidth: 1,

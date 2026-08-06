@@ -17,7 +17,7 @@ const PROTECTED_MD =
 
 const MENTION = new RegExp(
   `(^|[\\s(*_~>"',])([!@])(${NAME})@(${INSTANCE})`,
-  "g"
+  "g",
 );
 
 const linkifyChunk = (chunk: string) =>

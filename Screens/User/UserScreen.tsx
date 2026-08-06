@@ -47,7 +47,7 @@ function UserScreen({
     );
   }
   return (
-    <Tab.Navigator initialRouteName={"ForeignUser"}>
+    <Tab.Navigator id={undefined} initialRouteName={"ForeignUser"}>
       <Tab.Screen
         options={{
           tabBarLabel: "Profile",

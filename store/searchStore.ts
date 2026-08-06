@@ -77,7 +77,7 @@ class SearchStore extends DataClass {
       (data) => {
         results = data;
       },
-      (e) => console.error(e)
+      (e) => console.error(e),
     );
     return results;
   }

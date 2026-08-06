@@ -1,7 +1,8 @@
 import React from "react";
-import { Image, Linking, View } from "react-native";
+import { Linking, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
+import { Image } from "expo-image";
 import { Person } from "lemmy-js-client";
 
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";

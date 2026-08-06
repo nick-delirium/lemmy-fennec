@@ -11,13 +11,13 @@ import { ButtonsRow } from "../CommentWrite/CommentWrite";
 function ProfileSettings() {
   const { colors } = useTheme();
   const [displayName, setDisplayName] = React.useState(
-    apiClient.profileStore.localUser?.person.display_name || ""
+    apiClient.profileStore.localUser?.person.display_name || "",
   );
   const [bio, setBio] = React.useState(
-    apiClient.profileStore.localUser?.person.bio || ""
+    apiClient.profileStore.localUser?.person.bio || "",
   );
   const [email, setEmail] = React.useState(
-    apiClient.profileStore.localUser?.local_user.email || ""
+    apiClient.profileStore.localUser?.local_user.email || "",
   );
 
   const onSave = () => {

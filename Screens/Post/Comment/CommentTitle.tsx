@@ -14,7 +14,7 @@ function CommentTitle({
 }) {
   const commentDate = React.useMemo(
     () => makeDateString(comment.comment.published),
-    []
+    [],
   );
   return (
     <View style={styles.topRow}>
@@ -33,7 +33,7 @@ function CommentTitle({
               <Text style={styles.opText}>BOT</Text>
             </View>
           ) : null}
-          {comment.creator.admin ? <Icon name={"shield"} size={16} /> : null}
+          {comment.creator_is_admin ? <Icon name={"shield"} size={16} /> : null}
         </View>
       </TouchableOpacity>
       <Text style={styles.date}>{commentDate}</Text>

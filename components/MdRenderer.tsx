@@ -1,12 +1,12 @@
 import React, { isValidElement } from "react";
-import { Linking, TextStyle, useColorScheme } from "react-native";
+import { Linking, TextStyle, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import Markdown, { Renderer } from "react-native-marked";
+import { Renderer, useMarkdown } from "react-native-marked";
 
 import { Text, TouchableOpacity } from "../ThemedComponents";
-import { mdTheme } from "../commonStyles";
+import { mdCodeBackground } from "../commonStyles";
 import { apiClient } from "../store/apiClient";
 import {
   COMMUNITY_SCHEME,
@@ -14,8 +14,13 @@ import {
   linkifyMentions,
 } from "../utils/lemmyLinks";
 
-const hasChildren = (element: React.ReactNode) =>
-  isValidElement(element) && Boolean(element.props.children);
+// react 19 narrows isValidElement to ReactElement<unknown>, so the prop shape
+// has to be named explicitly
+const hasChildren = (
+  element: React.ReactNode,
+): element is React.ReactElement<{ children: React.ReactNode }> =>
+  isValidElement<{ children?: React.ReactNode }>(element) &&
+  Boolean(element.props.children);
 
 const ReactChildrenText = (children): string => {
   if (hasChildren(children)) return ReactChildrenText(children.props.children);
@@ -93,7 +98,7 @@ class CustomRenderer extends Renderer {
   link(
     children: string | React.ReactNode[],
     href: string,
-    styles?: TextStyle
+    styles?: TextStyle,
   ): React.ReactNode {
     const text = ReactChildrenText(children[0]);
     return (
@@ -129,25 +134,48 @@ class CustomRenderer extends Renderer {
 
 function MdRenderer({ value }) {
   const navigation = useNavigation();
-  const RendererEx = new CustomRenderer(navigation);
+  const { colors, dark } = useTheme();
 
-  const sch = useColorScheme();
-  const { colors } = useTheme();
-  const theme = sch === "dark" ? mdTheme.dark : mdTheme.light;
+  // the renderer identity keys useMarkdown's parse cache — rebuilding it every
+  // render re-parsed the markdown every render
+  const renderer = React.useMemo(
+    () => new CustomRenderer(navigation),
+    [navigation],
+  );
+  // Taken from the active navigation theme, not useColorScheme(). The palette
+  // used to follow the *system* light/dark setting while the app rendered with
+  // preferences.theme, so an app theme that disagreed with the system put dark
+  // text on a dark background and post bodies became invisible.
+  const theme = React.useMemo(
+    () => ({
+      colors: {
+        text: colors.text,
+        link: colors.primary,
+        border: colors.border,
+        code: dark ? mdCodeBackground.dark : mdCodeBackground.light,
+      },
+    }),
+    [colors.text, colors.primary, colors.border, dark],
+  );
 
-  const themeWithBg = { ...theme, backgroundColor: colors.background };
   const content = React.useMemo(() => linkifyMentions(value), [value]);
+  const elements = useMarkdown(content, {
+    renderer,
+    theme,
+    // anything the theme above doesn't override still matches the app
+    colorScheme: dark ? "dark" : "light",
+  });
+
+  // `Markdown` renders its blocks into a FlatList. Feed rows and comment rows
+  // are themselves FlatList items, so that nested a VirtualizedList inside a
+  // VirtualizedList of the same orientation, which disables virtualisation for
+  // the whole list. Rendering the nodes into a plain View avoids that.
   return (
-    <Markdown
-      value={content}
-      flatListProps={{
-        style: { backgroundColor: colors.background },
-      }}
-      renderer={RendererEx}
-      theme={{
-        colors: themeWithBg,
-      }}
-    />
+    <View style={{ backgroundColor: colors.background }}>
+      {elements.map((element, index) => (
+        <React.Fragment key={index}>{element}</React.Fragment>
+      ))}
+    </View>
   );
 }
 

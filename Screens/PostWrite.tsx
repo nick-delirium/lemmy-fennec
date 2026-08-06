@@ -1,14 +1,9 @@
 import React from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  ToastAndroid,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { UploadImageResponse } from "lemmy-js-client";
 import { observer } from "mobx-react-lite";
@@ -16,6 +11,8 @@ import { observer } from "mobx-react-lite";
 import { Icon, Text, TextInput, TouchableOpacity } from "../ThemedComponents";
 import { commonColors } from "../commonStyles";
 import { apiClient } from "../store/apiClient";
+import { showToast } from "../utils/toast";
+import useBottomInset from "../utils/useBottomInset";
 import { ButtonsRow } from "./CommentWrite/CommentWrite";
 import { Toggler } from "./Settings/Looks";
 
@@ -33,6 +30,7 @@ function PostWrite({
 }: NativeStackScreenProps<any, "WritePost">) {
   const { communityName, communityId, isEdit, content } = route.params;
   const { colors } = useTheme();
+  const bottomInset = useBottomInset();
   const [image, setImage] = React.useState<ImagePicker.ImagePickerAsset>(null);
   const [text, setText] = React.useState("");
   const [title, setTitle] = React.useState("");
@@ -54,11 +52,7 @@ function PostWrite({
     if (permission.granted === false) {
       const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (result.granted === false)
-        return ToastAndroid.showWithGravity(
-          "You need to grant permission to access the library",
-          ToastAndroid.SHORT,
-          ToastAndroid.CENTER
-        );
+        return showToast("You need to grant permission to access the library");
     }
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -99,16 +93,12 @@ function PostWrite({
             setUrl(
               apiClient.currentInstance +
                 "/pictrs/image/" +
-                result.files[0].file
+                result.files[0].file,
             );
           })
           .catch((e) => {
             console.log(e);
-            ToastAndroid.showWithGravity(
-              "Network error",
-              ToastAndroid.SHORT,
-              ToastAndroid.CENTER
-            );
+            showToast("Network error");
           });
       }
     } catch (e) {
@@ -149,18 +139,14 @@ function PostWrite({
         })
         .catch((e) => {
           console.log(e);
-          ToastAndroid.showWithGravity(
-            "Network error",
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          );
+          showToast("Network error");
         })
         .finally(() => setIsLoading(false));
     }
   };
 
   return (
-    <View style={{ flex: 1, gap: 8 }}>
+    <View style={{ flex: 1, gap: 8, paddingBottom: bottomInset }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
         <View style={{ paddingHorizontal: 8, gap: 12 }}>
           <View style={{ flexDirection: "row", gap: 6 }}>

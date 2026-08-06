@@ -60,12 +60,12 @@ function FloatingMenu({
   const hideRead = () => {
     if (useCommunity) {
       const newPosts = apiClient.postStore.communityPosts.filter(
-        (post) => post.read === false
+        (post) => post.read === false,
       );
       apiClient.postStore.setCommunityPosts(newPosts);
     } else {
       const newPosts = apiClient.postStore.posts.filter(
-        (post) => post.read === false
+        (post) => post.read === false,
       );
       apiClient.postStore.setPosts(newPosts);
     }
@@ -168,7 +168,7 @@ function ListingMenu({
   closeSelf: () => void;
 }) {
   const setListing = (
-    listing: (typeof ListingTypeMap)[keyof typeof ListingTypeMap]
+    listing: (typeof ListingTypeMap)[keyof typeof ListingTypeMap],
   ) => {
     void apiClient.postStore.setFilters({ type_: listing });
     void apiClient.postStore.getPosts();

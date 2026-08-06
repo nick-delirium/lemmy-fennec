@@ -13,7 +13,7 @@ function FollowedCommunity({ item }: { item: ICommunity }) {
   const navigation = useNavigation();
   const isFavorite =
     apiClient.communityStore.favoriteCommunities.findIndex(
-      (i) => i.id === item.id
+      (i) => i.id === item.id,
     ) !== -1;
   const onPress = () => {
     if (isFavorite) {

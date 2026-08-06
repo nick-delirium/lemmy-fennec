@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Image,
   Linking,
   RefreshControl,
   ScrollView,
@@ -10,6 +9,7 @@ import {
 
 import { useTheme } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Image } from "expo-image";
 import { observer } from "mobx-react-lite";
 
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
@@ -77,7 +77,7 @@ function Profile({ navigation }: NativeStackScreenProps<any, "Profile">) {
         <View style={{ gap: 8 }}>
           {hasBanner ? (
             <Image
-              resizeMode={"cover"}
+              contentFit={"cover"}
               source={{ uri: profile.person.banner }}
               style={{
                 width: "100%",

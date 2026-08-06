@@ -75,11 +75,11 @@ function SortMenu({
   closeSelf: () => void;
 }) {
   const setSorting = (
-    sort: (typeof CommentSortTypeMap)[keyof typeof CommentSortTypeMap]
+    sort: (typeof CommentSortTypeMap)[keyof typeof CommentSortTypeMap],
   ) => {
     void apiClient.commentsStore.setFilters({ sort: sort });
     void apiClient.commentsStore.getComments(
-      apiClient.postStore.singlePost.post.id
+      apiClient.postStore.singlePost.post.id,
     );
     closeSelf();
   };

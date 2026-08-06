@@ -1,7 +1,8 @@
 import React from "react";
-import { Image, Linking, ScrollView, StyleSheet, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
+import { Image } from "expo-image";
 import { observer } from "mobx-react-lite";
 
 import { Text, TouchableOpacity } from "../../ThemedComponents";
@@ -14,9 +15,8 @@ function CommunityInfos({ navigation, route }) {
   React.useEffect(() => {
     if (community === null && !apiClient.communityStore.isLoading) {
       void apiClient.communityStore.getCommunity(
-        apiClient.loginDetails,
         route.params.id,
-        route.params.name
+        route.params.name,
       );
     }
   }, [community, navigation]);
@@ -35,18 +35,19 @@ function CommunityInfos({ navigation, route }) {
     community.subscribed === "Pending"
       ? community.subscribed
       : isFollowing
-      ? "Unsubscribe"
-      : "Subscribe";
+        ? "Unsubscribe"
+        : "Subscribe";
 
   const follow = () => {
     if (community.subscribed === "Pending") return;
     void apiClient.communityStore.followCommunity(
       community.community.id,
-      !isFollowing
+      !isFollowing,
     );
   };
 
   const createPost = () => {
+    if (!apiClient.isLoggedIn) return;
     navigation.navigate("PostWrite", {
       communityName: community.community.name,
       communityId: community.community.id,
@@ -56,14 +57,14 @@ function CommunityInfos({ navigation, route }) {
   const toggleBlockCommunity = () => {
     void apiClient.communityStore.blockCommunity(
       community.community.id,
-      !community.blocked
+      !community.blocked,
     );
   };
 
   const canPost =
     !community?.community.posting_restricted_to_mods ||
     apiClient.profileStore.moderatedCommunities.findIndex(
-      (c) => c.community.id === community.community.id
+      (c) => c.community.id === community.community.id,
     ) !== -1;
 
   return (

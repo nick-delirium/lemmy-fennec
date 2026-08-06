@@ -34,61 +34,57 @@ export class Preferences {
 
   constructor() {
     makeAutoObservable(this);
-    asyncStorageHandler.readData(dataKeys.readScroll).then((value) => {
-      this.setReadOnScroll(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.blurNsfw).then((value) => {
-      this.setBlurNsfw(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.leftHanded).then((value) => {
-      this.setLeftHanded(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.collapseParent).then((value) => {
-      this.setCollapseParentComment(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.compactPostLayout).then((value) => {
-      this.setPostLayout(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.paginatedFeed).then((value) => {
-      this.setPaginatedFeed(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.theme).then((value) => {
-      switch (value) {
-        case "1":
-          this.setTheme(Theme.Light);
-          break;
-        case "2":
-          this.setTheme(Theme.Dark);
-          break;
-        case "3":
-          this.setTheme(Theme.Amoled);
-          break;
-        case "0":
-        default:
-          this.setTheme(Theme.System);
-          break;
-      }
-    });
-    asyncStorageHandler.readData(dataKeys.hapticsOff).then((value) => {
-      this.setHapticsOff(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.ignoredInstances).then((value) => {
-      if (value) {
-        this.setIgnoredInstances(value.split(", "));
-      }
-    });
-    asyncStorageHandler.readData(dataKeys.votingButtons).then((value) => {
-      this.setSwapVotingButtons(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.lowTraffic).then((value) => {
-      this.setLowTrafficMode(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.dynamicHeaders).then((value) => {
-      this.setDisableDynamicHeaders(value === "1");
-    });
-    asyncStorageHandler.readData(dataKeys.altUpvote).then((value) => {
-      this.setAltUpvote(value === "1");
-    });
+    void this.restore();
+  }
+
+  /** One multiGet rather than 13 separate reads on the startup path. */
+  private async restore() {
+    const stored = await asyncStorageHandler.readMany([
+      dataKeys.readScroll,
+      dataKeys.blurNsfw,
+      dataKeys.leftHanded,
+      dataKeys.collapseParent,
+      dataKeys.compactPostLayout,
+      dataKeys.paginatedFeed,
+      dataKeys.theme,
+      dataKeys.hapticsOff,
+      dataKeys.ignoredInstances,
+      dataKeys.votingButtons,
+      dataKeys.lowTraffic,
+      dataKeys.dynamicHeaders,
+      dataKeys.altUpvote,
+    ]);
+
+    this.setReadOnScroll(stored[dataKeys.readScroll] === "1");
+    this.setBlurNsfw(stored[dataKeys.blurNsfw] === "1");
+    this.setLeftHanded(stored[dataKeys.leftHanded] === "1");
+    this.setCollapseParentComment(stored[dataKeys.collapseParent] === "1");
+    this.setPostLayout(stored[dataKeys.compactPostLayout] === "1");
+    this.setPaginatedFeed(stored[dataKeys.paginatedFeed] === "1");
+    this.setHapticsOff(stored[dataKeys.hapticsOff] === "1");
+    this.setSwapVotingButtons(stored[dataKeys.votingButtons] === "1");
+    this.setLowTrafficMode(stored[dataKeys.lowTraffic] === "1");
+    this.setDisableDynamicHeaders(stored[dataKeys.dynamicHeaders] === "1");
+    this.setAltUpvote(stored[dataKeys.altUpvote] === "1");
+
+    switch (stored[dataKeys.theme]) {
+      case "1":
+        this.setTheme(Theme.Light);
+        break;
+      case "2":
+        this.setTheme(Theme.Dark);
+        break;
+      case "3":
+        this.setTheme(Theme.Amoled);
+        break;
+      case "0":
+      default:
+        this.setTheme(Theme.System);
+        break;
+    }
+
+    const ignored = stored[dataKeys.ignoredInstances];
+    if (ignored) this.setIgnoredInstances(ignored.split(","));
   }
 
   setAltUpvote(altUpvote: boolean) {
@@ -112,7 +108,7 @@ export class Preferences {
     this.disableDynamicHeaders = disableDynamicHeaders;
     void asyncStorageHandler.setData(
       dataKeys.dynamicHeaders,
-      disableDynamicHeaders ? "1" : "0"
+      disableDynamicHeaders ? "1" : "0",
     );
   }
 
@@ -120,7 +116,7 @@ export class Preferences {
     this.lowTrafficMode = lowTrafficMode;
     void asyncStorageHandler.setData(
       dataKeys.lowTraffic,
-      lowTrafficMode ? "1" : "0"
+      lowTrafficMode ? "1" : "0",
     );
   }
 
@@ -128,15 +124,19 @@ export class Preferences {
     this.swapVotingButtons = swapVotingButtons;
     void asyncStorageHandler.setData(
       dataKeys.votingButtons,
-      swapVotingButtons ? "1" : "0"
+      swapVotingButtons ? "1" : "0",
     );
   }
 
   setIgnoredInstances(instances: string[]) {
-    this.ignoredInstances = instances;
+    // a blank entry (trailing comma in the settings field) would match every
+    // actor_id via String.includes and hide the whole feed
+    this.ignoredInstances = instances
+      .map((instance) => instance.trim())
+      .filter(Boolean);
     void asyncStorageHandler.setData(
       dataKeys.ignoredInstances,
-      instances.join(", ")
+      this.ignoredInstances.join(", "),
     );
   }
 
@@ -148,7 +148,7 @@ export class Preferences {
     this.paginatedFeed = paginatedFeed;
     void asyncStorageHandler.setData(
       dataKeys.paginatedFeed,
-      paginatedFeed ? "1" : "0"
+      paginatedFeed ? "1" : "0",
     );
   }
 
@@ -156,7 +156,7 @@ export class Preferences {
     this.hapticsOff = hapticsOff;
     void asyncStorageHandler.setData(
       dataKeys.hapticsOff,
-      hapticsOff ? "1" : "0"
+      hapticsOff ? "1" : "0",
     );
   }
 
@@ -169,7 +169,7 @@ export class Preferences {
     this.compactPostLayout = compactPostLayout;
     void asyncStorageHandler.setData(
       dataKeys.compactPostLayout,
-      compactPostLayout ? "1" : "0"
+      compactPostLayout ? "1" : "0",
     );
   }
 
@@ -177,7 +177,7 @@ export class Preferences {
     this.collapseParentComment = collapseParentComment;
     void asyncStorageHandler.setData(
       dataKeys.collapseParent,
-      collapseParentComment ? "1" : "0"
+      collapseParentComment ? "1" : "0",
     );
   }
 
@@ -185,7 +185,7 @@ export class Preferences {
     this.leftHanded = leftHanded;
     void asyncStorageHandler.setData(
       dataKeys.leftHanded,
-      leftHanded ? "1" : "0"
+      leftHanded ? "1" : "0",
     );
   }
 
@@ -198,7 +198,7 @@ export class Preferences {
     this.readOnScroll = readOnScroll;
     void asyncStorageHandler.setData(
       dataKeys.readScroll,
-      readOnScroll ? "1" : "0"
+      readOnScroll ? "1" : "0",
     );
   }
 

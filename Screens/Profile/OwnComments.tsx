@@ -37,7 +37,7 @@ function OwnComments({ navigation }) {
 
   const nextPage = () => {
     apiClient.profileStore.setProfilePage(
-      apiClient.profileStore.profilePage + 1
+      apiClient.profileStore.profilePage + 1,
     );
     void apiClient.profileStore.getProfile({
       person_id: apiClient.profileStore.userProfile.person_view.person.id,
@@ -47,7 +47,7 @@ function OwnComments({ navigation }) {
   const prevPage = () => {
     if (apiClient.profileStore.profilePage === 1) return;
     apiClient.profileStore.setProfilePage(
-      apiClient.profileStore.profilePage - 1
+      apiClient.profileStore.profilePage - 1,
     );
     void apiClient.profileStore.getProfile({
       person_id: apiClient.profileStore.userProfile.person_view.person.id,

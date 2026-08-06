@@ -1,7 +1,8 @@
 import React from "react";
-import { Image, Share, StyleSheet, View } from "react-native";
+import { Share, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
+import { Image } from "expo-image";
 import { observer } from "mobx-react-lite";
 
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
@@ -33,15 +34,21 @@ function Media({ url, name, isNsfw, small }: Props) {
     return small ? styles.noImageSmall : styles.noImage;
   }, [small]);
 
+  const shouldBlur = isNsfw && !preferences.unblurNsfw;
+
   return (
     <>
-      <ImageViewer
-        url={url}
-        name={name}
-        visible={visible}
-        setIsVisible={setIsVisible}
-        shareImage={shareImage}
-      />
+      {/* mounted only while open: ImageViewer calls expo-media-library's
+          usePermissions, which otherwise ran once per row in the feed */}
+      {visible ? (
+        <ImageViewer
+          url={url}
+          name={name}
+          visible={visible}
+          setIsVisible={setIsVisible}
+          shareImage={shareImage}
+        />
+      ) : null}
       <TouchableOpacity onPressCb={() => setIsVisible(true)} simple>
         {preferences.lowTrafficMode ? (
           <View style={{ ...containerStyle, backgroundColor: colors.card }}>
@@ -57,11 +64,18 @@ function Media({ url, name, isNsfw, small }: Props) {
           <Image
             source={{ uri: url }}
             style={imgStyle}
-            progressiveRenderingEnabled
-            resizeMode={"contain"}
+            contentFit={"contain"}
             alt={"Image for post" + name}
             accessibilityLabel={"Image for post" + name}
-            blurRadius={isNsfw && !preferences.unblurNsfw ? 55 : 0}
+            cachePolicy={"memory-disk"}
+            // rows are recycled by the feed's FlatList; without this the
+            // previous post's image lingers until the new one decodes
+            recyclingKey={url}
+            // only set when actually blurring, rather than passing 0
+            {...(shouldBlur ? { blurRadius: 55 } : null)}
+            onError={({ error }) =>
+              console.warn("image failed to load", url, error)
+            }
           />
         )}
       </TouchableOpacity>

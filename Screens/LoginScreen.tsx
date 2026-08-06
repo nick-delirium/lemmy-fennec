@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  ToastAndroid,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -17,11 +16,11 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { LemmyHttp } from "lemmy-js-client";
 import { observer } from "mobx-react-lite";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { Text, TextInput, TouchableOpacity } from "../ThemedComponents";
 import { asyncStorageHandler, dataKeys } from "../asyncStorage";
 import { apiClient } from "../store/apiClient";
+import { showToast } from "../utils/toast";
 
 function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
   const passRef = React.useRef<any>(null);
@@ -55,28 +54,24 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
         await Promise.all([
           asyncStorageHandler.setSecureData(
             dataKeys.login,
-            JSON.stringify(auth)
+            JSON.stringify(auth),
           ),
           asyncStorageHandler.setData(dataKeys.instance, instanceHref),
           asyncStorageHandler.setData(
             dataKeys.username,
-            loginDetails.username_or_email
+            loginDetails.username_or_email,
           ),
         ]);
         apiClient.setActiveJWT(auth.jwt);
         navigation.replace("Home");
       })
       .catch(() => {
-        ToastAndroid.showWithGravity(
-          "Couldn't login to chosen instance; check your credentials?",
-          ToastAndroid.SHORT,
-          ToastAndroid.TOP
-        );
+        showToast("Couldn't login to chosen instance; check your credentials?");
       });
   };
 
   return (
-    <SafeAreaProvider>
+    <View style={{ flex: 1 }}>
       <StatusBar style="auto" />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
@@ -212,7 +207,7 @@ function LoginScreen({ navigation }: NativeStackScreenProps<any, "Login">) {
           </ScrollView>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
-    </SafeAreaProvider>
+    </View>
   );
 }
 

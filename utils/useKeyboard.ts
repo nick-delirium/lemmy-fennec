@@ -16,11 +16,11 @@ const useKeyboard = () => {
 
     const showSubscription = Keyboard.addListener(
       "keyboardDidShow",
-      onKeyboardDidShow
+      onKeyboardDidShow,
     );
     const hideSubscription = Keyboard.addListener(
       "keyboardDidHide",
-      onKeyboardDidHide
+      onKeyboardDidHide,
     );
     return () => {
       showSubscription.remove();

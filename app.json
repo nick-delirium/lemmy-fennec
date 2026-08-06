@@ -21,7 +21,8 @@
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-image"
     ],
     "splash": {
       "image": "./assets/splash.png",
@@ -33,6 +34,7 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.nickdelirium.arctius",
       "config": {
         "usesNonExemptEncryption": false
       },

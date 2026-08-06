@@ -146,6 +146,7 @@ function ReplyActions({
   navigation: any;
 }) {
   const openReply = () => {
+    if (!apiClient.isLoggedIn) return;
     markRead();
     apiClient.commentsStore.setReplyTo({
       postId: item.post.id,
@@ -162,7 +163,7 @@ function ReplyActions({
   const openPost = () => {
     const path = item.comment.path.split(".");
     const replyId = path.findIndex(
-      (id) => parseInt(id, 10) === item.comment.id
+      (id) => parseInt(id, 10) === item.comment.id,
     );
     const parentId = path.length > 2 ? path[replyId - 1] : path[1];
     navigation.navigate("Post", {

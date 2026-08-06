@@ -88,7 +88,7 @@ class ApiClient {
     if (coldRun) return;
     void asyncStorageHandler.setSecureData(
       dataKeys.accounts,
-      JSON.stringify(accounts)
+      JSON.stringify(accounts),
     );
   }
 
@@ -105,7 +105,7 @@ class ApiClient {
           await this.createLoggedClient(
             possibleJWT,
             possibleInstance,
-            possibleUsername
+            possibleUsername,
           );
         } else {
           const client: LemmyHttp = new LemmyHttp(
@@ -115,7 +115,7 @@ class ApiClient {
               headers: {
                 "User-Agent": `Arctius Android 0.2.4`,
               },
-            }
+            },
           );
           this.setClient(client);
         }
@@ -197,7 +197,7 @@ class ApiClient {
 
   setReportMode(
     mode: (typeof ReportMode)[keyof typeof ReportMode],
-    itemId: number | null
+    itemId: number | null,
   ) {
     this.reportMode = mode;
     this.reportedItemId = mode === ReportMode.Off ? null : itemId;
@@ -224,7 +224,7 @@ class ApiClient {
       debugStore.addError(
         typeof e === "string"
           ? `login ${e}`
-          : `login --- ${e.name}: ${e.message}; ${e.stack}`
+          : `login --- ${e.name}: ${e.message}; ${e.stack}`,
       );
       throw e;
     } finally {
@@ -246,11 +246,11 @@ class ApiClient {
         this.profileStore.setModeratedCommunities(user.moderates);
       }
       apiClient.communityStore.setFollowedCommunities(
-        follows.map((c) => c.community)
+        follows.map((c) => c.community),
       );
       this.profileStore.setBlocks(person_blocks, community_blocks);
       const localAccountInd = this.accounts.findIndex(
-        (a) => JSON.parse(a.auth).jwt === this.loginDetails.jwt
+        (a) => JSON.parse(a.auth).jwt === this.loginDetails.jwt,
       );
       if (localAccountInd !== -1) {
         if (
@@ -275,7 +275,7 @@ class ApiClient {
       debugStore.addError(
         typeof e === "string"
           ? `get site data ${e}`
-          : `get site data --- ${e.name}: ${e.message}; ${e.stack}`
+          : `get site data --- ${e.name}: ${e.message}; ${e.stack}`,
       );
     } finally {
       this.setIsLoading(false);

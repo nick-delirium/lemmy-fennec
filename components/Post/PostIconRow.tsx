@@ -4,7 +4,6 @@ import {
   Platform,
   Share,
   StyleSheet,
-  ToastAndroid,
   View,
   useColorScheme,
 } from "react-native";
@@ -18,6 +17,7 @@ import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { commonStyles } from "../../commonStyles";
 import { ReportMode, Score, apiClient } from "../../store/apiClient";
 import { preferences } from "../../store/preferences";
+import { showToast } from "../../utils/toast";
 import { shortenNumbers } from "../../utils/utils";
 
 interface Props {
@@ -50,14 +50,10 @@ function PostIconRow({
             locked: !post.post.locked,
           },
           isExpanded,
-          useCommunity
+          useCommunity,
         )
         .then(() => {
-          ToastAndroid.showWithGravity(
-            "Post lock toggled",
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          );
+          showToast("Post lock toggled");
         });
     };
 
@@ -76,7 +72,7 @@ function PostIconRow({
       ],
       {
         userInterfaceStyle: scheme,
-      }
+      },
     );
   };
   const onPostDelete = () => {
@@ -88,7 +84,7 @@ function PostIconRow({
           deleted: true,
         })
         .then(() => {
-          ToastAndroid.show("Post deleted", ToastAndroid.SHORT);
+          showToast("Post deleted");
           if (isExpanded) {
             navigation.goBack();
           }
@@ -110,7 +106,7 @@ function PostIconRow({
       ],
       {
         userInterfaceStyle: scheme,
-      }
+      },
     );
   };
   const isSelf =
@@ -119,8 +115,14 @@ function PostIconRow({
   const scoreColor = !post.my_vote
     ? undefined
     : post.my_vote === 1
-    ? preferences.voteColors.upvote
-    : preferences.voteColors.downvote;
+      ? preferences.voteColors.upvote
+      : preferences.voteColors.downvote;
+
+  // guard on the vote total, not on the score: an evenly split post has a score
+  // of 0 and used to be reported as 0% instead of 50%
+  const totalVotes = post.counts.upvotes + post.counts.downvotes;
+  const upvotePercentage =
+    totalVotes > 0 ? Math.ceil((post.counts.upvotes / totalVotes) * 100) : 0;
 
   const openReporting = () => {
     apiClient.setReportMode(ReportMode.Post, post.post.id);
@@ -139,23 +141,23 @@ function PostIconRow({
     if (apiClient.loginDetails?.jwt) {
       if (
         apiClient.profileStore.moderatedCommunities.findIndex(
-          (c) => c.community.id === post.community.id
+          (c) => c.community.id === post.community.id,
         ) !== -1
       ) {
         options.unshift(
           "Mod: Feature Post Toggle",
           "Mod: Remove Post",
-          "Mod: Post Lock Toggle"
+          "Mod: Post Lock Toggle",
           // "Ban user"
         );
         icons.unshift(
           <Icon name={"star"} size={24} />,
           <Icon name={"slash"} size={24} />,
-          <Icon name={"lock"} size={24} />
+          <Icon name={"lock"} size={24} />,
           // <Icon name={"user-x"} size={24} />
         );
       }
-      if (post.creator.id === apiClient.profileStore.localUser?.person.id) {
+      if (isSelf) {
         options.unshift("Edit");
         icons.unshift(<Icon name={"edit-2"} size={24} />);
       }
@@ -163,7 +165,7 @@ function PostIconRow({
       icons.unshift(
         <Icon name={"alert-circle"} size={24} />,
         <Icon name={"bookmark"} size={24} />,
-        <Icon name={"slash"} size={24} />
+        <Icon name={"slash"} size={24} />,
       );
     }
     const cancelButtonIndex = options.findIndex((v) => v === "Cancel");
@@ -172,15 +174,15 @@ function PostIconRow({
     const deleteIndex = options.findIndex((v) => v === "Delete Own Post");
     const removePostIndex = options.findIndex((v) => v === "Mod: Remove Post");
     const togglePostLockIndex = options.findIndex(
-      (v) => v === "Mod: Post Lock Toggle"
+      (v) => v === "Mod: Post Lock Toggle",
     );
     const featurePostIndex = options.findIndex(
-      (v) => v === "Mod: Feature Post Toggle"
+      (v) => v === "Mod: Feature Post Toggle",
     );
     const editIndex = options.findIndex((v) => v === "Edit");
     // const banUserIndex = options.findIndex((v) => v === "Ban user");
     const blockCommunityIndex = options.findIndex(
-      (v) => v === "Block Community"
+      (v) => v === "Block Community",
     );
     const textStyle = {
       color: colors.text,
@@ -223,11 +225,7 @@ function PostIconRow({
             apiClient.communityStore
               .blockCommunity(post.community.id, true)
               .then(() => {
-                ToastAndroid.showWithGravity(
-                  "Community blocked",
-                  ToastAndroid.SHORT,
-                  ToastAndroid.CENTER
-                );
+                showToast("Community blocked");
               });
             break;
           case editIndex:
@@ -254,15 +252,13 @@ function PostIconRow({
                   feature_type: "Community",
                 },
                 isExpanded,
-                useCommunity
+                useCommunity,
               )
               .then(() => {
-                ToastAndroid.showWithGravity(
+                showToast(
                   !post.post.featured_community
                     ? "Post pinned as Featured"
                     : "Post unpinned",
-                  ToastAndroid.SHORT,
-                  ToastAndroid.CENTER
                 );
               });
             break;
@@ -280,14 +276,10 @@ function PostIconRow({
                       reason: text,
                     },
                     isExpanded,
-                    useCommunity
+                    useCommunity,
                   )
                   .then(() => {
-                    ToastAndroid.showWithGravity(
-                      "Post removed",
-                      ToastAndroid.SHORT,
-                      ToastAndroid.CENTER
-                    );
+                    showToast("Post removed");
                   });
               },
               onCancel: () => apiClient.setShowPrompt(false),
@@ -302,13 +294,11 @@ function PostIconRow({
                   save: !post.saved,
                 },
                 isExpanded,
-                useCommunity
+                useCommunity,
               )
               .then(() => {
-                ToastAndroid.showWithGravity(
+                showToast(
                   !post.saved ? "Post saved" : "Post removed from saved",
-                  ToastAndroid.SHORT,
-                  ToastAndroid.CENTER
                 );
               });
             break;
@@ -324,7 +314,7 @@ function PostIconRow({
           case cancelButtonIndex:
           // Canceled
         }
-      }
+      },
     );
   };
 
@@ -340,7 +330,7 @@ function PostIconRow({
           void apiClient.postStore.ratePost(
             post.post.id,
             post.my_vote === Score.Downvote ? Score.Neutral : Score.Downvote,
-            useCommunity
+            useCommunity,
           );
         }}
       >
@@ -363,7 +353,7 @@ function PostIconRow({
           void apiClient.postStore.ratePost(
             post.post.id,
             post.my_vote === Score.Upvote ? Score.Neutral : Score.Upvote,
-            useCommunity
+            useCommunity,
           );
         }}
       >
@@ -392,15 +382,7 @@ function PostIconRow({
           color={scoreColor}
         />
         <Text customColor={scoreColor}>
-          {shortenNumbers(post.counts.score)} (
-          {post.counts.score !== 0
-            ? Math.ceil(
-                (post.counts.upvotes /
-                  (post.counts.upvotes + post.counts.downvotes)) *
-                  100
-              )
-            : 0}
-          %)
+          {shortenNumbers(post.counts.score)} ({upvotePercentage}%)
         </Text>
       </View>
       <View style={{ flex: 1 }} />
@@ -443,7 +425,7 @@ function PostIconRow({
               message: Platform.OS === "ios" ? "" : post.post.ap_id,
               title: post.post.name,
             },
-            { dialogTitle: post.post.name }
+            { dialogTitle: post.post.name },
           )
         }
       >

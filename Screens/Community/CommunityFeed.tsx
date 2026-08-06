@@ -45,7 +45,7 @@ function CommunityFeed({ navigation }: { navigation: any }) {
         <FeedPost post={item} navigation={navigation} useCommunity />
       );
     },
-    [preferences.compactPostLayout]
+    [preferences.compactPostLayout],
   );
   const extractor = React.useCallback((p) => p.post.id.toString(), []);
   const onEndReached = React.useCallback(() => {
@@ -71,6 +71,7 @@ function CommunityFeed({ navigation }: { navigation: any }) {
   }).current;
 
   const createPost = () => {
+    if (!apiClient.isLoggedIn) return;
     navigation.navigate("PostWrite", {
       communityName: community.community.name,
       communityId: community.community.id,

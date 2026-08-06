@@ -1,14 +1,15 @@
 import React from "react";
-import { Image, StyleSheet, ToastAndroid, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { LoginResponse } from "lemmy-js-client";
+import { Image } from "expo-image";
 import { observer } from "mobx-react-lite";
 
 import { Icon, Text, TouchableOpacity } from "../../ThemedComponents";
 import { asyncStorageHandler, dataKeys } from "../../asyncStorage";
 import { Account as IAccount, apiClient } from "../../store/apiClient";
+import { showToast } from "../../utils/toast";
 
 function AddNew() {
   const navigation = useNavigation();
@@ -63,7 +64,7 @@ const Account = observer(
         </Text>
       </View>
     );
-  }
+  },
 );
 
 function AccountPicker() {
@@ -90,16 +91,12 @@ function AccountPicker() {
       apiClient
         .createLoggedClient(account.auth, instance, username)
         .then(() => {
-          void apiClient.postStore.getPosts({
-            jwt: account.auth,
-          } as LoginResponse);
+          // getPosts takes (communityId?, communityName?) — the old auth
+          // argument went away when the client started carrying the token
+          void apiClient.postStore.getPosts();
         });
     } catch (e) {
-      ToastAndroid.showWithGravity(
-        "Error changing account",
-        ToastAndroid.SHORT,
-        ToastAndroid.CENTER
-      );
+      showToast("Error changing account");
     }
   };
 

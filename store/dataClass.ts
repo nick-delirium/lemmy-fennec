@@ -1,6 +1,5 @@
-import { ToastAndroid } from "react-native";
-
 import ApiService from "../services/apiService";
+import { showToast } from "../utils/toast";
 import { debugStore } from "./debugStore";
 
 export default class DataClass {
@@ -20,23 +19,29 @@ export default class DataClass {
     onSuccess: (data: T) => void,
     onError: (error: any) => void,
     isUnimportant?: boolean,
-    label?: string
+    label?: string,
   ) {
-    if (this.isLoading) return;
+    // `isLoading` drives the loading spinners, so only the requests that own it
+    // may bail out on it. Background work (votes, mark-as-read) used to be
+    // dropped here whenever any other request happened to be in flight, which
+    // silently discarded the action after the UI had already applied it.
+    if (!isUnimportant) {
+      if (this.isLoading) return;
+      this.setIsLoading(true);
+    }
     console.log(new Date().getTime(), "fetching", label);
-    if (!isUnimportant) this.setIsLoading(true);
     try {
       const data = await fetcher();
       onSuccess(data);
     } catch (e) {
-      const errStr = `Network${
+      const errStr = `Network ${
         typeof e === "string" ? "error: " + e : "error"
       }`;
-      ToastAndroid.show(errStr, ToastAndroid.SHORT);
+      showToast(errStr);
       debugStore.addError(
         typeof e === "string"
           ? `${label} ${e}`
-          : `${label} --- ${e.name}: ${e.message}; ${e.stack}`
+          : `${label} --- ${e?.name}: ${e?.message}; ${e?.stack}`,
       );
       onError(e);
     } finally {

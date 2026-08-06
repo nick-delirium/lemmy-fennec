@@ -90,7 +90,7 @@ function SearchScreen({
   };
 
   const changeViewType = (
-    type: "Communities" | "Users" | "Posts" | "Comments"
+    type: "Communities" | "Users" | "Posts" | "Comments",
   ) => {
     setIsFullSearch(true);
     apiClient.searchStore.setSearchType(type);

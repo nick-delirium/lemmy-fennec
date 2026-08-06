@@ -1,12 +1,14 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
-import { PersonView } from "lemmy-js-client";
+import { LocalUserView, PersonView } from "lemmy-js-client";
 
 import { Icon } from "../../ThemedComponents";
 import MdRenderer from "../../components/MdRenderer";
 
-function Bio({ profile }: { profile: PersonView }) {
+// the own-profile screen passes a LocalUserView, other screens a PersonView;
+// only `person` is read, which both carry
+function Bio({ profile }: { profile: PersonView | LocalUserView }) {
   return profile.person.bio ? (
     <View style={styles.longRow}>
       <Icon name={"edit"} size={24} style={{ marginTop: 8 }} />

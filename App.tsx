@@ -25,8 +25,10 @@ import UserScreen from "./Screens/User/UserScreen";
 import { Icon } from "./ThemedComponents";
 import { AppAmoledTheme, AppDarkTheme, AppTheme } from "./commonStyles";
 import Prompt from "./components/Prompt";
+import Toast from "./components/Toast";
 import { ReportMode, apiClient } from "./store/apiClient";
 import { Theme, preferences } from "./store/preferences";
+import { showToast } from "./utils/toast";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,25 +49,22 @@ const App = observer(() => {
   };
 
   const sendReport = (text: string) => {
-    if (apiClient.reportMode === ReportMode.Post) {
-      apiClient.api
-        .createPostReport({
-          post_id: apiClient.reportedItemId,
-          reason: text,
-        })
-        .then(() => {
-          closeReport();
-        });
-    } else {
-      apiClient.api
-        .createCommentReport({
-          comment_id: apiClient.reportedItemId,
-          reason: text,
-        })
-        .then(() => {
-          closeReport();
-        });
-    }
+    const report =
+      apiClient.reportMode === ReportMode.Post
+        ? apiClient.api.createPostReport({
+            post_id: apiClient.reportedItemId,
+            reason: text,
+          })
+        : apiClient.api.createCommentReport({
+            comment_id: apiClient.reportedItemId,
+            reason: text,
+          });
+
+    report
+      .then(() => showToast("Report sent"))
+      .catch(() => showToast("Couldn't send report"))
+      // without this the prompt stays open forever when the request fails
+      .finally(() => closeReport());
   };
 
   const closeReport = () => {
@@ -89,7 +88,7 @@ const App = observer(() => {
       />
       <ActionSheetProvider>
         <NavigationContainer theme={schemeMap[preferences.theme]}>
-          <Stack.Navigator initialRouteName={"Home"}>
+          <Stack.Navigator id={undefined} initialRouteName={"Home"}>
             <Stack.Screen
               name="Home"
               component={HomeScreen}
@@ -150,6 +149,7 @@ const App = observer(() => {
               onCancel={promptActions.onCancel}
             />
           ) : null}
+          <Toast />
         </NavigationContainer>
       </ActionSheetProvider>
     </SafeAreaProvider>

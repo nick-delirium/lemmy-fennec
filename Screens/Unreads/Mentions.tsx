@@ -47,7 +47,7 @@ function Mentions({ navigation }) {
   const nextPage = () => {
     if (apiClient.mentionsStore.mentions.length > 5) {
       apiClient.mentionsStore.setMentionsPage(
-        apiClient.mentionsStore.mentionsPage + 1
+        apiClient.mentionsStore.mentionsPage + 1,
       );
       void apiClient.mentionsStore.getMentions();
     }
@@ -145,6 +145,7 @@ function ReplyActions({
   navigation: any;
 }) {
   const openReply = () => {
+    if (!apiClient.isLoggedIn) return;
     markRead();
     apiClient.commentsStore.setReplyTo({
       postId: item.post.id,
@@ -161,7 +162,7 @@ function ReplyActions({
   const openPost = () => {
     const path = item.comment.path.split(".");
     const replyId = path.findIndex(
-      (id) => parseInt(id, 10) === item.comment.id
+      (id) => parseInt(id, 10) === item.comment.id,
     );
     navigation.navigate("Post", {
       post: item.post.id,

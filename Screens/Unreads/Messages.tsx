@@ -58,7 +58,7 @@ function Message({ item }: { item: PrivateMessageView }) {
   const borderColor = isFromLocalUser ? commonColors.author : "#cecece";
 
   const messageDate = makeDateString(
-    item.private_message.updated || item.private_message.published
+    item.private_message.updated || item.private_message.published,
   );
   const toWriting = () => {
     // @ts-ignore

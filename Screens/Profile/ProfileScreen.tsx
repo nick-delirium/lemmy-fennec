@@ -10,7 +10,7 @@ const Tab = createMaterialTopTabNavigator();
 
 function ProfileScreen() {
   return (
-    <Tab.Navigator initialRouteName={"UserProfile"}>
+    <Tab.Navigator id={undefined} initialRouteName={"UserProfile"}>
       <Tab.Screen
         options={{
           tabBarLabel: "Profile",

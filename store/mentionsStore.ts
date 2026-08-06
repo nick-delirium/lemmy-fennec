@@ -97,7 +97,7 @@ class MentionsStore extends DataClass {
       },
       (error) => console.log(error),
       false,
-      "fetch unreads count"
+      "fetch unreads count",
     );
   }
 
@@ -112,7 +112,7 @@ class MentionsStore extends DataClass {
       ({ replies }) => this.setReplies(replies),
       (error) => console.log(error),
       false,
-      "fetch comment replies"
+      "fetch comment replies",
     );
   }
 
@@ -129,7 +129,7 @@ class MentionsStore extends DataClass {
       },
       (error) => console.log(error),
       false,
-      "fetch private messages"
+      "fetch private messages",
     );
   }
 
@@ -146,7 +146,7 @@ class MentionsStore extends DataClass {
       },
       (error) => console.log(error),
       false,
-      "fetch user mentions"
+      "fetch user mentions",
     );
   }
 
@@ -160,13 +160,13 @@ class MentionsStore extends DataClass {
       () => {
         this.setReplies(
           this.replies.map((r) =>
-            r.comment_reply.id === replyId ? { ...r, read: true } : r
-          )
+            r.comment_reply.id === replyId ? { ...r, read: true } : r,
+          ),
         );
       },
       (error) => console.log(error),
       false,
-      "mark reply read"
+      "mark reply read",
     );
   }
 
@@ -176,7 +176,7 @@ class MentionsStore extends DataClass {
       ({ replies }) => this.setReplies(replies),
       (error) => console.log(error),
       false,
-      "mark all replies read"
+      "mark all replies read",
     );
   }
 }

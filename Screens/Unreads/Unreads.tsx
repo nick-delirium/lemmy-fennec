@@ -16,13 +16,13 @@ const buildShortStr = (counter: number) => (counter > 99 ? "99+" : counter);
 function Unreads() {
   const unreadReplies = buildShortStr(apiClient.mentionsStore.unreads.replies);
   const unreadMessages = buildShortStr(
-    apiClient.mentionsStore.unreads.messages
+    apiClient.mentionsStore.unreads.messages,
   );
   const unreadMentions = buildShortStr(
-    apiClient.mentionsStore.unreads.mentions
+    apiClient.mentionsStore.unreads.mentions,
   );
   return (
-    <Tab.Navigator>
+    <Tab.Navigator id={undefined}>
       <Tab.Screen
         options={{
           tabBarBadge: () =>

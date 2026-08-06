@@ -61,8 +61,8 @@ function ThemedTouchableOpacity(props: PressProps | LongPressProps) {
               backgroundColor: props.isOutlined
                 ? ""
                 : props.isSecondary
-                ? colors.border
-                : colors.primary,
+                  ? colors.border
+                  : colors.primary,
               opacity: pressed && !props.still ? 0.5 : 1,
               ...props.style,
             }
